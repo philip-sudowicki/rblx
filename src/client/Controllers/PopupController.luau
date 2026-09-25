@@ -41,7 +41,7 @@ local showNext: () -> ()
 
 local function canShow(): boolean
 	return ClientState.ready
-		and ClientState.player:GetAttribute("DH_LoadingDone") == true
+		and (ClientState.player:GetAttribute("DH_LoadingDone") == true or os.clock() > 45)
 		and not SubController.isDiving()
 		and PopupController.holds <= 0
 end
