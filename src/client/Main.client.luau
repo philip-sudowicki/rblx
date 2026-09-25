@@ -35,6 +35,7 @@ local ORDER: { Instance } = {
 	Controllers:WaitForChild("EventController"),
 	Controllers:WaitForChild("ChatController"),
 	Controllers:WaitForChild("OfferController"),
+	Controllers:WaitForChild("DebugConsole"),
 }
 
 local modules: { { name: string, module: any } } = {}
@@ -61,6 +62,14 @@ for _, entry in modules do
 		end)
 	end
 end
+
+-- tell the loading screen we're ready once the save has arrived and everything has started
+task.spawn(function()
+	local ClientState = require(Controllers:WaitForChild("ClientState")) :: any
+	ClientState.waitReady()
+	task.wait(0.5)
+	game:GetService("Players").LocalPlayer:SetAttribute("DH_ClientReady", true)
+end)
 
 pcall(function()
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)

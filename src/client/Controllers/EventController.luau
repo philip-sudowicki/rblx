@@ -142,7 +142,7 @@ local function placeWidget()
 	local inset = GuiService.TopbarInset.Height
 	if SubController.isDiving() then
 		widget.AnchorPoint = Vector2.new(0, 0)
-		widget.Position = UDim2.fromOffset(16, 142)
+		widget.Position = UDim2.fromOffset(16, inset + 140)
 	else
 		widget.AnchorPoint = Vector2.new(0.5, 0)
 		widget.Position = UDim2.new(0.5, 0, 0, inset + 8)

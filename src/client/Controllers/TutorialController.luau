@@ -201,7 +201,7 @@ function TutorialController.Init()
 	gui = UIKit.screen("DeepHaulTutorial", 12)
 	panel = UIKit.panel({
 		Name = "TutorialPanel",
-		Position = UDim2.fromOffset(110, 240),
+		Position = UDim2.fromOffset(110, 310),
 		Size = UDim2.fromOffset(420, 136),
 		BackgroundTransparency = 0.08,
 		Visible = false,

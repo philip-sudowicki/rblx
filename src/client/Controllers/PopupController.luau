@@ -40,7 +40,10 @@ PopupController.holds = 0
 local showNext: () -> ()
 
 local function canShow(): boolean
-	return ClientState.ready and not SubController.isDiving() and PopupController.holds <= 0
+	return ClientState.ready
+		and ClientState.player:GetAttribute("DH_LoadingDone") == true
+		and not SubController.isDiving()
+		and PopupController.holds <= 0
 end
 
 local function present(popup: Popup)
@@ -169,6 +172,9 @@ function PopupController.Start()
 	Net.event("WelcomeBack").OnClientEvent:Connect(welcomeBack)
 	ClientState.Ready:Connect(function()
 		task.delay(1, showNext)
+	end)
+	ClientState.player:GetAttributeChangedSignal("DH_LoadingDone"):Connect(function()
+		task.delay(0.5, showNext)
 	end)
 	SubController.Ended:Connect(function()
 		task.delay(2.5, showNext)

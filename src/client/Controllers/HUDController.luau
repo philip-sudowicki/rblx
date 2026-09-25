@@ -4,6 +4,7 @@
 -- pressure warnings with screen cracks and a red vignette, zone banners and toasts.
 
 local Players = game:GetService("Players")
+local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -98,6 +99,12 @@ local function buildTopLeft(gui: ScreenGui)
 		Parent = gui,
 	})
 	UIKit.scaled(holder)
+	-- keep clear of Roblox's top bar buttons (its height differs by platform and UI version)
+	local function place()
+		holder.Position = UDim2.fromOffset(16, GuiService.TopbarInset.Height + 8)
+	end
+	place()
+	GuiService:GetPropertyChangedSignal("TopbarInset"):Connect(place)
 	UIKit.list(Enum.FillDirection.Vertical, 6).Parent = holder
 	local _, coins = pill(holder, "🪙", Theme.Coin, 1)
 	coinLabel = coins

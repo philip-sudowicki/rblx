@@ -37,6 +37,7 @@ local ORDER = {
 	"TutorialService",
 	"EventContentService",
 	"MonetizationService",
+	"DebugService",
 }
 
 local modules: { { name: string, module: any } } = {}
