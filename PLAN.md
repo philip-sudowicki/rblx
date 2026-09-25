@@ -124,7 +124,9 @@ form a DAG; lower layers talk upward only through `ServerSignals` (no require cy
 10. **CatchService** (minigame sessions), **SalvageService** (hold sessions)
 11. **UpgradeService, RebirthService, AquariumService, IndexService** (codex, milestones, sets),
     **QuestService, DailyService, AchievementService** (skins), **CodesService, LeaderboardService,
-    TutorialService, MonetizationService** (ProcessReceipt), **ChatTagService, DebugService** (Studio only)
+    TutorialService, MonetizationService** (ProcessReceipt), **NametagService, CosmeticService,
+    SettingsService, EventContentService** (Leviathan / Galleon / Tremor), **DebugService** (Studio
+    and owner only). Chat tags are applied client-side (ChatController) from player attributes.
 
 `src/server/Config/Codes.luau` is the one config kept server-side: codes in ReplicatedStorage would
 be readable by exploiters before release.
