@@ -16,7 +16,6 @@ local rgb = Color3.fromRGB
 local WOOD = rgb(150, 108, 70)
 local WOOD_DARK = rgb(105, 74, 48)
 local NAVY = rgb(20, 40, 70)
-local CYAN = rgb(0, 214, 255)
 local STRIPES = {
 	{ rgb(240, 80, 70), rgb(250, 245, 235) },
 	{ rgb(40, 150, 230), rgb(250, 245, 235) },
@@ -33,18 +32,18 @@ local dock = world.dockCenter
 
 -- Areas kept clear (buildings, walkways, plots).
 local RECTS: { Rect } = {
-	{ x0 = -68, x1 = 68, z0 = -636, z1 = -508 }, -- plaza and leaderboards
+	{ x0 = -96, x1 = 96, z0 = -636, z1 = -508 }, -- plaza deck and leaderboards
 	{ x0 = -84, x1 = 84, z0 = -542, z1 = -500 }, -- market and workshop
 	{ x0 = 62, x1 = 96, z0 = -604, z1 = -572 }, -- shop kiosk
 	{ x0 = -96, x1 = -58, z0 = -604, z1 = -572 }, -- quest board
 	{ x0 = -172, x1 = -84, z0 = -766, z1 = -552 }, -- aquarium plots
-	{ x0 = -14, x1 = 14, z0 = -534, z1 = -455 }, -- pier walkway
+	{ x0 = -20, x1 = 20, z0 = -534, z1 = -455 }, -- pier walkway and gateway
 	{ x0 = -8, x1 = 8, z0 = -690, z1 = -630 }, -- boardwalk to the shrine
 }
 local CIRCLES: { Circle } = {
 	{ x = 0, z = -700, r = 26 }, -- shrine
-	{ x = 150, z = -775, r = 16 }, -- lighthouse
-	{ x = 0, z = -836, r = 14 }, -- lifeguard tower
+	{ x = 175, z = -800, r = 16 }, -- lighthouse
+	{ x = 0, z = -876, r = 14 }, -- lifeguard tower
 }
 
 local taken: { Circle } = {}
@@ -79,12 +78,10 @@ local function groundY(x: number, z: number): number
 	local r = math.sqrt((x - dock.X) ^ 2 + (z - dock.Z) ^ 2)
 	local R = world.dockRadius
 	local profile = {
-		{ r = R - 40, y = world.atollTopY },
-		{ r = R - 28, y = world.atollTopY - 0.5 },
-		{ r = R - 16, y = 3.5 },
+		{ r = R - 20, y = world.atollTopY },
 		{ r = R - 8, y = 2 },
-		{ r = R, y = 0 },
-		{ r = R + 8, y = -2.5 },
+		{ r = R + 4, y = 0 },
+		{ r = R + 14, y = -4 },
 	}
 	if r <= profile[1].r then
 		return profile[1].y
@@ -293,18 +290,79 @@ local function boardwalk(parent: Instance)
 	end
 end
 
+-- A big gateway over the start of the pier, so the way to the dive area is obvious.
 local function welcomeArch(parent: Instance)
 	local model = Build.model(parent, "WelcomeArch")
-	local z = -532
-	local y = world.atollTopY + 1
+	local z = world.pierStart.Z + 2
+	local y = world.atollTopY
+	local coral = rgb(236, 110, 90)
+	local teal = rgb(40, 170, 170)
 	for side = -1, 1, 2 do
-		Build.cylinder(model, 16, 2.2, CFrame.new(side * 10, y + 8, z) * CFrame.Angles(0, 0, math.pi / 2), WOOD_DARK, Enum.Material.Wood)
-		Build.soft(Build.ball(model, 2.6, Vector3.new(side * 10, y + 16.5, z), rgb(255, 200, 70), Enum.Material.Neon))
-		tikiTorch(model, Vector3.new(side * 14, y, z + 3))
+		local x = side * 13.5
+		Build.cylinder(model, 24, 2.8, CFrame.new(x, y + 12, z) * CFrame.Angles(0, 0, math.pi / 2), WOOD_DARK, Enum.Material.Wood)
+		for ring = 1, 4 do
+			Build.cylinder(model, 0.8, 3.2, CFrame.new(x, y + ring * 5, z) * CFrame.Angles(0, 0, math.pi / 2), if ring % 2 == 0 then coral else teal, Enum.Material.SmoothPlastic)
+		end
+		local lantern = Build.soft(Build.ball(model, 2.4, Vector3.new(x, y + 25.2, z), rgb(255, 190, 90), Enum.Material.Neon))
+		local light = Instance.new("PointLight")
+		light.Color = rgb(255, 180, 90)
+		light.Range = 22
+		light.Brightness = 1
+		light.Parent = lantern
+		tikiTorch(model, Vector3.new(side * 17, y, z - 3))
 	end
-	Build.part(model, Vector3.new(24, 1.4, 2.4), CFrame.new(0, y + 15.2, z), WOOD, Enum.Material.WoodPlanks)
-	local signPos = Vector3.new(0, y + 12.6, z)
-	Build.sign(model, Vector3.new(18, 3.6, 0.6), CFrame.lookAt(signPos, signPos + Vector3.new(0, 0, -10)), "⚓ DIVE THE BLUE HOLE", NAVY, CYAN, Enum.Material.SmoothPlastic)
+	Build.part(model, Vector3.new(32, 1.8, 3), CFrame.new(0, y + 23.4, z), WOOD, Enum.Material.WoodPlanks)
+	-- the sign itself: large, framed, readable from the plaza (front) and from the pier (back)
+	Build.part(model, Vector3.new(26.6, 6.6, 0.8), CFrame.new(0, y + 19, z), teal, Enum.Material.SmoothPlastic)
+	for _, facingZ in { -10, 10 } do
+		local signPos = Vector3.new(0, y + 19, z + (if facingZ < 0 then -0.45 else 0.45))
+		Build.sign(model, Vector3.new(25.4, 5.4, 0.2), CFrame.lookAt(signPos, signPos + Vector3.new(0, 0, facingZ)), if facingZ < 0 then "DIVE THE BLUE HOLE" else "BACK TO THE ISLAND", NAVY, rgb(120, 235, 255), Enum.Material.SmoothPlastic)
+	end
+end
+
+local HUT_COLORS = { rgb(236, 110, 90), rgb(40, 170, 170), rgb(250, 200, 80), rgb(120, 150, 230), rgb(230, 130, 190) }
+
+local function beachHut(parent: Instance, base: Vector3, rng: Random)
+	local model = Build.model(parent, "BeachHut")
+	local color = HUT_COLORS[rng:NextInteger(1, #HUT_COLORS)]
+	local origin = CFrame.new(base) * CFrame.Angles(0, seaward(base) + math.pi, 0)
+	local white = rgb(248, 245, 238)
+	Build.part(model, Vector3.new(8, 0.6, 8), origin * CFrame.new(0, 0.6, 0), WOOD, Enum.Material.WoodPlanks)
+	for x = -1, 1, 2 do
+		for z = -1, 1, 2 do
+			Build.part(model, Vector3.new(0.5, 1.6, 0.5), origin * CFrame.new(x * 3.6, -0.2, z * 3.6), WOOD_DARK, Enum.Material.Wood)
+		end
+	end
+	-- vertical stripes on three walls, open front with a door frame
+	for i = 0, 7 do
+		local stripe = if i % 2 == 0 then color else white
+		Build.part(model, Vector3.new(1, 6, 0.4), origin * CFrame.new(-3.5 + i, 3.9, 3.8), stripe, Enum.Material.WoodPlanks)
+		Build.part(model, Vector3.new(0.4, 6, 1), origin * CFrame.new(-3.8, 3.9, -3.5 + i), stripe, Enum.Material.WoodPlanks)
+		Build.part(model, Vector3.new(0.4, 6, 1), origin * CFrame.new(3.8, 3.9, -3.5 + i), stripe, Enum.Material.WoodPlanks)
+	end
+	Build.part(model, Vector3.new(8, 1.4, 0.4), origin * CFrame.new(0, 6.2, -3.8), white, Enum.Material.WoodPlanks)
+	Build.wedge(model, Vector3.new(8.8, 2.6, 4.6), origin * CFrame.new(0, 8.2, -2.2), color:Lerp(rgb(60, 50, 50), 0.2), Enum.Material.WoodPlanks)
+	Build.wedge(model, Vector3.new(8.8, 2.6, 4.6), origin * CFrame.new(0, 8.2, 2.2) * CFrame.Angles(0, math.pi, 0), color:Lerp(rgb(60, 50, 50), 0.2), Enum.Material.WoodPlanks)
+end
+
+local FLOWER_COLORS = { rgb(255, 120, 150), rgb(255, 210, 80), rgb(190, 120, 255), rgb(255, 150, 70), rgb(250, 250, 250) }
+
+local function flowers(parent: Instance, base: Vector3, rng: Random)
+	local model = Build.model(parent, "Flowers")
+	for _ = 1, rng:NextInteger(6, 10) do
+		local offset = Vector3.new(rng:NextNumber(-3, 3), 0, rng:NextNumber(-3, 3))
+		local height = rng:NextNumber(0.8, 1.6)
+		Build.soft(Build.part(model, Vector3.new(0.15, height, 0.15), CFrame.new(base + offset + Vector3.new(0, height / 2, 0)), rgb(70, 140, 60), Enum.Material.Grass))
+		Build.soft(Build.ball(model, rng:NextNumber(0.5, 0.8), base + offset + Vector3.new(0, height + 0.2, 0), FLOWER_COLORS[rng:NextInteger(1, #FLOWER_COLORS)], Enum.Material.SmoothPlastic))
+	end
+end
+
+local function bush(parent: Instance, base: Vector3, rng: Random)
+	local green = rgb(70, 140, 70):Lerp(rgb(110, 170, 80), rng:NextNumber())
+	for _ = 1, 3 do
+		local offset = Vector3.new(rng:NextNumber(-1.5, 1.5), rng:NextNumber(0.6, 1.4), rng:NextNumber(-1.5, 1.5))
+		Build.soft(Build.ball(parent, rng:NextNumber(2.2, 3.4), base + offset, green, Enum.Material.Grass))
+	end
 end
 
 function Beach.build(parent: Instance)
@@ -313,46 +371,64 @@ function Beach.build(parent: Instance)
 	table.clear(taken)
 	boardwalk(folder)
 	welcomeArch(folder)
-	lifeguardTower(folder, Vector3.new(0, groundY(0, -836), -836))
+	lifeguardTower(folder, Vector3.new(0, groundY(0, -876), -876))
 	-- palms: a ring near the shore and a few inland
 	for _ = 1, 26 do
-		local p = point(rng, 120, 182, 7)
+		local p = point(rng, 150, 222, 7)
 		if p then
 			Beach.palm(folder, p, rng)
 		end
 	end
 	for _ = 1, 10 do
-		local p = point(rng, 40, 120, 8)
+		local p = point(rng, 40, 150, 8)
 		if p then
 			Beach.palm(folder, p, rng)
 		end
 	end
 	for _ = 1, 9 do
-		local p = point(rng, 150, 184, 9)
+		local p = point(rng, 196, 224, 9)
 		if p then
 			umbrellaSet(folder, p, rng)
 		end
 	end
 	for _ = 1, 7 do
-		local p = point(rng, 150, 186, 3)
+		local p = point(rng, 196, 226, 3)
 		if p then
 			surfboard(folder, p, rng)
 		end
 	end
 	for _ = 1, 5 do
-		local p = point(rng, 160, 190, 5)
+		local p = point(rng, 204, 230, 5)
 		if p then
 			sandcastle(folder, p, rng)
 		end
 	end
 	for _ = 1, 6 do
-		local p = point(rng, 150, 192, 6)
+		local p = point(rng, 196, 232, 6)
 		if p then
 			driftwood(folder, p, rng)
 		end
 	end
+	for _ = 1, 5 do
+		local p = point(rng, 180, 212, 9)
+		if p then
+			beachHut(folder, p, rng)
+		end
+	end
+	for _ = 1, 16 do
+		local p = point(rng, 30, 190, 4)
+		if p then
+			flowers(folder, p, rng)
+		end
+	end
+	for _ = 1, 18 do
+		local p = point(rng, 30, 205, 3)
+		if p then
+			bush(folder, p, rng)
+		end
+	end
 	for _ = 1, 22 do
-		local p = point(rng, 170, 198, 1)
+		local p = point(rng, 214, 240, 1)
 		if p then
 			starfish(folder, p, rng)
 		end
@@ -361,8 +437,8 @@ function Beach.build(parent: Instance)
 	for i = 0, 5 do
 		tikiTorch(folder, Vector3.new(if i % 2 == 0 then -6.5 else 6.5, world.atollTopY + 0.4, -636 - math.floor(i / 2) * 16))
 	end
-	for _, x in { -68, 68 } do
-		for _, z in { -512, -630 } do
+	for _, x in { -97, 97 } do
+		for _, z in { -505, -623 } do
 			tikiTorch(folder, Vector3.new(x, world.atollTopY + 0.4, z))
 		end
 	end

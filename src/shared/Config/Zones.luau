@@ -366,13 +366,13 @@ local surface = {
 -- Dock island / atoll geometry (studs)
 local world = {
 	atollOuterRadius = 560, -- the atoll ring spans Shallows.radius … atollOuterRadius
-	atollTopY = 5,
+	atollTopY = 4, -- island / atoll surface; kept on the 4-stud terrain voxel grid so it never rounds up
 	waterDepth = 8, -- thin terrain water layer at the surface
 	ceilingThickness = 30, -- rock ceiling over a zone wider than the one above it
 	wallThickness = 60,
-	dockCenter = Vector3.new(0, 5, -660), -- centre of the dock island
-	dockRadius = 200,
-	plazaCenter = Vector3.new(0, 5, -565),
+	dockCenter = Vector3.new(0, 4, -660), -- centre of the dock island
+	dockRadius = 240,
+	plazaCenter = Vector3.new(0, 4, -565),
 	pierStart = Vector3.new(0, 6, -470), -- where you arrive back on the dock after a dive
 	pierEnd = Vector3.new(0, 6, -398),
 	launchPoint = Vector3.new(0, -14, -380), -- centre of the dive area just below the surface
@@ -380,7 +380,7 @@ local world = {
 	launchLook = Vector3.new(0, -30, -250),
 	characterBarrierY = -7,
 	boundaryHalfX = 700, -- invisible character walls around the whole playable area
-	boundaryMinZ = -900,
+	boundaryMinZ = -960,
 	boundaryMaxZ = 600,
 	-- The Rift Seal sits in the Hadal floor hole. Players without a rebirth are pushed back above it.
 	riftSealY = -1845,

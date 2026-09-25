@@ -155,7 +155,7 @@ local function buildBoard(board: Board, part: BasePart)
 	gui.MaxDistance = 220
 	gui.Parent = part
 	local root = Instance.new("Frame")
-	root.BackgroundColor3 = Color3.fromRGB(8, 20, 36)
+	root.BackgroundColor3 = Color3.fromRGB(18, 38, 64)
 	root.BorderSizePixel = 0
 	root.Size = UDim2.fromScale(1, 1)
 	root.Parent = gui
@@ -172,7 +172,7 @@ local function buildBoard(board: Board, part: BasePart)
 	for i = 1, Game.Leaderboards.Top do
 		local y = 0.15 + (i - 1) * 0.075
 		local frame = Instance.new("Frame")
-		frame.BackgroundColor3 = if i % 2 == 0 then Color3.fromRGB(14, 32, 54) else Color3.fromRGB(18, 40, 66)
+		frame.BackgroundColor3 = if i <= 3 then Color3.fromRGB(34, 66, 104) else if i % 2 == 0 then Color3.fromRGB(26, 52, 84) else Color3.fromRGB(30, 58, 92)
 		frame.BorderSizePixel = 0
 		frame.Position = UDim2.fromScale(0.03, y)
 		frame.Size = UDim2.fromScale(0.94, 0.07)

@@ -221,17 +221,15 @@ local function beachIsland(rng: Random)
 	local R = world.dockRadius
 	local top = world.atollTopY
 	-- rings from the outside in: each higher disc overwrites the middle of the one below
+	-- heights sit on (or below) the 4-stud voxel grid: terrain rounds partial voxels up
 	local rings = {
-		{ r = R + 44, y = -18 },
+		{ r = R + 44, y = -20 },
 		{ r = R + 34, y = -12 },
-		{ r = R + 26, y = -8 },
-		{ r = R + 16, y = -5 },
-		{ r = R + 8, y = -2.5 },
-		{ r = R, y = 0 },
+		{ r = R + 24, y = -8 },
+		{ r = R + 14, y = -4 },
+		{ r = R + 4, y = 0 },
 		{ r = R - 8, y = 2 },
-		{ r = R - 16, y = 3.5 },
-		{ r = R - 28, y = top - 0.5 },
-		{ r = R - 40, y = top },
+		{ r = R - 20, y = top },
 	}
 	for _, ring in rings do
 		disc(dock.X, dock.Z, -36, ring.y, ring.r, Enum.Material.Sand)
@@ -242,7 +240,7 @@ local function beachIsland(rng: Random)
 		local r = rng:NextNumber(20, R - 80)
 		local x, z = dock.X + math.cos(angle) * r, dock.Z - 30 + math.sin(angle) * r * 0.6
 		if z < world.plazaCenter.Z - 70 then
-			fillCylinder(CFrame.new(x, top - 0.6, z), 2, rng:NextNumber(16, 30), Enum.Material.Grass)
+			fillCylinder(CFrame.new(x, top - 2, z), 4, rng:NextNumber(16, 30), Enum.Material.Grass)
 		end
 	end
 	-- rocky outcrops at the waterline
