@@ -7,6 +7,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Game = require(Shared.Config.Game)
@@ -24,6 +25,7 @@ SubController.speed = 0
 SubController.timeScale = 1
 SubController.frozen = false
 SubController.damping = 1 -- multiplier on top speed (salvage slows you)
+SubController.boosting = false -- thrusters firing this frame
 SubController.Started = Signal.new() :: Signal.Signal<Model>
 SubController.Ended = Signal.new() :: Signal.Signal<any>
 
@@ -47,6 +49,51 @@ local elapsed = 0
 local shakeMagnitude = 0
 local shakeUntil = 0
 local emergencySent = false
+local launchUntil = 0 -- the crane drop at the start of a dive runs until this time
+local lastY = 0
+
+-- A splash where the sub breaks the surface: a burst of spray and an expanding foam ring.
+local function splash(position: Vector3, big: boolean)
+	local anchor = Instance.new("Part")
+	anchor.Anchored = true
+	anchor.CanCollide = false
+	anchor.CanQuery = false
+	anchor.CanTouch = false
+	anchor.Transparency = 1
+	anchor.Size = Vector3.new(1, 1, 1)
+	anchor.CFrame = CFrame.new(position.X, 0.3, position.Z)
+	anchor.Parent = workspace
+	local spray = Instance.new("ParticleEmitter")
+	spray.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	spray.Color = ColorSequence.new(Color3.fromRGB(235, 250, 255))
+	spray.Transparency = NumberSequence.new(0.2, 1)
+	spray.Size = NumberSequence.new(2.5, 6)
+	spray.Lifetime = NumberRange.new(0.6, 1.2)
+	spray.Speed = NumberRange.new(18, 34)
+	spray.SpreadAngle = Vector2.new(35, 35)
+	spray.Acceleration = Vector3.new(0, -45, 0)
+	spray.EmissionDirection = Enum.NormalId.Top
+	spray.Enabled = false
+	spray.Parent = anchor
+	spray:Emit(if big then 45 else 25)
+	local ring = Instance.new("Part")
+	ring.Shape = Enum.PartType.Cylinder
+	ring.Anchored = true
+	ring.CanCollide = false
+	ring.CanQuery = false
+	ring.CanTouch = false
+	ring.Material = Enum.Material.SmoothPlastic
+	ring.Color = Color3.fromRGB(240, 252, 255)
+	ring.Transparency = 0.25
+	ring.Size = Vector3.new(0.3, 6, 6)
+	ring.CFrame = CFrame.new(position.X, 0.1, position.Z) * CFrame.Angles(0, 0, math.pi / 2)
+	ring.Parent = workspace
+	TweenService:Create(ring, TweenInfo.new(1.2, Enum.EasingStyle.Quad), { Size = Vector3.new(0.3, 30, 30), Transparency = 1 }):Play()
+	task.delay(1.6, function()
+		anchor:Destroy()
+		ring:Destroy()
+	end)
+end
 local connections: { RBXScriptConnection } = {}
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -94,6 +141,10 @@ local function stepMovement(dt: number)
 	elapsed += dt
 	local stats = ClientState.stats()
 	local maxSpeed = stats.speed * SubController.damping
+	SubController.boosting = InputController.boosting and not InputController.silent and not SubController.frozen
+	if SubController.boosting then
+		maxSpeed *= Game.Dive.BoostSpeedMultiplier
+	end
 	local move = InputController.moveVector()
 	local look = CFrame.fromEulerAnglesYXZ(math.rad(camPitch), math.rad(camYaw), 0)
 	local wish = look.LookVector * -move.Z + look.RightVector * move.X
@@ -111,6 +162,17 @@ local function stepMovement(dt: number)
 	if SubController.frozen then
 		rate = 6
 	end
+	-- launch: the crane lets go and the sub drops nose-level into the water
+	local y = root.Position.Y
+	if os.clock() < launchUntil and y > Game.Dive.SurfaceY - 8 then
+		target = Vector3.new(0, -Game.Dive.LaunchDropSpeed, 0) + look.LookVector * Vector3.new(1, 0, 1) * 6
+		rate = 10
+	end
+	if (lastY > 0) ~= (y > 0) then
+		splash(root.Position, lastY > 0)
+		SubController.shake(if lastY > 0 then 0.7 else 0.3, 0.6)
+	end
+	lastY = y
 	local velocity = SubController.velocity:Lerp(target, 1 - math.exp(-rate * dt))
 	SubController.velocity = velocity
 	SubController.speed = velocity.Magnitude
@@ -139,7 +201,7 @@ local function stepMovement(dt: number)
 		propWeld.C0 = propBase * CFrame.Angles(propAngle, 0, 0)
 	end
 	if bubbles then
-		bubbles.Rate = 4 + SubController.speed * 1.2
+		bubbles.Rate = (4 + SubController.speed * 1.2) * (if SubController.boosting then 2.2 else 1)
 	end
 
 	-- emergency surface hold
@@ -193,7 +255,8 @@ local function stepCamera(dt: number)
 	camera.CFrame = CFrame.lookAt(camPosition :: Vector3, focus + rotation.LookVector * 12) * shakeOffset()
 	local stats = ClientState.stats()
 	local speedFraction = math.clamp(SubController.speed / math.max(stats.speed, 1), 0, 1)
-	camera.FieldOfView = Game.Camera.FOV + Game.Camera.SpeedFOV * speedFraction
+	local boostFOV = if SubController.boosting then 8 else 0
+	camera.FieldOfView = Game.Camera.FOV + Game.Camera.SpeedFOV * speedFraction + boostFOV
 end
 
 local function cleanup()
@@ -260,7 +323,9 @@ local function begin(subName: string)
 	yaw = rootYaw
 	lastYaw = rootYaw
 	camYaw = math.deg(rootYaw)
-	camPitch = -14
+	camPitch = -8
+	launchUntil = os.clock() + 2.5
+	lastY = root.Position.Y
 	SubController.velocity = Vector3.zero
 	camera = workspace.CurrentCamera
 	camera.CameraType = Enum.CameraType.Scriptable

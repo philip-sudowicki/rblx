@@ -22,9 +22,9 @@ local steps: { Step } = {
 		title = "Welcome to DEEP HAUL!",
 		target = "Launch",
 		text = {
-			KeyboardMouse = "Follow the beam to the Launch Bay at the end of the pier, press E and launch your sub.",
-			Gamepad = "Follow the beam to the Launch Bay at the end of the pier, press X and launch your sub.",
-			Touch = "Follow the beam to the Launch Bay at the end of the pier, tap Dive! and launch your sub.",
+			KeyboardMouse = "Follow the beam to the Launch Bay at the end of the pier and press E. Your sub is waiting on the crane!",
+			Gamepad = "Follow the beam to the Launch Bay at the end of the pier and press X. Your sub is waiting on the crane!",
+			Touch = "Follow the beam to the Launch Bay at the end of the pier and tap Dive!. Your sub is waiting on the crane!",
 		},
 	},
 	{
@@ -33,9 +33,9 @@ local steps: { Step } = {
 		title = "Take her down",
 		target = nil,
 		text = {
-			KeyboardMouse = "Steer with WASD and aim with the mouse. Hold Shift to sink and Space to rise.",
-			Gamepad = "Steer with the left stick and aim with the right. Hold L2 to sink and R2 to rise.",
-			Touch = "Steer with the joystick and drag to look around. Hold ▼ DOWN to sink.",
+			KeyboardMouse = "Steer with WASD and aim with the mouse. Hold Shift to sink, Space to rise, Q for thrusters.",
+			Gamepad = "Steer with the left stick and aim with the right. Hold L2 to sink, R2 to rise, RB for thrusters.",
+			Touch = "Steer with the joystick and drag to look around. Hold ▼ DOWN to sink and 🚀 BOOST to speed up.",
 		},
 	},
 	{

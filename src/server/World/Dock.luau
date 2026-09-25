@@ -138,10 +138,34 @@ local function launchBay(folder: Folder, prompts: { [string]: ProximityPrompt })
 		Build.soft(Build.part(buoy, Vector3.new(0.3, 3, 0.3), CFrame.new(pos + Vector3.new(0, 2, 0)), rgb(60, 60, 60), Enum.Material.Metal))
 		Build.tag(buoy, "Buoy")
 	end
-	-- crane
-	Build.part(model, Vector3.new(2, 24, 2), CFrame.new(-14, pierY + 12.5, platformZ - 6), rgb(230, 190, 40), Enum.Material.Metal)
-	Build.part(model, Vector3.new(2, 2, 18), CFrame.new(-14, pierY + 24, platformZ + 2), rgb(230, 190, 40), Enum.Material.Metal)
-	Build.part(model, Vector3.new(0.3, 10, 0.3), CFrame.new(-14, pierY + 18, platformZ + 10), rgb(40, 40, 40), Enum.Material.Metal)
+	-- launch crane: your sub hangs from the hook over the dive area (the client draws it) and is
+	-- dropped into the water when you launch
+	local yellow = rgb(240, 190, 30)
+	local mastBase = Vector3.new(-17, pierY, platformZ + 4)
+	local boomY = pierY + 28
+	Build.part(model, Vector3.new(4, 1, 4), CFrame.new(mastBase + Vector3.new(0, 0.5, 0)), rgb(60, 64, 72), Enum.Material.DiamondPlate)
+	Build.part(model, Vector3.new(2.2, 28, 2.2), CFrame.new(mastBase + Vector3.new(0, 14, 0)), yellow, Enum.Material.Metal)
+	for i = 1, 6 do
+		Build.part(model, Vector3.new(2.4, 0.3, 2.4), CFrame.new(mastBase + Vector3.new(0, i * 4, 0)), rgb(40, 40, 44), Enum.Material.Metal)
+	end
+	local hang = world.launchHang
+	local tip = Vector3.new(hang.X, boomY, hang.Z)
+	local root = mastBase + Vector3.new(0, 28, 0)
+	local boomLength = (tip - root).Magnitude + 6
+	local boomCf = CFrame.lookAt((root + tip) / 2, tip) * CFrame.new(0, 0, -2)
+	Build.part(model, Vector3.new(1.8, 1.8, boomLength), boomCf, yellow, Enum.Material.Metal)
+	Build.part(model, Vector3.new(3, 3, 3), CFrame.lookAt(root, tip) * CFrame.new(0, 0, 3), rgb(60, 64, 72), Enum.Material.Metal) -- counterweight
+	Build.part(model, Vector3.new(2, 1.2, 2), CFrame.new(tip - Vector3.new(0, 1.2, 0)), rgb(40, 40, 44), Enum.Material.Metal)
+	local cableTop = tip - Vector3.new(0, 1.8, 0)
+	local cableBottom = hang + Vector3.new(0, 4, 0)
+	Build.soft(Build.part(model, Vector3.new(0.25, (cableTop - cableBottom).Magnitude, 0.25), CFrame.new((cableTop + cableBottom) / 2), rgb(30, 30, 34), Enum.Material.Metal))
+	local hook = Build.soft(Build.part(model, Vector3.new(1.4, 1, 1.4), CFrame.new(cableBottom), yellow, Enum.Material.Metal))
+	hook.Name = "CraneHook"
+	local warning = Build.soft(Build.ball(model, 0.8, root + Vector3.new(0, 1.8, 0), rgb(255, 120, 40), Enum.Material.Neon))
+	local beacon = Instance.new("PointLight")
+	beacon.Color = rgb(255, 140, 50)
+	beacon.Range = 14
+	beacon.Parent = warning
 end
 
 local function market(folder: Folder, prompts: { [string]: ProximityPrompt }, origin: CFrame)

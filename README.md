@@ -34,6 +34,7 @@ Before publishing:
 | Steer | WASD + mouse | Left + right stick | Joystick + drag |
 | Rise / sink | Space / Shift | R2 / L2 | ▲ UP / ▼ DOWN |
 | Catch / salvage | Click / hold click | A / hold A | ACTION / hold |
+| Thrusters (burns extra oxygen) | Hold Q | Hold RB | Hold 🚀 BOOST |
 | Sonar | F | Y | 📡 SONAR |
 | Silent running | Ctrl or C | L3 | 🤫 SLOW |
 | Emergency surface | Hold R | Hold X | Hold 🚨 |

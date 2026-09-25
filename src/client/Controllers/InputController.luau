@@ -2,12 +2,12 @@
 -- Unifies PC, touch and console input into dive intents.
 --
 -- PC:      WASD move (via PlayerModule), mouse look, Space up, Left Shift down, Left Click action,
---          F sonar, hold R emergency surface, Ctrl / C silent running, hold Alt for the cursor,
+--          F sonar, hold Q thrusters, hold R emergency surface, Ctrl / C silent running, hold Alt for the cursor,
 --          M menu.
 -- Touch:   default thumbstick + MobileControls buttons (Up, Down, ACTION, Sonar, Surface, Slow),
 --          drag on the right side of the screen to look.
 -- Console: left stick move, right stick look, RT up, LT down, A action, Y sonar,
---          hold X emergency surface, L3 silent running, Select (View) opens the menu.
+--          hold RB thrusters, hold X emergency surface, L3 silent running, Select (View) opens the menu.
 
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
@@ -29,6 +29,8 @@ InputController.SilentChanged = Signal.new() :: Signal.Signal<boolean>
 InputController.MenuToggle = Signal.new() :: Signal.Signal<()>
 
 InputController.silent = false
+InputController.boosting = false -- thrusters held (Q / RB / BOOST button)
+InputController.BoostChanged = Signal.new() :: Signal.Signal<boolean>
 InputController.actionHeld = false
 InputController.diving = false
 InputController.cursorFree = false -- menus open or Alt held
@@ -110,6 +112,13 @@ function InputController.setSilent(value: boolean)
 	if InputController.silent ~= value then
 		InputController.silent = value
 		InputController.SilentChanged:Fire(value)
+	end
+end
+
+function InputController.setBoost(down: boolean)
+	if InputController.boosting ~= down then
+		InputController.boosting = down
+		InputController.BoostChanged:Fire(down)
 	end
 end
 
@@ -218,6 +227,15 @@ local function bindDiveActions()
 		return sink()
 	end, false, ACTION_PRIORITY, Enum.KeyCode.R, Enum.KeyCode.ButtonX)
 
+	ContextActionService:BindActionAtPriority("DH_Boost", function(_, inputState)
+		if inputState == Enum.UserInputState.Begin then
+			InputController.setBoost(true)
+		elseif inputState == Enum.UserInputState.End or inputState == Enum.UserInputState.Cancel then
+			InputController.setBoost(false)
+		end
+		return sink()
+	end, false, ACTION_PRIORITY, Enum.KeyCode.Q, Enum.KeyCode.ButtonR1)
+
 	ContextActionService:BindActionAtPriority("DH_Silent", function(_, inputState)
 		if inputState == Enum.UserInputState.Begin then
 			InputController.setSilent(not InputController.silent)
@@ -227,9 +245,10 @@ local function bindDiveActions()
 end
 
 local function unbindDiveActions()
-	for _, name in { "DH_Ascend", "DH_Descend", "DH_Action", "DH_Sonar", "DH_Emergency", "DH_Silent" } do
+	for _, name in { "DH_Ascend", "DH_Descend", "DH_Action", "DH_Sonar", "DH_Emergency", "DH_Silent", "DH_Boost" } do
 		ContextActionService:UnbindAction(name)
 	end
+	InputController.setBoost(false)
 	ascendHeld, descendHeld = false, false
 	keyboardVertical, triggerUp, triggerDown, touchVertical = 0, 0, 0, 0
 	InputController.pressAction(false)

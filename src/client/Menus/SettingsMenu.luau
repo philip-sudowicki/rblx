@@ -163,6 +163,7 @@ local CONTROLS: { { string } } = {
 	{ "Steer", "WASD + mouse", "Left stick + right stick", "Joystick + drag" },
 	{ "Rise / sink", "Space / Shift", "R2 / L2", "▲ UP / ▼ DOWN" },
 	{ "Catch / salvage", "Click / hold click", "A / hold A", "ACTION / hold" },
+	{ "Thrusters (uses O₂)", "Hold Q", "Hold RB", "Hold 🚀 BOOST" },
 	{ "Sonar ping", "F", "Y", "📡 SONAR" },
 	{ "Silent running", "Ctrl or C", "L3", "🤫 SLOW" },
 	{ "Emergency surface", "Hold R", "Hold X", "Hold 🚨" },

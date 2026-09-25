@@ -22,6 +22,7 @@ local ORDER: { Instance } = {
 	Controllers:WaitForChild("MobileControls"),
 	Controllers:WaitForChild("EntityRenderer"),
 	Controllers:WaitForChild("AquariumRenderer"),
+	Controllers:WaitForChild("CraneController"),
 	Controllers:WaitForChild("MinigameController"),
 	Controllers:WaitForChild("SalvageController"),
 	Controllers:WaitForChild("InteractionController"),

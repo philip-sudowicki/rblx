@@ -197,9 +197,10 @@ local function startDive(player: Player, insure: boolean)
 
 	local stats = StatsService.get(player)
 	local world = Zones.world
-	local offset = Vector3.new(math.random(-16, 16), math.random(-3, 3), math.random(-6, 6))
-	local startPos = world.launchPoint + offset
-	local cf = CFrame.lookAt(startPos, world.launchLook + offset)
+	-- the sub starts hanging from the Launch Bay crane; the client drops it into the water
+	local offset = Vector3.new(math.random(-6, 6), 0, math.random(-3, 3))
+	local startPos = world.launchHang + offset
+	local cf = CFrame.lookAt(startPos, Vector3.new(world.launchLook.X + offset.X, startPos.Y, world.launchLook.Z))
 	local sub = SubModel.build(data.Skins.Equipped, cf)
 	sub.Name = "Sub_" .. player.UserId
 	sub:SetAttribute("OwnerUserId", player.UserId)
@@ -234,7 +235,7 @@ local function startDive(player: Player, insure: boolean)
 		velocity = Vector3.zero,
 		speed = 0,
 		strikes = {},
-		allowanceUntil = now + 2,
+		allowanceUntil = now + 4, -- covers the drop from the crane
 		ending = false,
 		riftVisited = false,
 		cursedDrain = 0,
@@ -441,6 +442,10 @@ local function tickDive(state: PlayerState.State, dt: number)
 	-- oxygen
 	local zone = Zones.list[zoneIndex]
 	local drain = zone.oxygenDrain * (1 + dive.cursedDrain) * stats.oxygenEfficiency
+	-- thrusters: judged from the speed the server actually observes, not from what the client says
+	if now >= dive.allowanceUntil and dive.speed > stats.speed * 1.15 then
+		drain *= Game.Dive.BoostDrainMultiplier
+	end
 	if not data.Tutorial.Done then
 		drain *= 0.4
 	end

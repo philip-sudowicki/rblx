@@ -32,6 +32,9 @@ return {
 		LowHullFraction = 0.3,
 		EmergencyHoldSeconds = 2,
 		SilentRunningSpeed = 9, -- speed cap while Silent Running is on
+		BoostSpeedMultiplier = 1.55, -- thrusters (hold Q / RB / BOOST): top speed ×
+		BoostDrainMultiplier = 2.5, -- …at the cost of this much faster oxygen use
+		LaunchDropSpeed = 38, -- studs/s the sub drops from the Launch Bay crane into the water
 		CursedDrainCap = 2.0, -- max extra oxygen drain from cursed cargo (+200%)
 		StorageBlocksDive = true,
 		-- Server movement validation

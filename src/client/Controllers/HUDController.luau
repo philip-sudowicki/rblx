@@ -575,6 +575,14 @@ local function stepDive()
 	cargoLabel.TextColor3 = if cargo >= stats.cargo then Theme.Warn else Theme.Text
 	insuredLabel.Visible = player:GetAttribute("DiveInsured") == true
 	silentLabel.Visible = InputController.silent
+	if SubController.boosting then
+		silentLabel.Visible = true
+		silentLabel.Text = "🚀 THRUSTERS · extra oxygen use"
+		silentLabel.TextColor3 = Theme.Warn
+	else
+		silentLabel.Text = "🤫 SILENT RUNNING"
+		silentLabel.TextColor3 = Theme.Accent
+	end
 
 	local root = SubController.root
 	if root then
