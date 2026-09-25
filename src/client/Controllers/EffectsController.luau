@@ -6,6 +6,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Theme = require(Shared.Config.Theme)
+local Upgrades = require(Shared.Config.Upgrades)
+local Rebirth = require(Shared.Config.Rebirth)
+local CollectionSets = require(Shared.Config.CollectionSets)
 local Format = require(Shared.Modules.Format)
 local Net = require(Shared.Modules.Net)
 local UIKit = require(script.Parent.Parent.UI.UIKit)
@@ -169,6 +172,34 @@ function EffectsController.Start()
 			EffectsController.flash(Theme.Bad, 0.35, 0.4)
 		elseif payload.kind == "PredatorAggro" then
 			AudioController.play("PredatorGrowl")
+		elseif payload.kind == "Upgrade" then
+			local upgrade = Upgrades.byId[payload.id]
+			if upgrade then
+				AudioController.play("Upgrade", 0.95 + math.min(payload.level or 1, 15) * 0.02)
+				EffectsController.floatText(string.format("%s %s Lv %d", upgrade.icon, upgrade.name, payload.level or 1), Theme.Good)
+				EffectsController.flash(Theme.Good, 0.18, 0.35)
+			end
+		elseif payload.kind == "Rebirth" then
+			AudioController.play("Rebirth")
+			EffectsController.flash(Theme.Token, 0.8, 1.2)
+			EffectsController.fadeOut(
+				string.format("🔱 REBIRTH #%d", payload.count or 1),
+				string.format("x%s sell value forever · +%d tokens", tostring(1 + (payload.count or 1) * Rebirth.sellMultiplierPerRebirth), payload.tokens or 0),
+				Color3.fromRGB(8, 40, 70),
+				2.2
+			)
+			if payload.riftUnlocked then
+				task.delay(3.2, function()
+					HUDController.banner("THE RIFT IS OPEN", "Something ancient stirs below the Hadal Trench", Color3.fromRGB(200, 90, 255), 6)
+				end)
+			end
+		elseif payload.kind == "SetComplete" then
+			local set = CollectionSets.byId[payload.id]
+			if set then
+				AudioController.play("Achievement")
+				EffectsController.flash(set.color, 0.35, 0.8)
+				HUDController.banner("SET COMPLETE!", set.name, set.color, 4)
+			end
 		end
 	end)
 	SubController.Ended:Connect(function(summary)

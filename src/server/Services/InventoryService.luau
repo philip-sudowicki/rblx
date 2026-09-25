@@ -8,6 +8,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Types = require(Shared.Modules.Types)
 local Game = require(Shared.Config.Game)
 local Treasure = require(Shared.Config.Treasure)
+local Rarities = require(Shared.Config.Rarities)
 local DataService = require(script.Parent.DataService)
 local PlayerState = require(script.Parent.PlayerState)
 local Remotes = require(script.Parent.Remotes)
@@ -251,7 +252,7 @@ function InventoryService.Start()
 		InventoryService.sell(player, uids)
 	end)
 	Remotes.on("SellAll", 1, 2, function(player, keep)
-		if not Validate.integer(keep, 2, 9) then
+		if not Validate.integer(keep, 2, Rarities.count + 1) then
 			return
 		end
 		if not InventoryService.canSell(player) then

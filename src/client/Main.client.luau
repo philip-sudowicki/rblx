@@ -17,8 +17,10 @@ local ORDER: { Instance } = {
 	Controllers:WaitForChild("WorldFXController"),
 	Controllers:WaitForChild("HUDController"),
 	Controllers:WaitForChild("EffectsController"),
+	Controllers:WaitForChild("PopupController"),
 	Controllers:WaitForChild("MobileControls"),
 	Controllers:WaitForChild("EntityRenderer"),
+	Controllers:WaitForChild("AquariumRenderer"),
 	Controllers:WaitForChild("MinigameController"),
 	Controllers:WaitForChild("SalvageController"),
 	Controllers:WaitForChild("InteractionController"),
@@ -26,6 +28,7 @@ local ORDER: { Instance } = {
 	Controllers:WaitForChild("RevealController"),
 	Controllers:WaitForChild("PromptRouter"),
 	Menus:WaitForChild("LaunchPanel"),
+	Controllers:WaitForChild("MenuController"),
 	Controllers:WaitForChild("DockController"),
 }
 

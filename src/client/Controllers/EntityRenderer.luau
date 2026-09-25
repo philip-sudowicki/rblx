@@ -28,6 +28,7 @@ local SubController = require(script.Parent.SubController)
 local AudioController = require(script.Parent.AudioController)
 local HUDController = require(script.Parent.HUDController)
 local EffectsController = require(script.Parent.EffectsController)
+local FishAnimator = require(script.Parent.Parent.Render.FishAnimator)
 
 export type FishView = {
 	id: number,
@@ -408,54 +409,11 @@ end
 local fishParts: { BasePart } = {}
 local fishFrames: { CFrame } = {}
 
-type Anim = { wag: { number }, wave: { number } }
-local animCache: { [any]: Anim } = setmetatable({}, { __mode = "k" }) :: any
-
-local function animFor(built: FishModel.Built): Anim
-	local cached = animCache[built]
-	if cached then
-		return cached
-	end
-	local wag, wave = {}, {}
-	for i, part in built.parts do
-		local w = part:GetAttribute("Wag")
-		local v = part:GetAttribute("Wave")
-		wag[i] = if typeof(w) == "number" then w else 0
-		wave[i] = if typeof(v) == "number" then v else -1
-	end
-	local anim = { wag = wag, wave = wave }
-	animCache[built] = anim
-	return anim
+local function place(built: FishModel.Built, cf: CFrame, t: number, phase: number, length: number, speed: number)
+	FishAnimator.append(built, cf, t, phase, length, speed, fishParts, fishFrames)
 end
 
-local function place(built: FishModel.Built, cf: CFrame, t: number, phase: number, length: number, scale: number)
-	local anim = animFor(built)
-	for i, part in built.parts do
-		local offset = built.offsets[i]
-		local wag = anim.wag[i]
-		local wave = anim.wave[i]
-		local final: CFrame
-		if wag > 0 then
-			final = cf * offset * CFrame.Angles(0, math.sin(t * 9 * scale + phase) * wag, 0)
-		elseif wave >= 0 then
-			final = cf * CFrame.new(math.sin(t * 5 * scale - wave * 0.8 + phase) * length * 0.035 * wave, 0, 0) * offset
-		else
-			final = cf * offset
-		end
-		table.insert(fishParts, part)
-		table.insert(fishFrames, final)
-	end
-end
-
-local function tint(built: FishModel.Built, t: number)
-	local mode = built.root:GetAttribute("Tint")
-	if mode == "rainbow" then
-		built.root.Color = Color3.fromHSV((t * 0.25) % 1, 0.7, 1)
-	elseif mode == "pulse" then
-		local p = (math.sin(t * 4) + 1) / 2
-		built.root.Color = Color3.fromRGB(6, 10, 18):Lerp(Color3.fromRGB(40, 240, 255), p)
-	end
-end
+local tint = FishAnimator.tint
 
 local function glowDotFor(view: FishView)
 	if view.glowDot then

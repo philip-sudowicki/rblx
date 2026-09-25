@@ -22,6 +22,13 @@ local ORDER = {
 	"CatchService",
 	"SalvageService",
 	"PredatorService",
+	"UpgradeService",
+	"RebirthService",
+	"AquariumService",
+	"IndexService",
+	"NametagService",
+	"CosmeticService",
+	"SettingsService",
 }
 
 local modules: { { name: string, module: any } } = {}

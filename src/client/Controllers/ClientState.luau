@@ -103,6 +103,33 @@ function ClientState.deepestZone(): number
 	return DepthMath.zoneIndexAtMeters(ClientState.data.Stats.DeepestMeters)
 end
 
+-- Settings apply instantly on this client and reach the server a moment later, batched, so a
+-- dragged slider sends one update when it settles instead of one per frame.
+local pendingSettings: { [string]: any } = {}
+local settingsQueued = false
+
+function ClientState.setSetting(key: string, value: any)
+	local data = ClientState.data
+	if not data then
+		return
+	end
+	(data.Settings :: any)[key] = value
+	ClientState.Changed:Fire("Settings")
+	pendingSettings[key] = value
+	if settingsQueued then
+		return
+	end
+	settingsQueued = true
+	task.delay(0.4, function()
+		settingsQueued = false
+		local batch = pendingSettings
+		pendingSettings = {}
+		for settingKey, settingValue in batch do
+			Net.event("SetSetting"):FireServer(settingKey, settingValue)
+		end
+	end)
+end
+
 function ClientState.Init()
 	Net.event("DataInit").OnClientEvent:Connect(function(snapshot)
 		ClientState.data = snapshot
