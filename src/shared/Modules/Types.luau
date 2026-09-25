@@ -67,6 +67,8 @@ export type PlayerStats = {
 	BestScore: number, -- rarest catch score (see LootMath.rarityScore)
 	BestItem: string, -- config id of the rarest catch
 	BestMutation: string, -- mutation of the rarest catch ("" if none)
+	BestKind: string, -- "F" or "T" for the rarest catch
+	BestBoardValue: number, -- leaderboard encoding of the rarest catch (LootMath.encodeBoardScore)
 	RiftVisits: number,
 	CleanDives: number, -- dives that ended by surfacing (not blackout)
 	PlaySeconds: number,

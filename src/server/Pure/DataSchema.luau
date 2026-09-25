@@ -46,6 +46,8 @@ local function defaultStats(): Types.PlayerStats
 		BestScore = 0,
 		BestItem = "",
 		BestMutation = "",
+		BestKind = "",
+		BestBoardValue = 0,
 		RiftVisits = 0,
 		CleanDives = 0,
 		PlaySeconds = 0,

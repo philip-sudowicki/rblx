@@ -125,3 +125,24 @@ test("world geometry: terraces, holes, ceilings and open water", function()
 	local clamped = WorldGeometry.clampInside(Vector3.new(1000, -500, 0), 30)
 	near(clamped.X, 350, 1e-6)
 end)
+
+test("minigame marker sweeps as a triangle wave", function()
+	local M = require(Shared.Modules.MinigameMath)
+	eq(M.marker(-1, 1), 0, "before start")
+	near(M.marker(0.5, 1), 0.5, 1e-9)
+	near(M.marker(1, 1), 1, 1e-9, "far end")
+	near(M.marker(1.5, 1), 0.5, 1e-9, "coming back")
+	near(M.marker(2, 1), 0, 1e-9)
+	near(M.marker(0.25, 2), 0.5, 1e-9, "faster sweeps")
+	ok(M.inZone(0.5, 0.4, 0.2))
+	ok(not M.inZone(0.61, 0.4, 0.2))
+	ok(M.isPerfect(0.5, 0.4, 0.2, 0.3))
+	ok(not M.isPerfect(0.44, 0.4, 0.2, 0.3))
+	-- every rarity's minigame fits inside 3 s with several chances to hit the zone
+	local Rarities = require(Shared.Config.Rarities)
+	local Game = require(Shared.Config.Game)
+	for _, rarity in Rarities.list do
+		local passes = Game.Catch.Duration * rarity.minigame.sweeps
+		ok(passes >= 2, rarity.id .. " gives at least two passes")
+	end
+end)

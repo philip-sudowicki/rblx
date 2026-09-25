@@ -17,6 +17,11 @@ local ORDER = {
 	"StatsService",
 	"InventoryService",
 	"SubService",
+	"SpawnService",
+	"LootService",
+	"CatchService",
+	"SalvageService",
+	"PredatorService",
 }
 
 local modules: { { name: string, module: any } } = {}
