@@ -12,7 +12,7 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local TIMEOUT = 30
+local TIMEOUT = 90
 local TIPS = {
 	"Rarer fish live deeper. Upgrade your hull to survive the pressure.",
 	"Surface before your oxygen runs out, or you'll lose half your cargo!",
@@ -170,8 +170,13 @@ end)
 if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
-status.Text = "Loading your save…"
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local deadline = os.clock() + TIMEOUT
+while not finished and ReplicatedStorage:GetAttribute("WorldReady") ~= true and os.clock() < deadline do
+	status.Text = "Filling the ocean…"
+	task.wait(0.2)
+end
+status.Text = "Loading your save…"
 while not finished and player:GetAttribute("DH_ClientReady") ~= true and os.clock() < deadline do
 	task.wait(0.1)
 end

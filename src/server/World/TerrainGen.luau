@@ -17,6 +17,31 @@ local TerrainGen = {}
 local terrain = workspace.Terrain
 local AIR = Enum.Material.Air
 
+-- Building the whole map in one go can run longer than Roblox's script time limit, so every
+-- terrain operation goes through these wrappers, which yield briefly every ~50 ms.
+local sliceStart = os.clock()
+local function pace()
+	if os.clock() - sliceStart > 0.05 then
+		task.wait()
+		sliceStart = os.clock()
+	end
+end
+
+local function fillBall(center: Vector3, radius: number, material: Enum.Material)
+	terrain:FillBall(center, radius, material)
+	pace()
+end
+
+local function fillBlock(cf: CFrame, size: Vector3, material: Enum.Material)
+	terrain:FillBlock(cf, size, material)
+	pace()
+end
+
+local function fillCylinder(cf: CFrame, height: number, radius: number, material: Enum.Material)
+	terrain:FillCylinder(cf, height, radius, material)
+	pace()
+end
+
 -- Spherical obstacles per zone (fish spawns avoid them)
 TerrainGen.obstacles = {} :: { [number]: { Obstacle } }
 TerrainGen.ledges = {} :: { Ledge }
@@ -33,7 +58,7 @@ local function addObstacle(zoneIndex: number, center: Vector3, radius: number)
 end
 
 local function disc(cx: number, cz: number, y0: number, y1: number, radius: number, material: Enum.Material)
-	terrain:FillCylinder(CFrame.new(cx, (y0 + y1) / 2, cz), y1 - y0, radius, material)
+	fillCylinder(CFrame.new(cx, (y0 + y1) / 2, cz), y1 - y0, radius, material)
 end
 
 -- A ring wall made of straight blocks (inner face at innerR).
@@ -45,7 +70,7 @@ local function ring(innerR: number, thickness: number, y0: number, y1: number, m
 	for i = 0, segments - 1 do
 		local theta = (i / segments) * math.pi * 2
 		local pos = Vector3.new(math.cos(theta) * rc, cy, math.sin(theta) * rc)
-		terrain:FillBlock(CFrame.lookAt(pos, Vector3.new(0, cy, 0)), Vector3.new(arc, height, thickness), material)
+		fillBlock(CFrame.lookAt(pos, Vector3.new(0, cy, 0)), Vector3.new(arc, height, thickness), material)
 	end
 end
 
@@ -63,7 +88,7 @@ local function wallBoulders(zoneIndex: number, rng: Random, count: number, mater
 		local r = zone.radius + radius * 0.35
 		local y = rng:NextNumber(minY, maxY)
 		local center = Vector3.new(math.cos(theta) * r, y, math.sin(theta) * r)
-		terrain:FillBall(center, radius, material)
+		fillBall(center, radius, material)
 		addObstacle(zoneIndex, center, radius)
 	end
 end
@@ -76,7 +101,7 @@ local function floorMounds(zoneIndex: number, rng: Random, count: number, materi
 			local y = WorldGeometry.floorY(zoneIndex, x, z)
 			local radius = rng:NextNumber(6, maxRadius)
 			local center = Vector3.new(x, y - radius * 0.55, z)
-			terrain:FillBall(center, radius, material)
+			fillBall(center, radius, material)
 			addObstacle(zoneIndex, center, radius)
 		end
 	end
@@ -95,8 +120,8 @@ local function ledges(zoneIndex: number, rng: Random, count: number, material: E
 		local rc = zone.radius - depth / 2 + 6
 		local pos = Vector3.new(math.cos(theta) * rc, y, math.sin(theta) * rc)
 		local cf = CFrame.lookAt(pos, Vector3.new(0, y, 0))
-		terrain:FillBlock(cf, Vector3.new(width, thick, depth + 12), material)
-		terrain:FillBall(pos + Vector3.new(0, -thick * 0.6, 0) + cf.LookVector * -4, thick * 1.1, material)
+		fillBlock(cf, Vector3.new(width, thick, depth + 12), material)
+		fillBall(pos + Vector3.new(0, -thick * 0.6, 0) + cf.LookVector * -4, thick * 1.1, material)
 		local topPoint = pos + Vector3.new(0, thick / 2, 0) + cf.LookVector * (depth * 0.15)
 		table.insert(TerrainGen.ledges, { top = topPoint, zone = zoneIndex, normal = cf.LookVector })
 		addObstacle(zoneIndex, pos, math.max(width, depth) / 2 + thick)
@@ -113,10 +138,10 @@ local function arches(zoneIndex: number, rng: Random, count: number, material: E
 			local base = CFrame.new(x, floor, z) * CFrame.Angles(0, yaw, 0)
 			local height = rng:NextNumber(40, 60)
 			local span = rng:NextNumber(26, 36)
-			terrain:FillBlock(base * CFrame.new(-span / 2, height / 2, 0), Vector3.new(9, height, 9), material)
-			terrain:FillBlock(base * CFrame.new(span / 2, height / 2, 0), Vector3.new(9, height, 9), material)
-			terrain:FillBlock(base * CFrame.new(0, height, 0), Vector3.new(span + 12, 10, 10), material)
-			terrain:FillBall((base * CFrame.new(0, height + 2, 0)).Position, 9, material)
+			fillBlock(base * CFrame.new(-span / 2, height / 2, 0), Vector3.new(9, height, 9), material)
+			fillBlock(base * CFrame.new(span / 2, height / 2, 0), Vector3.new(9, height, 9), material)
+			fillBlock(base * CFrame.new(0, height, 0), Vector3.new(span + 12, 10, 10), material)
+			fillBall((base * CFrame.new(0, height + 2, 0)).Position, 9, material)
 			table.insert(TerrainGen.arches, (base * CFrame.new(0, 0, 0)).Position)
 			addObstacle(zoneIndex, (base * CFrame.new(0, height / 2, 0)).Position, span / 2 + height / 2)
 		end
@@ -131,8 +156,8 @@ local function floaters(zoneIndex: number, rng: Random, count: number, material:
 		local y = rng:NextNumber(floorTop + 60, zone.topY - 90)
 		local radius = rng:NextNumber(10, 20)
 		local center = Vector3.new(x, y, z)
-		terrain:FillBall(center, radius, material)
-		terrain:FillBall(center + Vector3.new(rng:NextNumber(-6, 6), -radius * 0.6, rng:NextNumber(-6, 6)), radius * 0.7, material)
+		fillBall(center, radius, material)
+		fillBall(center + Vector3.new(rng:NextNumber(-6, 6), -radius * 0.6, rng:NextNumber(-6, 6)), radius * 0.7, material)
 		table.insert(TerrainGen.floaters, { center = center, radius = radius })
 		addObstacle(zoneIndex, center, radius + 6)
 	end
@@ -147,12 +172,14 @@ local function colors()
 	terrain:SetMaterialColor(Enum.Material.LeafyGrass, Color3.fromRGB(110, 175, 80))
 	terrain:SetMaterialColor(Enum.Material.Grass, Color3.fromRGB(100, 165, 75))
 	terrain:SetMaterialColor(Enum.Material.Sand, Zones.list[1].materialColors.floor)
-	terrain.WaterColor = Color3.fromRGB(28, 150, 190)
-	terrain.WaterTransparency = 0.55
-	terrain.WaterReflectance = 0.35
-	terrain.WaterWaveSize = 0.15
-	terrain.WaterWaveSpeed = 8
-	terrain.Decoration = false
+	terrain:SetMaterialColor(Enum.Material.Basalt, Color3.fromRGB(70, 68, 66))
+	terrain:SetMaterialColor(Enum.Material.Rock, Color3.fromRGB(120, 116, 108))
+	terrain.WaterColor = Color3.fromRGB(20, 175, 200)
+	terrain.WaterTransparency = 0.7
+	terrain.WaterReflectance = 0.25
+	terrain.WaterWaveSize = 0.2
+	terrain.WaterWaveSpeed = 9
+	terrain.Decoration = true -- animated grass blades on the island
 end
 
 local function buildShallows(rng: Random)
@@ -178,21 +205,88 @@ local function buildShallows(rng: Random)
 			local theta = (j / count) * math.pi * 2 + rng:NextNumber(-0.05, 0.05)
 			local radius = rng:NextNumber(5, 11)
 			local center = Vector3.new(math.cos(theta) * (r + 2), terraces[i - 1].y - radius * 0.4, math.sin(theta) * (r + 2))
-			terrain:FillBall(center, radius, if rng:NextNumber() < 0.5 then zone.materials.accent else zone.materials.wall)
+			fillBall(center, radius, if rng:NextNumber() < 0.5 then zone.materials.accent else zone.materials.wall)
 		end
 	end
 	floorMounds(1, rng, 55, zone.materials.floor, 16)
 	floorMounds(1, rng, 25, zone.materials.accent, 10)
 	wallBoulders(1, rng, 40, zone.materials.wall, zone.bottomY + 40, -20)
 
-	-- Dock island
+end
+
+-- The home island: a sandy beach that slopes gently into the sea on every side (so anyone who
+-- ends up in the water can walk back out), a grassy middle, and a few rocky outcrops.
+local function beachIsland(rng: Random)
+	local world = Zones.world
 	local dock = world.dockCenter
-	disc(dock.X, dock.Z, -45, world.atollTopY, world.dockRadius, Enum.Material.Sand)
-	disc(dock.X, dock.Z - 10, world.atollTopY - 3, world.atollTopY, world.dockRadius - 30, Enum.Material.LeafyGrass)
-	for j = 1, 36 do
-		local theta = (j / 36) * math.pi * 2
-		local r = world.dockRadius - 4
-		terrain:FillBall(Vector3.new(dock.X + math.cos(theta) * r, -6, dock.Z + math.sin(theta) * r), rng:NextNumber(16, 24), Enum.Material.Sand)
+	local R = world.dockRadius
+	local top = world.atollTopY
+	-- rings from the outside in: each higher disc overwrites the middle of the one below
+	local rings = {
+		{ r = R + 26, y = -8 },
+		{ r = R + 16, y = -5 },
+		{ r = R + 8, y = -2.5 },
+		{ r = R, y = 0 },
+		{ r = R - 8, y = 2 },
+		{ r = R - 16, y = 3.5 },
+		{ r = R - 28, y = top - 0.5 },
+		{ r = R - 40, y = top },
+	}
+	for _, ring in rings do
+		disc(dock.X, dock.Z, -36, ring.y, ring.r, Enum.Material.Sand)
+	end
+	-- grassy dunes in the middle of the island (south of the plaza)
+	for _ = 1, 9 do
+		local angle = rng:NextNumber(0, math.pi * 2)
+		local r = rng:NextNumber(20, R - 80)
+		local x, z = dock.X + math.cos(angle) * r, dock.Z - 30 + math.sin(angle) * r * 0.6
+		if z < world.plazaCenter.Z - 70 then
+			fillCylinder(CFrame.new(x, top - 0.6, z), 2, rng:NextNumber(16, 30), Enum.Material.Grass)
+		end
+	end
+	-- rocky outcrops at the waterline
+	for i = 1, 14 do
+		local angle = (i / 14) * math.pi * 2 + rng:NextNumber(-0.12, 0.12)
+		local r = R + rng:NextNumber(4, 18)
+		local center = Vector3.new(dock.X + math.cos(angle) * r, rng:NextNumber(-4, 0), dock.Z + math.sin(angle) * r)
+		if center.Z < world.plazaCenter.Z - 40 then
+			fillBall(center, rng:NextNumber(4, 8), Enum.Material.Basalt)
+			fillBall(center + Vector3.new(rng:NextNumber(-4, 4), -1, rng:NextNumber(-4, 4)), rng:NextNumber(3, 5), Enum.Material.Rock)
+		end
+	end
+	-- keep the Blue Hole's rim clean where the island meets the atoll
+	fillCylinder(CFrame.new(0, -17, 0), 58, Zones.list[1].radius - 2, AIR)
+end
+
+-- A sandy seabed under the open sea around the atoll, so the water is turquoise instead of a
+-- sheet over the void. Filled in cells, skipping the Blue Hole inside the atoll.
+local SEA_EXTENT = 3000
+local function seabed()
+	local world = Zones.world
+	local minR = world.atollOuterRadius - 12
+	local function fillCell(cx: number, cz: number, size: number)
+		local nearestX = math.max(math.abs(cx) - size / 2, 0)
+		local nearestZ = math.max(math.abs(cz) - size / 2, 0)
+		if math.sqrt(nearestX * nearestX + nearestZ * nearestZ) >= minR then
+			fillBlock(CFrame.new(cx, -20, cz), Vector3.new(size, 24, size), Enum.Material.Sand)
+		elseif size > 32 then
+			local half = size / 2
+			for dx = -1, 1, 2 do
+				for dz = -1, 1, 2 do
+					fillCell(cx + dx * half / 2, cz + dz * half / 2, half)
+				end
+			end
+		end
+	end
+	local size = 256
+	local x = -SEA_EXTENT
+	while x < SEA_EXTENT do
+		local z = -SEA_EXTENT
+		while z < SEA_EXTENT do
+			fillCell(x + size / 2, z + size / 2, size)
+			z += size
+		end
+		x += size
 	end
 end
 
@@ -234,8 +328,8 @@ local function water()
 	-- Turn the air in the surface slab into water (never overwrites land).
 	local world = Zones.world
 	local y0 = -world.waterDepth
-	local minX, maxX = -world.boundaryHalfX - 200, world.boundaryHalfX + 200
-	local minZ, maxZ = world.boundaryMinZ - 200, world.boundaryMaxZ + 200
+	local minX, maxX = -SEA_EXTENT, SEA_EXTENT
+	local minZ, maxZ = -SEA_EXTENT, SEA_EXTENT
 	local step = 512
 	local x = minX
 	while x < maxX do
@@ -243,20 +337,39 @@ local function water()
 		while z < maxZ do
 			local region = Region3.new(Vector3.new(x, y0, z), Vector3.new(math.min(x + step, maxX), 0, math.min(z + step, maxZ)))
 			terrain:ReplaceMaterial(region:ExpandToGrid(4), 4, AIR, Enum.Material.Water)
+			pace()
 			z += step
 		end
 		x += step
 	end
 end
 
+-- Each stage is isolated so one failure can't leave the whole map missing.
+local function stage(name: string, fn: () -> ())
+	local ok, err = pcall(fn :: (...any) -> ...any)
+	if not ok then
+		warn(string.format("[DeepHaul] terrain stage %s failed: %s", name, tostring(err)))
+	end
+end
+
 function TerrainGen.build()
 	local rng = Random.new(20240601)
-	colors()
-	buildShallows(rng)
+	sliceStart = os.clock()
+	stage("colors", colors)
+	stage("shallows", function()
+		buildShallows(rng)
+	end)
+	stage("seabed", seabed)
+	stage("island", function()
+		beachIsland(rng)
+	end)
+	-- the surface water goes in early so the dock is surrounded by sea as soon as possible
+	stage("water", water)
 	for index = 2, Zones.count do
-		buildZone(index, rng)
+		stage("zone " .. index, function()
+			buildZone(index, rng)
+		end)
 	end
-	water()
 end
 
 return TerrainGen

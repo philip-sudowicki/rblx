@@ -10,6 +10,8 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Zones = require(Shared.Config.Zones)
 local Game = require(Shared.Config.Game)
 local Build = require(script.Parent.Build)
+local Beach = require(script.Parent.Beach)
+local SubModel = require(Shared.Models.SubModel)
 
 export type Plot = {
 	index: number,
@@ -74,28 +76,6 @@ local function lamp(parent: Instance, base: Vector3)
 	light.Range = 18
 	light.Brightness = 1.2
 	light.Parent = bulb
-end
-
-local function palm(parent: Instance, base: Vector3, rng: Random)
-	local model = Build.model(parent, "Palm")
-	local lean = rng:NextNumber(0.1, 0.35)
-	local yaw = rng:NextNumber(0, math.pi * 2)
-	local cf = CFrame.new(base) * CFrame.Angles(0, yaw, 0)
-	local segments = 6
-	for i = 1, segments do
-		local seg = cf * CFrame.Angles(lean * i / segments, 0, 0) * CFrame.new(0, 2, 0)
-		Build.cylinder(model, 4.2, 1.6 - i * 0.12, seg * CFrame.Angles(0, 0, math.pi / 2), rgb(140, 105, 70), Enum.Material.Wood)
-		cf = seg * CFrame.new(0, 2, 0)
-	end
-	local top = cf.Position
-	for leaf = 1, 7 do
-		local angle = leaf / 7 * math.pi * 2
-		local leafCf = CFrame.new(top) * CFrame.Angles(0, angle, 0) * CFrame.Angles(-0.5, 0, 0) * CFrame.new(0, 0, -4.5)
-		Build.soft(Build.part(model, Vector3.new(1.6, 0.25, 9), leafCf, rgb(70, 160, 70):Lerp(rgb(120, 190, 80), rng:NextNumber()), Enum.Material.Grass))
-	end
-	for c = 1, 3 do
-		Build.soft(Build.ball(model, 0.9, top + Vector3.new(math.cos(c * 2) * 0.8, -0.8, math.sin(c * 2) * 0.8), rgb(110, 80, 40), Enum.Material.SmoothPlastic))
-	end
 end
 
 local function crate(parent: Instance, position: Vector3, yaw: number, size: number)
@@ -196,29 +176,114 @@ local function market(folder: Folder, prompts: { [string]: ProximityPrompt }, or
 end
 
 local function workshop(folder: Folder, prompts: { [string]: ProximityPrompt }, origin: CFrame)
+	-- A steel-framed hangar: open front with a rolled-up shutter, a real sub on a cradle under a
+	-- chain hoist, a tool wall, and the upgrade terminal at the front counter.
 	local model = Build.model(folder, "Workshop")
-	local metal = rgb(120, 130, 140)
+	local steel = rgb(58, 64, 74)
+	local panel = rgb(34, 88, 120)
+	local yellow = rgb(255, 196, 40)
 	local function add(size: Vector3, offset: CFrame, color: Color3, material: Enum.Material): Part
 		return Build.part(model, size, origin * offset, color, material)
 	end
-	add(Vector3.new(28, 1, 22), CFrame.new(0, 0.5, 0), rgb(110, 110, 116), Enum.Material.Concrete)
-	add(Vector3.new(28, 14, 1), CFrame.new(0, 7.5, 10.5), metal, Enum.Material.CorrodedMetal)
-	add(Vector3.new(1, 14, 22), CFrame.new(-13.5, 7.5, 0), metal, Enum.Material.CorrodedMetal)
-	add(Vector3.new(1, 14, 22), CFrame.new(13.5, 7.5, 0), metal, Enum.Material.CorrodedMetal)
-	Build.wedge(model, Vector3.new(22, 6, 14.5), origin * CFrame.new(0, 17.5, -3.6) * CFrame.Angles(0, -math.pi / 2, 0) * CFrame.Angles(0, 0, 0), rgb(200, 70, 60), Enum.Material.CorrodedMetal)
-	Build.wedge(model, Vector3.new(22, 6, 14.5), origin * CFrame.new(0, 17.5, 3.6) * CFrame.Angles(0, math.pi / 2, 0), rgb(200, 70, 60), Enum.Material.CorrodedMetal)
-	local bench = add(Vector3.new(12, 3.2, 4), CFrame.new(0, 2.6, 3), rgb(90, 70, 50), Enum.Material.Wood)
-	add(Vector3.new(10, 5, 0.4), CFrame.new(0, 7, 9.8), rgb(60, 60, 64), Enum.Material.Metal)
-	for i = 1, 5 do
-		add(Vector3.new(0.4, 2.4, 0.4), CFrame.new(-4 + i * 1.6, 7, 9.5), rgb(200, 200, 205), Enum.Material.Metal)
+	local W, D, H = 30, 24, 15
+	-- floor with a hazard edge
+	add(Vector3.new(W, 1, D), CFrame.new(0, 0.5, 0), rgb(130, 132, 136), Enum.Material.Concrete)
+	for i = 0, 9 do
+		add(Vector3.new(W / 10, 0.12, 1), CFrame.new(-W / 2 + W / 20 + i * W / 10, 1.06, -D / 2 + 0.5), if i % 2 == 0 then yellow else rgb(30, 30, 34), Enum.Material.SmoothPlastic)
 	end
-	-- hanging sub hull being repaired
-	Build.ball(model, 5, (origin * CFrame.new(-6, 7, -2)).Position, rgb(255, 196, 40), Enum.Material.SmoothPlastic)
-	Build.cylinder(model, 6, 5, origin * CFrame.new(-3, 7, -2), rgb(255, 196, 40), Enum.Material.SmoothPlastic)
-	Build.soft(Build.part(model, Vector3.new(0.3, 5, 0.3), origin * CFrame.new(-4, 12, -2), rgb(40, 40, 40), Enum.Material.Metal))
-	local signPos = (origin * CFrame.new(0, 12, -11.2)).Position
-	Build.sign(model, Vector3.new(16, 3.4, 0.6), CFrame.lookAt(signPos, signPos + origin.LookVector), "WORKSHOP", NAVY, CYAN, Enum.Material.SmoothPlastic)
-	local anchorPart = anchor(model, "UpgradePrompt", (bench.CFrame * CFrame.new(0, 1.5, -2.5)).Position)
+	-- steel columns and header beam
+	for _, x in { -W / 2 + 0.6, W / 2 - 0.6 } do
+		for _, z in { -D / 2 + 0.6, 0, D / 2 - 0.6 } do
+			add(Vector3.new(1.2, H, 1.2), CFrame.new(x, H / 2 + 1, z), steel, Enum.Material.Metal)
+		end
+	end
+	add(Vector3.new(W, 1.6, 1.4), CFrame.new(0, H + 0.4, -D / 2 + 0.6), steel, Enum.Material.Metal)
+	for i = 0, 11 do
+		add(Vector3.new(W / 12, 0.6, 0.2), CFrame.new(-W / 2 + W / 24 + i * W / 12, H - 0.7, -D / 2 - 0.1), if i % 2 == 0 then yellow else rgb(30, 30, 34), Enum.Material.SmoothPlastic)
+	end
+	-- rolled-up shutter
+	Build.cylinder(model, W - 2, 2.4, origin * CFrame.new(0, H - 2.2, -D / 2 + 1.6), rgb(150, 156, 164), Enum.Material.DiamondPlate)
+	-- walls (diamond-plate panels with a trim line)
+	add(Vector3.new(W, H, 0.6), CFrame.new(0, H / 2 + 1, D / 2 - 0.3), panel, Enum.Material.DiamondPlate)
+	for side = -1, 1, 2 do
+		add(Vector3.new(0.6, H, D), CFrame.new(side * (W / 2 - 0.3), H / 2 + 1, 0), panel, Enum.Material.DiamondPlate)
+		-- a porthole window in each side wall
+		local window = add(Vector3.new(0.7, 3.4, 3.4), CFrame.new(side * (W / 2 - 0.3), H / 2 + 2, 2), rgb(160, 220, 255), Enum.Material.Glass)
+		window.Transparency = 0.4
+		window.Shape = Enum.PartType.Cylinder
+	end
+	Build.soft(add(Vector3.new(W + 0.2, 0.4, D + 0.2), CFrame.new(0, 3.2, 0), CYAN, Enum.Material.Neon))
+	-- roof: two slopes and a ridge, with neon trim along the front
+	Build.wedge(model, Vector3.new(D + 1, 4, W / 2 + 0.5), origin * CFrame.new(-W / 4, H + 3.2, 0) * CFrame.Angles(0, math.pi / 2, 0), rgb(24, 44, 70), Enum.Material.Metal)
+	Build.wedge(model, Vector3.new(D + 1, 4, W / 2 + 0.5), origin * CFrame.new(W / 4, H + 3.2, 0) * CFrame.Angles(0, -math.pi / 2, 0), rgb(24, 44, 70), Enum.Material.Metal)
+	add(Vector3.new(1.2, 0.6, D + 1.2), CFrame.new(0, H + 5.3, 0), steel, Enum.Material.Metal)
+	Build.soft(add(Vector3.new(W + 1, 0.3, 0.3), CFrame.new(0, H + 1.3, -D / 2 - 0.4), CYAN, Enum.Material.Neon))
+	-- the sub on its cradle, under a chain hoist
+	local subCf = origin * CFrame.new(-3, 5.4, 3) * CFrame.Angles(0, math.pi / 2, 0)
+	local sub = SubModel.display("Default", subCf)
+	sub.Parent = model
+	for _, dz in { -4, 4 } do
+		add(Vector3.new(6.5, 2.4, 1), CFrame.new(-3, 2.2, 3 + dz), yellow, Enum.Material.Metal)
+	end
+	add(Vector3.new(1, 1, 18), CFrame.new(-3, H - 0.2, 3), steel, Enum.Material.Metal)
+	Build.soft(add(Vector3.new(0.3, 5.2, 0.3), CFrame.new(-3, H - 3.2, 3), rgb(80, 80, 86), Enum.Material.Metal))
+	add(Vector3.new(1.6, 1.2, 1.2), CFrame.new(-3, H - 6, 3), yellow, Enum.Material.Metal)
+	local sparks = Build.soft(add(Vector3.new(0.4, 0.4, 0.4), CFrame.new(1.2, 5.4, 3), rgb(255, 220, 140), Enum.Material.Neon))
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	emitter.Color = ColorSequence.new(rgb(255, 230, 150), rgb(255, 140, 40))
+	emitter.LightEmission = 1
+	emitter.Rate = 18
+	emitter.Lifetime = NumberRange.new(0.2, 0.5)
+	emitter.Speed = NumberRange.new(6, 12)
+	emitter.SpreadAngle = Vector2.new(60, 60)
+	emitter.Size = NumberSequence.new(0.35, 0)
+	emitter.Acceleration = Vector3.new(0, -30, 0)
+	emitter.Parent = sparks
+	-- tool wall and workbench along the back
+	add(Vector3.new(12, 6, 0.3), CFrame.new(7, 8, D / 2 - 0.8), rgb(90, 70, 52), Enum.Material.Wood)
+	local toolColors = { rgb(220, 60, 50), rgb(60, 130, 220), rgb(200, 200, 205), rgb(255, 196, 40) }
+	for i = 1, 8 do
+		local long = i % 3 == 0
+		add(Vector3.new(0.4, if long then 3 else 2, 0.3), CFrame.new(2 + i * 1.25, 8 + (if i % 2 == 0 then 0.8 else -0.6), D / 2 - 1.1), toolColors[(i % 4) + 1], Enum.Material.Metal)
+	end
+	add(Vector3.new(12, 0.6, 3.4), CFrame.new(7, 3.8, D / 2 - 2.4), rgb(120, 86, 56), Enum.Material.WoodPlanks)
+	add(Vector3.new(11.4, 2.8, 3), CFrame.new(7, 2.2, D / 2 - 2.4), rgb(70, 74, 82), Enum.Material.Metal)
+	add(Vector3.new(2.6, 1.6, 1.6), CFrame.new(10, 4.9, D / 2 - 2.4), rgb(210, 50, 45), Enum.Material.Metal)
+	barrel(model, (origin * CFrame.new(W / 2 - 2.5, 1, -D / 2 + 3)).Position)
+	barrel(model, (origin * CFrame.new(W / 2 - 5.2, 1, -D / 2 + 2.6)).Position)
+	-- hanging lamps
+	for _, x in { -8, 0, 8 } do
+		Build.soft(add(Vector3.new(0.2, 2, 0.2), CFrame.new(x, H - 1, -1), rgb(40, 40, 44), Enum.Material.Metal))
+		Build.soft(add(Vector3.new(2.2, 0.6, 2.2), CFrame.new(x, H - 2.2, -1), rgb(40, 40, 44), Enum.Material.Metal))
+		local bulb = Build.soft(Build.ball(model, 0.9, (origin * CFrame.new(x, H - 2.7, -1)).Position, rgb(255, 236, 190), Enum.Material.Neon))
+		local light = Instance.new("PointLight")
+		light.Color = rgb(255, 230, 190)
+		light.Range = 18
+		light.Brightness = 1.3
+		light.Parent = bulb
+	end
+	-- upgrade terminal at the front counter
+	local counter = add(Vector3.new(9, 3.6, 3), CFrame.new(8, 2.8, -6), rgb(40, 48, 60), Enum.Material.Metal)
+	Build.soft(add(Vector3.new(9.2, 0.3, 3.2), CFrame.new(8, 4.7, -6), CYAN, Enum.Material.Neon))
+	local screen = add(Vector3.new(4.6, 2.8, 0.3), CFrame.new(8, 6.6, -5.2) * CFrame.Angles(-0.2, 0, 0), rgb(10, 20, 34), Enum.Material.SmoothPlastic)
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Front
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 50
+	gui.LightInfluence = 0
+	gui.Parent = screen
+	local text = Instance.new("TextLabel")
+	text.BackgroundTransparency = 1
+	text.Size = UDim2.fromScale(1, 1)
+	text.Font = Enum.Font.FredokaOne
+	text.TextScaled = true
+	text.TextColor3 = CYAN
+	text.Text = "SUB\nUPGRADES"
+	text.Parent = gui
+	local signPos = (origin * CFrame.new(0, H + 2.6, -D / 2 - 0.9)).Position
+	Build.sign(model, Vector3.new(16, 3.4, 0.6), CFrame.lookAt(signPos, signPos + origin.LookVector), "🛠 WORKSHOP", NAVY, CYAN, Enum.Material.SmoothPlastic)
+	local anchorPart = anchor(model, "UpgradePrompt", (counter.CFrame * CFrame.new(0, 1.4, -2.2)).Position)
 	prompts.Upgrades = prompt(anchorPart, "Upgrades", "Upgrade Sub", "Workshop")
 end
 
@@ -504,16 +569,7 @@ function Dock.build(parent: Instance): DockResult
 		local angle = (i + 0.5) / 8 * math.pi * 2
 		lamp(folder, Vector3.new(plaza.X + math.cos(angle) * 52, plaza.Y + 1, plaza.Z - 4 + math.sin(angle) * 44))
 	end
-	for i = 1, 12 do
-		local angle = i / 12 * math.pi * 2 + rng:NextNumber(-0.1, 0.1)
-		local r = world.dockRadius - rng:NextNumber(18, 34)
-		local pos = Vector3.new(world.dockCenter.X + math.cos(angle) * r, world.atollTopY, world.dockCenter.Z + math.sin(angle) * r)
-		local inAquarium = pos.X < -84 and pos.Z < -545 and pos.Z > -775
-		local nearPier = math.abs(pos.X) < 30 and pos.Z > -525
-		if not inAquarium and not nearPier then
-			palm(folder, pos, rng)
-		end
-	end
+	Beach.build(folder)
 	for i = 1, 6 do
 		crate(folder, Vector3.new(rng:NextNumber(14, 22) * (if i % 2 == 0 then 1 else -1), plaza.Y + 1, -480 + rng:NextNumber(-10, 10)), rng:NextNumber(0, 1), rng:NextNumber(2, 3.4))
 	end

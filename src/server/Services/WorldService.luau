@@ -187,6 +187,7 @@ function WorldService.Init()
 	local zonesFolder = Build.folder(folder, "Zones")
 	local rng = Random.new(424242)
 	for index = 1, Zones.count do
+		task.wait() -- keep each step short (the world is big)
 		local special = Decor.build(index, zonesFolder, rng)
 		for _, spot in special do
 			addSpot(spot.position, spot.zone, spot.special)
@@ -203,6 +204,7 @@ function WorldService.Init()
 		end
 	end
 	WorldService.ready = true
+	game:GetService("ReplicatedStorage"):SetAttribute("WorldReady", true)
 	print(string.format("[DeepHaul] world built in %.2fs", os.clock() - started))
 end
 

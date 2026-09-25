@@ -91,9 +91,11 @@ local function setPassenger(character: Model, passenger: boolean)
 	end
 end
 
+-- After a dive you step off onto the pier just behind the Launch Bay, facing the island, so
+-- the market, workshop and the bay itself are all a few steps away.
 local function dockCFrame(): CFrame
 	local world = Zones.world
-	local position = world.pierStart + Vector3.new(math.random(-5, 5), 3, math.random(-4, 0))
+	local position = world.pierEnd + Vector3.new(math.random(-6, 6), 3.5, -24 + math.random(-3, 3))
 	return CFrame.lookAt(position, Vector3.new(world.plazaCenter.X, position.Y, world.plazaCenter.Z))
 end
 

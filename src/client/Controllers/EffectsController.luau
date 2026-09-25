@@ -201,6 +201,8 @@ function EffectsController.Start()
 				EffectsController.flash(Theme.Coin, 0.25, 0.6)
 				HUDController.banner("🏅 " .. achievement.name, achievement.desc, Theme.Coin, 3.5)
 			end
+		elseif payload.kind == "WashedAshore" then
+			EffectsController.fadeOut("WASHED ASHORE", if payload.reason == "swim" then "The tide carried you back to the beach" else "Back on the island", Color3.fromRGB(10, 60, 90), 0.6)
 		elseif payload.kind == "QuestComplete" then
 			AudioController.play("QuestComplete")
 		elseif payload.kind == "Daily" then

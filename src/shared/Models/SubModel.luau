@@ -208,4 +208,27 @@ function SubModel.build(skinId: string, cframe: CFrame): Model
 	return model
 end
 
+-- A static copy for decoration (the workshop cradle, the Launch Bay crane): no seat, no
+-- physics controllers, every part anchored and non-colliding.
+function SubModel.display(skinId: string, cframe: CFrame): Model
+	local model = SubModel.build(skinId, cframe)
+	for _, descendant in model:GetDescendants() do
+		if descendant:IsA("Seat") or descendant:IsA("LinearVelocity") or descendant:IsA("AlignOrientation") or descendant:IsA("WeldConstraint") or descendant:IsA("Weld") then
+			descendant:Destroy()
+		elseif descendant:IsA("ParticleEmitter") then
+			descendant.Enabled = false
+		end
+	end
+	for _, descendant in model:GetDescendants() do
+		if descendant:IsA("BasePart") then
+			descendant.Anchored = true
+			descendant.CanCollide = false
+			descendant.CanQuery = false
+			descendant.CanTouch = false
+		end
+	end
+	model.Name = "DisplaySub"
+	return model
+end
+
 return SubModel

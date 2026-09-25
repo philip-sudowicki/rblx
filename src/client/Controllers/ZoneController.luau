@@ -37,6 +37,8 @@ type Preset = {
 
 local color: ColorCorrectionEffect
 local bloom: BloomEffect
+local clouds: Clouds
+local sunRays: SunRaysEffect
 local current: Preset? = nil
 local snowPart: Part? = nil
 local snow: ParticleEmitter? = nil
@@ -228,6 +230,12 @@ local function step(dt: number)
 		ZoneController.ZoneChanged:Fire(index)
 	end
 
+	local nearSurface = y > -40
+	if clouds.Enabled ~= nearSurface then
+		clouds.Enabled = nearSurface
+		sunRays.Enabled = nearSurface
+	end
+
 	if snowPart and snow then
 		snowPart.CFrame = CFrame.new(camera.CFrame.Position)
 		local graphicsLow = ClientState.data and ClientState.data.Settings.Graphics == "Low"
@@ -257,6 +265,19 @@ function ZoneController.Init()
 	bloom.Size = 30
 	bloom.Parent = Lighting
 	Lighting.ClockTime = Zones.surface.clockTime
+	Lighting.EnvironmentDiffuseScale = 0.6
+	Lighting.EnvironmentSpecularScale = 0.6
+	-- fluffy clouds and soft sun rays at the surface (hidden once you're deep underwater)
+	clouds = Instance.new("Clouds")
+	clouds.Cover = 0.55
+	clouds.Density = 0.7
+	clouds.Color = Color3.fromRGB(255, 255, 255)
+	clouds.Parent = workspace.Terrain
+	sunRays = Instance.new("SunRaysEffect")
+	sunRays.Name = "DH_SunRays"
+	sunRays.Intensity = 0.06
+	sunRays.Spread = 0.8
+	sunRays.Parent = Lighting
 	setupSnow()
 end
 
