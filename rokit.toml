@@ -1,0 +1,6 @@
+# Toolchain used to build and check DEEP HAUL. Install with `rokit install`
+# (https://github.com/rojo-rbx/rokit). Aftman users can use aftman.toml instead.
+[tools]
+rojo = "rojo-rbx/rojo@7.4.4"
+selene = "Kampfkarren/selene@0.27.1"
+luau-lsp = "JohnnyMorganz/luau-lsp@1.60.0"

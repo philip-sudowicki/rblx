@@ -1,0 +1,66 @@
+# Minimal selene standard library for DEEP HAUL.
+# selene's full "roblox" std has to be downloaded; this file declares the Roblox globals so
+# selene can run its general lints offline. luau-lsp (tools/check.sh) does the full Roblox API
+# type checking with the official definitions.
+---
+base: luau
+name: roblox_lite
+globals:
+  game: { any: true }
+  workspace: { any: true }
+  script: { any: true }
+  plugin: { any: true }
+  shared: { any: true }
+  Enum: { any: true }
+  Instance: { any: true }
+  Vector3: { any: true }
+  Vector2: { any: true }
+  Vector3int16: { any: true }
+  Vector2int16: { any: true }
+  CFrame: { any: true }
+  Color3: { any: true }
+  ColorSequence: { any: true }
+  ColorSequenceKeypoint: { any: true }
+  NumberSequence: { any: true }
+  NumberSequenceKeypoint: { any: true }
+  NumberRange: { any: true }
+  UDim: { any: true }
+  UDim2: { any: true }
+  Rect: { any: true }
+  Ray: { any: true }
+  Region3: { any: true }
+  BrickColor: { any: true }
+  TweenInfo: { any: true }
+  PhysicalProperties: { any: true }
+  RaycastParams: { any: true }
+  OverlapParams: { any: true }
+  Random: { any: true }
+  DateTime: { any: true }
+  Font: { any: true }
+  Axes: { any: true }
+  Faces: { any: true }
+  PathWaypoint: { any: true }
+  SharedTable: { any: true }
+  task: { any: true }
+  debug: { any: true }
+  utf8: { any: true }
+  buffer: { any: true }
+  vector: { any: true }
+  typeof:
+    args:
+      - type: any
+  tick:
+    args: []
+  time:
+    args: []
+  elapsedTime:
+    args: []
+  warn:
+    args:
+      - type: "..."
+  print:
+    args:
+      - type: "..."
+  require:
+    args:
+      - type: any

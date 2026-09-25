@@ -1,0 +1,6 @@
+std = "roblox_lite"
+
+[lints]
+# Config tables intentionally use long literal lists.
+mixed_table = "allow"
+# ProfileStore is vendored third-party code and is excluded from linting in tools/check.sh.

@@ -1,0 +1,6 @@
+build/
+sourcemap.json
+tools/.cache/
+*.rbxl.lock
+*.rbxlx.lock
+.DS_Store
