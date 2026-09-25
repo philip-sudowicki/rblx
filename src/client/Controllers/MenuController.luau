@@ -17,6 +17,7 @@ local InputController = require(script.Parent.InputController)
 local SubController = require(script.Parent.SubController)
 local PromptRouter = require(script.Parent.PromptRouter)
 local AudioController = require(script.Parent.AudioController)
+local LaunchPanel = require(script.Parent.Parent.Menus.LaunchPanel)
 
 export type MenuModule = {
 	build: (parent: Instance, close: () -> ()) -> Window.Window,
@@ -147,7 +148,7 @@ function MenuController.toggle(name: string, tab: string?)
 end
 
 local function refreshBar()
-	bar.Visible = not SubController.isDiving() and ClientState.ready
+	bar.Visible = not SubController.isDiving() and ClientState.ready and not LaunchPanel.isOpen
 end
 
 local badgeQueued = false
@@ -173,20 +174,22 @@ local function refreshBadges()
 end
 
 local function buildBar()
+	-- A hotbar centred along the bottom of the screen (the top corners belong to Roblox's chat
+	-- and player list, and the bottom corners to the touch controls).
 	bar = UIKit.frame({
 		Name = "MenuBar",
 		BackgroundTransparency = 1,
-		AnchorPoint = Vector2.new(0, 0.5),
-		Position = UDim2.new(0, 12, 0.55, 0),
-		Size = UDim2.fromOffset(84, 7 * 80),
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -12),
+		Size = UDim2.fromOffset(#ordered * 86, 76),
 		Visible = false,
 		Parent = gui,
 	})
 	UIKit.scaled(bar)
-	UIKit.list(Enum.FillDirection.Vertical, 8).Parent = bar
+	UIKit.list(Enum.FillDirection.Horizontal, 8, Enum.HorizontalAlignment.Center).Parent = bar
 	for index, entry in ordered do
 		local button = UIKit.button({
-			Size = UDim2.fromOffset(78, 70),
+			Size = UDim2.fromOffset(78, 72),
 			LayoutOrder = index,
 			Text = "",
 			Parent = bar,
@@ -194,8 +197,10 @@ local function buildBar()
 			MenuController.toggle(entry.name)
 		end, Theme.Panel)
 		UIKit.stroke(Theme.Stroke, 2, 0.2).Parent = button
+		UIKit.gradient(ColorSequence.new(Theme.PanelLight, Theme.PanelDark), 90).Parent = button
 		UIKit.label({ Text = entry.icon, Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 4), TextSize = 30, TextXAlignment = Enum.TextXAlignment.Center, Parent = button })
-		UIKit.label({ Text = entry.label, Size = UDim2.new(1, 0, 0, 20), Position = UDim2.fromOffset(0, 46), TextSize = 13, Font = Theme.FontBold, TextXAlignment = Enum.TextXAlignment.Center, Parent = button })
+		local caption = UIKit.label({ Text = entry.label, Size = UDim2.new(1, 0, 0, 20), Position = UDim2.fromOffset(0, 46), TextSize = 13, Font = Theme.FontBold, TextXAlignment = Enum.TextXAlignment.Center, Parent = button })
+		UIKit.textStroke(1.2).Parent = caption
 		local dot = UIKit.frame({ BackgroundColor3 = Theme.Bad, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -8, 0, 8), Size = UDim2.fromOffset(16, 16), Visible = false, ZIndex = 5, Parent = button })
 		UIKit.corner(UDim.new(1, 0)).Parent = dot
 		UIKit.stroke(Color3.new(1, 1, 1), 2, 0).Parent = dot
@@ -253,6 +258,11 @@ function MenuController.Start()
 		refreshBar()
 	end)
 	SubController.Ended:Connect(refreshBar)
+	LaunchPanel.Opened:Connect(function()
+		MenuController.close()
+		refreshBar()
+	end)
+	LaunchPanel.Closed:Connect(refreshBar)
 	InputController.MenuToggle:Connect(function()
 		if MenuController.current then
 			MenuController.close()

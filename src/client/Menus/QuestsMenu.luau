@@ -44,7 +44,7 @@ end
 ---------------------------------------------------------------- quests
 
 local function rewardText(quest: Types.QuestState): string
-	local parts = { "🪙 " .. Format.short(quest.reward) }
+	local parts = { "💰 " .. Format.short(quest.reward) }
 	if quest.tokens and quest.tokens > 0 then
 		table.insert(parts, string.format("✦ %d", quest.tokens))
 	end
@@ -109,7 +109,7 @@ end
 local function tileReward(reward: DailyRewards.DailyReward): string
 	local lines = {}
 	if reward.coins then
-		table.insert(lines, "🪙 " .. Format.short(reward.coins * Stats.coinScale(DailyRewards.coinScale, zoneTier())))
+		table.insert(lines, "💰 " .. Format.short(reward.coins * Stats.coinScale(DailyRewards.coinScale, zoneTier())))
 	end
 	if reward.boost and Game.Boosts[reward.boost] then
 		table.insert(lines, Game.Boosts[reward.boost].icon .. " " .. Game.Boosts[reward.boost].name)
@@ -220,7 +220,7 @@ local function refreshAchievements()
 		UIKit.label({ Text = achievement.desc, Position = UDim2.fromOffset(54, 30), Size = UDim2.fromOffset(300, 20), TextSize = 13, TextColor3 = Theme.TextMuted, Parent = row })
 		local reward = if achievement.skin and Skins.byId[achievement.skin]
 			then "🎨 " .. Skins.byId[achievement.skin].name .. " skin"
-			elseif achievement.coins then "🪙 " .. Format.short(achievement.coins * Stats.coinScale(Achievements.coinScale, zoneTier()))
+			elseif achievement.coins then "💰 " .. Format.short(achievement.coins * Stats.coinScale(Achievements.coinScale, zoneTier()))
 			else ""
 		UIKit.label({ Text = reward, Position = UDim2.fromOffset(360, 0), Size = UDim2.fromOffset(200, 58), TextSize = 14, TextColor3 = Theme.Coin, Parent = row })
 		local bar = UIKit.bar({ AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(220, 20), Parent = row }, if unlocked then Theme.Good else Theme.Accent)

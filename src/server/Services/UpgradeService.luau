@@ -32,7 +32,7 @@ function UpgradeService.buy(player: Player, upgradeId: string): boolean
 	end
 	local cost = Stats.upgradeCost(upgradeId, level + 1)
 	if not DataService.spendCoins(player, cost) then
-		Remotes.notify(player, string.format("You need %s more coins.", Format.short(cost - data.Coins)), "warn", "🪙")
+		Remotes.notify(player, string.format("You need %s more coins.", Format.short(cost - data.Coins)), "warn", "💰")
 		return false
 	end
 	data.Upgrades[upgradeId] = level + 1

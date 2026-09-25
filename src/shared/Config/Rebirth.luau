@@ -49,7 +49,7 @@ local perks: { Perk } = {
 	{
 		id = "DeepLungs",
 		name = "Deep Lungs",
-		icon = "🫁",
+		icon = "💨",
 		desc = "+8% oxygen capacity per level.",
 		stat = "oxygen",
 		perLevel = 0.08,
@@ -67,7 +67,7 @@ local perks: { Perk } = {
 	{
 		id = "QuickClaw",
 		name = "Quick Claw",
-		icon = "🦾",
+		icon = "🧲",
 		desc = "+8% salvage speed per level.",
 		stat = "clawSpeed",
 		perLevel = 0.08,

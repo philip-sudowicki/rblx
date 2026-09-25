@@ -140,11 +140,12 @@ end
 
 local function placeWidget()
 	local inset = GuiService.TopbarInset.Height
+	local s = UIKit.scaleFactor()
+	widget.AnchorPoint = Vector2.new(0.5, 0)
 	if SubController.isDiving() then
-		widget.AnchorPoint = Vector2.new(0, 0)
-		widget.Position = UDim2.fromOffset(16, inset + 140)
+		-- centred just below the oxygen / hull panel and its status lines
+		widget.Position = UDim2.new(0.5, 0, 0, math.floor(14 + 166 * s))
 	else
-		widget.AnchorPoint = Vector2.new(0.5, 0)
 		widget.Position = UDim2.new(0.5, 0, 0, inset + 8)
 	end
 end
@@ -366,7 +367,7 @@ function EventController.Init()
 	countdown = UIKit.label({
 		Text = "",
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.5, 0.2),
+		Position = UDim2.fromScale(0.5, 0.44),
 		Size = UDim2.fromOffset(900, 50),
 		Font = Theme.FontDisplay,
 		TextSize = 40,
@@ -379,7 +380,7 @@ function EventController.Init()
 	countdownSub = UIKit.label({
 		Text = "",
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.new(0.5, 0, 0.2, 40),
+		Position = UDim2.new(0.5, 0, 0.44, 40),
 		Size = UDim2.fromOffset(600, 30),
 		Font = Theme.FontBold,
 		TextSize = 24,
@@ -409,6 +410,7 @@ function EventController.Start()
 	SubController.Started:Connect(placeWidget)
 	SubController.Ended:Connect(placeWidget)
 	GuiService:GetPropertyChangedSignal("TopbarInset"):Connect(placeWidget)
+	UIKit.ScaleChanged:Connect(placeWidget)
 	ReplicatedStorage:GetAttributeChangedSignal("GalleonZone"):Connect(refreshWidget)
 	placeWidget()
 	task.spawn(function()

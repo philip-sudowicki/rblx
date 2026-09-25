@@ -90,7 +90,7 @@ local function nextReveal()
 		statLabel.Text = string.format('Condition: <font color="#%s"><b>%s</b></font> ×%s', condition.color:ToHex(), condition.name, tostring(condition.multiplier))
 	end
 	local sellMult = ClientState.stats().sellMult
-	valueLabel.Text = string.format("🪙 %s", Format.commas(math.floor(item.v * sellMult + 0.5)))
+	valueLabel.Text = string.format("💰 %s", Format.commas(math.floor(item.v * sellMult + 0.5)))
 	local eventDef = item.e and Events.byId[item.e]
 	eventLabel.Visible = eventDef ~= nil
 	if eventDef then

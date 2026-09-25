@@ -193,7 +193,7 @@ local function showDetail(page: Page, item: Types.Item?)
 		local cursed = if def and def.cursed then string.format('  <font color="#C77DFF">☠️ +%d%% O₂ drain</font>', math.floor(def.cursed * 100)) else ""
 		d.stat.Text = string.format('%s %s · <font color="#%s">%s</font>%s', if category then category.icon else "", if category then category.name else "", condition.color:ToHex(), condition.name, cursed)
 	end
-	d.value.Text = "🪙 " .. Format.commas(priceOf(item))
+	d.value.Text = "💰 " .. Format.commas(priceOf(item))
 	local zone = Zones.list[item.z]
 	local event = item.e and Events.byId[item.e]
 	d.meta.Text = string.format("From the %s%s\n%s", if zone then zone.name else "deep", if event then string.format(' · <font color="#%s">%s %s</font>', event.color:ToHex(), event.icon, event.name) else "", DateTime.fromUnixTimestamp(item.t):FormatLocalTime("ll", "en-us"))
@@ -202,7 +202,7 @@ local function showDetail(page: Page, item: Types.Item?)
 	d.display.Visible = not item.g
 	local sellOk = canSell()
 	local sellable = sellOk and not item.f and item.d == nil and not item.g
-	d.sell.Text = string.format("Sell · 🪙 %s", Format.short(priceOf(item)))
+	d.sell.Text = string.format("Sell · 💰 %s", Format.short(priceOf(item)))
 	d.sell.BackgroundColor3 = if sellable then Theme.Good else Theme.PanelLight
 	d.sell.AutoButtonColor = sellable
 end
@@ -270,7 +270,7 @@ local function refreshPage(kind: string)
 		end
 	end
 	local ok, hint = canSell()
-	page.sellAll.Text = if sellCount > 0 then string.format("SELL ALL · %d · 🪙 %s", sellCount, Format.short(sellCoins)) else "Nothing to sell"
+	page.sellAll.Text = if sellCount > 0 then string.format("SELL ALL · %d · 💰 %s", sellCount, Format.short(sellCoins)) else "Nothing to sell"
 	page.sellAll.BackgroundColor3 = if ok and sellCount > 0 then Theme.Good else Theme.PanelLight
 	page.hint.Text = hint
 	page.hint.TextColor3 = if ok then Theme.Good else Theme.Warn
@@ -394,8 +394,8 @@ local function refreshAquarium()
 			perMinute += item.v * Game.Aquarium.IncomePerMinute
 		end
 	end
-	aquariumIncome.Text = string.format("Earning 🪙 %s / hour  ·  %s ready to collect", Format.short(perMinute * 60), Format.short(math.floor(data.Aquarium.Pending)))
-	collectButton.Text = string.format("Collect 🪙 %s", Format.short(math.floor(data.Aquarium.Pending)))
+	aquariumIncome.Text = string.format("Earning 💰 %s / hour  ·  %s ready to collect", Format.short(perMinute * 60), Format.short(math.floor(data.Aquarium.Pending)))
+	collectButton.Text = string.format("Collect 💰 %s", Format.short(math.floor(data.Aquarium.Pending)))
 	for _, child in tankGrid:GetChildren() do
 		if child:IsA("GuiObject") then
 			child:Destroy()

@@ -3,6 +3,7 @@
 -- beam and a bouncing arrow to the current target (dock station, the guided fish or treasure,
 -- or the surface), and a Skip button. The server decides the step (TutorialService).
 
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -167,7 +168,32 @@ local function onState(payload: any)
 	refreshText()
 end
 
+-- Top centre under the event widget at the dock; left of centre-screen while diving (the top
+-- of the screen then belongs to the oxygen / hull panel).
+local eventWidget: GuiObject? = nil
+local function placePanel()
+	if SubController.isDiving() then
+		panel.AnchorPoint = Vector2.new(0, 0.5)
+		panel.Position = UDim2.new(0, 16, 0.58, 0)
+		return
+	end
+	if not eventWidget then
+		local events = gui.Parent and gui.Parent:FindFirstChild("DeepHaulEvents")
+		local found = events and events:FindFirstChild("EventWidget")
+		eventWidget = if found and found:IsA("GuiObject") then found else nil
+	end
+	local top = GuiService.TopbarInset.Height + 8
+	local widget = eventWidget
+	if widget and widget.Visible then
+		-- the widget sits at inset + 8 at the dock (EventController.placeWidget)
+		top += widget.AbsoluteSize.Y + 10
+	end
+	panel.AnchorPoint = Vector2.new(0.5, 0)
+	panel.Position = UDim2.new(0.5, 0, 0, math.floor(top))
+end
+
 local function step()
+	placePanel()
 	local current = state
 	if not current then
 		return
@@ -201,7 +227,8 @@ function TutorialController.Init()
 	gui = UIKit.screen("DeepHaulTutorial", 12)
 	panel = UIKit.panel({
 		Name = "TutorialPanel",
-		Position = UDim2.fromOffset(110, 310),
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 120),
 		Size = UDim2.fromOffset(420, 136),
 		BackgroundTransparency = 0.08,
 		Visible = false,

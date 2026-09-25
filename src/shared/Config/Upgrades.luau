@@ -57,7 +57,7 @@ local list: { Upgrade } = {
 	{
 		id = "Oxygen",
 		name = "Oxygen Tank",
-		icon = "🫧",
+		icon = "💨",
 		desc = "How long you can stay down. Oxygen drains faster the deeper you go.",
 		stat = "oxygen",
 		unit = "s",
@@ -113,7 +113,7 @@ local list: { Upgrade } = {
 	{
 		id = "Claw",
 		name = "Salvage Claw",
-		icon = "🦾",
+		icon = "🧲",
 		desc = "Claw tier unlocks rarer treasure; claw speed makes salvaging faster.",
 		stat = "clawTier",
 		unit = "tier",

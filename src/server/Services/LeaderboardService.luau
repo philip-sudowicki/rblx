@@ -94,14 +94,14 @@ local BOARDS: { Board } = {
 	{
 		id = "TotalHaul",
 		title = "TOTAL HAUL VALUE",
-		icon = "🪙",
+		icon = "💰",
 		color = Color3.fromRGB(255, 210, 80),
 		storeName = "DH_Board_TotalHaul_v1",
 		value = function(data)
 			return math.floor(data.Stats.CoinsEarned)
 		end,
 		describe = function(value)
-			return "🪙 " .. Format.short(value), nil
+			return "💰 " .. Format.short(value), nil
 		end,
 		store = nil,
 		rows = {},

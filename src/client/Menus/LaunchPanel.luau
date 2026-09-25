@@ -21,6 +21,7 @@ local Products = require(Shared.Config.Products)
 local LaunchPanel = {}
 
 LaunchPanel.Opened = Signal.new() :: Signal.Signal<()>
+LaunchPanel.Closed = Signal.new() :: Signal.Signal<()>
 LaunchPanel.isOpen = false
 
 local gui: ScreenGui
@@ -38,7 +39,7 @@ local function refresh()
 	end
 	local stats = ClientState.stats()
 	statsLabel.Text = string.format(
-		"🛡️ Max depth <b>%s</b>    🫧 Oxygen <b>%ds</b>\n⚡ Speed <b>%d</b>    📦 Cargo <b>%d</b>    🦾 Claw <b>T%d</b>",
+		"🛡️ Max depth <b>%s</b>    💨 Oxygen <b>%ds</b>\n⚡ Speed <b>%d</b>    📦 Cargo <b>%d</b>    🧲 Claw <b>T%d</b>",
 		Format.meters(stats.maxDepth),
 		math.floor(stats.oxygen),
 		math.floor(stats.speed),
@@ -85,6 +86,7 @@ function LaunchPanel.close()
 		end
 	end)
 	InputController.setMenuOpen(false)
+	LaunchPanel.Closed:Fire()
 end
 
 local function launch()

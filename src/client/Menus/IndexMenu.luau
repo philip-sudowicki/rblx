@@ -331,7 +331,7 @@ local function showDetail(browser: Browser)
 		if mine then
 			table.insert(oddsLines, string.format('Your odds for this %s: <font color="#50E68C"><b>%s</b></font>', if entry.kind == "F" then "fish" else "treasure", Format.odds(mine)))
 		end
-		table.insert(oddsLines, string.format("Needs Claw Tier %d · base value 🪙 %s", entry.clawTier, Format.commas(entry.value)))
+		table.insert(oddsLines, string.format("Needs Claw Tier %d · base value 💰 %s", entry.clawTier, Format.commas(entry.value)))
 	end
 	d.odds.Text = table.concat(oddsLines, "\n")
 
@@ -588,7 +588,7 @@ end
 
 local function rewardText(milestone: IndexMath.MilestoneInfo): string
 	local coins = milestone.coins * Stats.coinScale(IndexRewards.coinScale, milestone.scaleIndex)
-	local text = "🪙 " .. Format.short(coins)
+	local text = "💰 " .. Format.short(coins)
 	if milestone.luck > 0 then
 		text ..= string.format(" + %d%% luck", math.floor(milestone.luck * 100 + 0.5))
 	end

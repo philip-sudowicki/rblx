@@ -44,7 +44,7 @@ local function show(key: string, text: string)
 	title.Text = text
 	buyButton.Text = MarketController.priceText(key)
 	card.Position = UDim2.new(0.5, 0, 0, -120)
-	UIKit.tween(card, { Position = UDim2.new(0.5, 0, 0, 176) }, 0.35, Enum.EasingStyle.Back)
+	UIKit.tween(card, { Position = UDim2.new(0.5, 0, 0.6, 0) }, 0.35, Enum.EasingStyle.Back)
 	task.delay(SHOW_SECONDS, function()
 		if currentKey == key then
 			hide()
@@ -76,7 +76,7 @@ local function check()
 	local hull = player:GetAttribute("DiveHull")
 	local maxOxygen = ClientState.stats().oxygen
 	if typeof(oxygen) == "number" and maxOxygen > 0 and oxygen / maxOxygen < 0.2 and (data.Consumables.OxygenRefill or 0) == 0 and MarketController.available("OxygenRefill") then
-		show("OxygenRefill", "🫧 Oxygen low! Refill it instantly?")
+		show("OxygenRefill", "💨 Oxygen low! Refill it instantly?")
 	elseif typeof(hull) == "number" and hull < 25 and (data.Consumables.HullRepair or 0) == 0 and MarketController.available("HullRepair") then
 		show("HullRepair", "🔧 Hull cracking! Repair it instantly?")
 	end

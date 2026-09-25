@@ -11,6 +11,7 @@ local UserInputService = game:GetService("UserInputService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Theme = require(Shared.Config.Theme)
 local Rarities = require(Shared.Config.Rarities)
+local Signal = require(Shared.Modules.Signal)
 
 export type Props = { [string]: any }
 
@@ -19,6 +20,8 @@ local UIKit = {}
 UIKit.Theme = Theme
 UIKit.clickSound = nil :: (() -> ())?
 UIKit.hoverSound = nil :: (() -> ())?
+-- (scale) fired whenever the responsive scale factor may have changed
+UIKit.ScaleChanged = Signal.new() :: Signal.Signal<number>
 
 local player = Players.LocalPlayer
 
@@ -304,6 +307,9 @@ end
 
 local function refreshScales()
 	local s = UIKit.scaleFactor()
+	task.defer(function()
+		UIKit.ScaleChanged:Fire(s)
+	end)
 	for i = #scales, 1, -1 do
 		local scale = scales[i]
 		if scale.Parent then

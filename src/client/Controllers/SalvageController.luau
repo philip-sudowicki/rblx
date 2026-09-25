@@ -101,7 +101,7 @@ function SalvageController.Start()
 			if payload.state == "done" then
 				AudioController.play("SalvageDone")
 			elseif payload.reason == "moved" then
-				HUDController.toast("Stay close to the treasure while salvaging!", "warn", "🦾")
+				HUDController.toast("Stay close to the treasure while salvaging!", "warn", "🧲")
 			end
 		end
 	end)

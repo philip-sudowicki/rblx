@@ -147,7 +147,7 @@ local function welcomeBack(payload: any)
 		PopupController.show({
 			icon = "🐠",
 			title = "Welcome back, " .. name .. "!",
-			highlight = "+" .. Format.commas(coins) .. " 🪙",
+			highlight = "+" .. Format.commas(coins) .. " 💰",
 			body = body,
 			button = "Nice!",
 			onClose = function()

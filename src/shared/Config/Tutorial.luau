@@ -51,7 +51,7 @@ local steps: { Step } = {
 	},
 	{
 		id = "Salvage",
-		icon = "🦾",
+		icon = "🧲",
 		title = "Salvage treasure",
 		target = "Treasure",
 		text = {

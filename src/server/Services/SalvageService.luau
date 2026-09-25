@@ -75,7 +75,7 @@ local function start(player: Player, entityId: number)
 	local stats = StatsService.get(player)
 	local required = SalvageService.requiredTier(entity.treasureId, entity.tier)
 	if stats.clawTier < required then
-		Remotes.notify(player, string.format("Requires Claw Tier %d (yours: %d). Upgrade at the Workshop!", required, stats.clawTier), "warn", "🦾")
+		Remotes.notify(player, string.format("Requires Claw Tier %d (yours: %d). Upgrade at the Workshop!", required, stats.clawTier), "warn", "🧲")
 		return
 	end
 	if not InventoryService.hasCargoSpace(player) then

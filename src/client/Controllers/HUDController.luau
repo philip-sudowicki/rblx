@@ -4,7 +4,6 @@
 -- pressure warnings with screen cracks and a red vignette, zone banners and toasts.
 
 local Players = game:GetService("Players")
-local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -19,6 +18,7 @@ local UIKit = require(script.Parent.Parent.UI.UIKit)
 local ClientState = require(script.Parent.ClientState)
 local InputController = require(script.Parent.InputController)
 local SubController = require(script.Parent.SubController)
+local LaunchPanel = require(script.Parent.Parent.Menus.LaunchPanel)
 local ZoneController = require(script.Parent.ZoneController)
 
 local HUDController = {}
@@ -91,29 +91,30 @@ local function pill(parent: Instance, icon: string, color: Color3, order: number
 end
 
 local function buildTopLeft(gui: ScreenGui)
+	-- Coins, tokens and boosts sit centred above the menu hotbar at the dock (the top corners
+	-- belong to Roblox's chat and player list). Hidden while diving.
 	local holder = UIKit.frame({
-		Name = "TopLeft",
+		Name = "Wallet",
 		BackgroundTransparency = 1,
-		Size = UDim2.fromOffset(220, 200),
-		Position = UDim2.fromOffset(16, 16),
+		AnchorPoint = Vector2.new(0.5, 1),
+		Size = UDim2.fromOffset(600, 38),
 		Parent = gui,
 	})
 	UIKit.scaled(holder)
-	-- keep clear of Roblox's top bar buttons (its height differs by platform and UI version)
-	local function place()
-		holder.Position = UDim2.fromOffset(16, GuiService.TopbarInset.Height + 8)
+	local function place(s: number)
+		holder.Position = UDim2.new(0.5, 0, 1, -math.floor(22 + 84 * s))
 	end
-	place()
-	GuiService:GetPropertyChangedSignal("TopbarInset"):Connect(place)
-	UIKit.list(Enum.FillDirection.Vertical, 6).Parent = holder
-	local _, coins = pill(holder, "🪙", Theme.Coin, 1)
+	place(UIKit.scaleFactor())
+	UIKit.ScaleChanged:Connect(place)
+	UIKit.list(Enum.FillDirection.Horizontal, 8, Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center).Parent = holder
+	local _, coins = pill(holder, "💰", Theme.Coin, 1)
 	coinLabel = coins
 	local tokens, tokenText = pill(holder, "✦", Theme.Token, 2)
 	tokenPill = tokens
 	tokenLabel = tokenText
 	tokenPill.Visible = false
-	boostRow = UIKit.frame({ BackgroundTransparency = 1, Size = UDim2.fromOffset(220, 30), LayoutOrder = 3, Parent = holder })
-	UIKit.list(Enum.FillDirection.Horizontal, 4).Parent = boostRow
+	boostRow = UIKit.frame({ BackgroundTransparency = 1, Size = UDim2.fromOffset(0, 30), AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 3, Parent = holder })
+	UIKit.list(Enum.FillDirection.Horizontal, 4, nil, Enum.VerticalAlignment.Center).Parent = boostRow
 	HUDController.topLeft = holder
 end
 
@@ -127,7 +128,7 @@ local function buildVitals(root: Frame)
 		Parent = root,
 	})
 	UIKit.scaled(vitals)
-	UIKit.label({ Text = "🫧", Position = UDim2.fromOffset(10, 8), Size = UDim2.fromOffset(26, 24), TextSize = 20, Parent = vitals })
+	UIKit.label({ Text = "💨", Position = UDim2.fromOffset(10, 8), Size = UDim2.fromOffset(26, 24), TextSize = 20, Parent = vitals })
 	oxygenBar = UIKit.bar({ Position = UDim2.fromOffset(40, 10), Size = UDim2.fromOffset(300, 20), Parent = vitals }, Theme.Oxygen)
 	UIKit.label({ Text = "🛡️", Position = UDim2.fromOffset(10, 40), Size = UDim2.fromOffset(26, 24), TextSize = 18, Parent = vitals })
 	hullBar = UIKit.bar({ Position = UDim2.fromOffset(40, 42), Size = UDim2.fromOffset(300, 20), Parent = vitals }, Theme.Hull)
@@ -466,7 +467,7 @@ local function buildConsumables(root: Frame)
 	})
 	UIKit.scaled(consumableRow)
 	UIKit.list(Enum.FillDirection.Horizontal, 8, Enum.HorizontalAlignment.Center).Parent = consumableRow
-	for index, spec in { { key = "OxygenRefill", icon = "🫧" }, { key = "HullRepair", icon = "🔧" }, { key = "CargoInsurance", icon = "🛡️" } } do
+	for index, spec in { { key = "OxygenRefill", icon = "💨" }, { key = "HullRepair", icon = "🔧" }, { key = "CargoInsurance", icon = "🛡️" } } do
 		local button = UIKit.button({
 			Size = UDim2.fromOffset(96, 36),
 			LayoutOrder = index,
@@ -547,6 +548,7 @@ local lastHull = 100
 local function stepDive()
 	local diving = SubController.isDiving()
 	HUDController.diveRoot.Visible = diving
+	HUDController.topLeft.Visible = not diving and not LaunchPanel.isOpen
 	if not diving then
 		setVignette(0)
 		return
@@ -688,9 +690,18 @@ function HUDController.Start()
 			HUDController.banner(zone.name:upper(), string.format("%s - %s", Format.meters(zone.meters[1]), zone.hazard), zone.color, 3)
 		end
 	end)
+	local function playerList(show: boolean)
+		pcall(function()
+			game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, show)
+		end)
+	end
 	SubController.Started:Connect(function()
 		lastHull = 100
 		refreshConsumables()
+		playerList(false) -- the depth meter lives in that corner during a dive
+	end)
+	SubController.Ended:Connect(function()
+		playerList(true)
 	end)
 	RunService.RenderStepped:Connect(stepDive)
 	task.spawn(function()

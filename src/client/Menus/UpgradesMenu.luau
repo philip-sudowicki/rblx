@@ -75,7 +75,7 @@ local function refreshUpgrades()
 			row.stat.Text = string.format('%s  →  <font color="#50E68C"><b>%s</b></font>', formatStat(upgrade, level), formatStat(upgrade, level + 1))
 			local cost = Stats.upgradeCost(upgrade.id, level + 1)
 			local affordable = data.Coins >= cost and not diving
-			row.buy.Text = "🪙 " .. Format.short(cost)
+			row.buy.Text = "💰 " .. Format.short(cost)
 			row.buy.BackgroundColor3 = if affordable then Theme.Good else Theme.PanelLight
 		end
 	end

@@ -16,7 +16,7 @@ local list: { Category } = {
 	{
 		id = "Coins",
 		name = "Coins & Currency",
-		icon = "🪙",
+		icon = "💰",
 		color = Color3.fromRGB(255, 205, 80),
 		desc = "Doubloons, ancient mint coins and forgotten fortunes.",
 		minZone = 1,

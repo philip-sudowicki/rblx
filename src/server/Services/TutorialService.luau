@@ -226,7 +226,7 @@ function TutorialService.Start()
 		local data = DataService.get(player)
 		if data and currentStep(data) == "Sell" then
 			DataService.addCoins(player, Game.Economy.TutorialBonusCoins, "Tutorial")
-			Remotes.notify(player, string.format("Here's %d bonus coins to get you started!", Game.Economy.TutorialBonusCoins), "good", "🪙")
+			Remotes.notify(player, string.format("Here's %d bonus coins to get you started!", Game.Economy.TutorialBonusCoins), "good", "💰")
 			advanceFrom(player, "Sell")
 		end
 	end)

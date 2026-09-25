@@ -135,7 +135,7 @@ local function refreshPrompt(target: Target?)
 			promptTitle.TextColor3 = Theme.Bad
 			MobileControls.setAction(string.format("CLAW T%d", requiredTier(view.treasureId, view.tier)), false)
 		else
-			promptTitle.Text = if cargoFull then "📦 CARGO FULL" else string.format("🦾 SALVAGE  [Hold %s]", keyHint())
+			promptTitle.Text = if cargoFull then "📦 CARGO FULL" else string.format("🧲 SALVAGE  [Hold %s]", keyHint())
 			promptTitle.TextColor3 = Theme.Text
 			MobileControls.setAction(if cargoFull then "FULL" else "SALVAGE", not cargoFull, rarity.color)
 		end
@@ -206,7 +206,7 @@ local function onAction(down: boolean)
 			salvaging = true
 			Net.event("SalvageStart"):FireServer(target.id)
 		else
-			HUDController.toast("Upgrade your Salvage Claw at the Workshop to lift this.", "warn", "🦾")
+			HUDController.toast("Upgrade your Salvage Claw at the Workshop to lift this.", "warn", "🧲")
 		end
 	elseif salvaging then
 		salvaging = false

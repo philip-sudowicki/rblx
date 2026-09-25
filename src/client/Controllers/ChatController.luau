@@ -57,7 +57,7 @@ showNextBanner = function()
 	bannerLabel.TextColor3 = entry.color
 	bannerFrame.Visible = true
 	bannerFrame.Position = UDim2.new(0.5, 0, 0, -80)
-	UIKit.tween(bannerFrame, { Position = UDim2.new(0.5, 0, 0, 70) }, 0.4, Enum.EasingStyle.Back)
+	UIKit.tween(bannerFrame, { Position = UDim2.new(0.5, 0, 0.34, 0) }, 0.4, Enum.EasingStyle.Back)
 	task.delay(entry.seconds, function()
 		UIKit.tween(bannerFrame, { Position = UDim2.new(0.5, 0, 0, -80) }, 0.35)
 		task.delay(0.4, function()

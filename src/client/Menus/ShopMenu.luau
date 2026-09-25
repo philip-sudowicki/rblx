@@ -112,7 +112,7 @@ local function refreshCoins()
 		if base then
 			local coins = base * Stats.coinScale(Products.coinScale, zone)
 			local text, color, onBuy = buyButton(product.key)
-			card(grid, product.order, product.icon, string.format("%s\n🪙 %s", product.name, Format.short(coins)), product.desc, text, color, onBuy)
+			card(grid, product.order, product.icon, string.format("%s\n💰 %s", product.name, Format.short(coins)), product.desc, text, color, onBuy)
 		end
 	end
 end

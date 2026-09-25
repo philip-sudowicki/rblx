@@ -101,7 +101,7 @@ function EffectsController.coinBurst(amount: number)
 	local centre = if camera then camera.ViewportSize / 2 else Vector2.new(640, 360)
 	for i = 1, count do
 		local coin = UIKit.label({
-			Text = "🪙",
+			Text = "💰",
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Size = UDim2.fromOffset(30, 30),
 			TextSize = 26,
@@ -162,11 +162,11 @@ function EffectsController.Start()
 			return
 		end
 		if payload.kind == "Sold" then
-			EffectsController.floatText("+" .. Format.short(payload.coins) .. " 🪙", Theme.Coin)
+			EffectsController.floatText("+" .. Format.short(payload.coins) .. " 💰", Theme.Coin)
 			EffectsController.coinBurst(payload.coins)
 			AudioController.play("CoinBurst")
 		elseif payload.kind == "Coins" then
-			EffectsController.floatText("+" .. Format.short(payload.coins) .. " 🪙", Theme.Coin)
+			EffectsController.floatText("+" .. Format.short(payload.coins) .. " 💰", Theme.Coin)
 			EffectsController.coinBurst(payload.coins)
 		elseif payload.kind == "PredatorHit" then
 			AudioController.play("Impact")

@@ -81,7 +81,7 @@ function AquariumService.refreshPlot(player: Player)
 		end
 	end
 	local pending = math.floor(data.Aquarium.Pending)
-	plot.pending.Text = if pending > 0 then "🪙 " .. Format.short(pending) .. " ready" else ""
+	plot.pending.Text = if pending > 0 then "💰 " .. Format.short(pending) .. " ready" else ""
 end
 
 local function clearPlot(index: number)

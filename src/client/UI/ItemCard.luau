@@ -24,7 +24,7 @@ function ItemCard.glyph(item: Types.Item): string
 		local def = Fish.byId[item.i]
 		local shape = if def then def.model.shape else "Classic"
 		if shape == "Jelly" then
-			return "🪼"
+			return "🎐"
 		elseif shape == "Squid" then
 			return "🦑"
 		elseif shape == "Crab" then
@@ -83,7 +83,7 @@ function ItemCard.new(item: Types.Item, price: number, onClick: (() -> ())?): Te
 		Parent = card,
 	})
 	UIKit.new("UITextSizeConstraint", { MaxTextSize = 14, Parent = name })
-	UIKit.label({ Text = "🪙 " .. Format.short(price), Position = UDim2.fromOffset(4, 94), Size = UDim2.new(1, -8, 0, 18), TextSize = 13, Font = Theme.FontBold, TextColor3 = Theme.Coin, TextXAlignment = Enum.TextXAlignment.Center, Parent = card })
+	UIKit.label({ Text = "💰 " .. Format.short(price), Position = UDim2.fromOffset(4, 94), Size = UDim2.new(1, -8, 0, 18), TextSize = 13, Font = Theme.FontBold, TextColor3 = Theme.Coin, TextXAlignment = Enum.TextXAlignment.Center, Parent = card })
 	local badges = {}
 	if item.f then
 		table.insert(badges, "⭐")
