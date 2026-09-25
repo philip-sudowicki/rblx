@@ -1,7 +1,7 @@
 --!strict
 -- The catch timing bar. The server sends the green zone, speed and start time; the marker is
 -- drawn with the shared formula against the synced server clock, and a tap sends the server
--- the exact moment you pressed. Rarer fish: smaller zone, faster marker, always ≤ 3 seconds.
+-- the exact moment you pressed. Rarer fish: smaller zone, faster marker, always <= 3 seconds.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

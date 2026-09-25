@@ -22,9 +22,9 @@ local steps: { Step } = {
 		title = "Welcome to DEEP HAUL!",
 		target = "Launch",
 		text = {
-			KeyboardMouse = "Follow the beam to the Launch Bay at the end of the pier and press E. Your sub is waiting on the crane!",
-			Gamepad = "Follow the beam to the Launch Bay at the end of the pier and press X. Your sub is waiting on the crane!",
-			Touch = "Follow the beam to the Launch Bay at the end of the pier and tap Dive!. Your sub is waiting on the crane!",
+			KeyboardMouse = "Walk to the Launch Bay and press E to dive.",
+			Gamepad = "Walk to the Launch Bay and press X to dive.",
+			Touch = "Walk to the Launch Bay and tap Dive!",
 		},
 	},
 	{
@@ -33,9 +33,9 @@ local steps: { Step } = {
 		title = "Take her down",
 		target = nil,
 		text = {
-			KeyboardMouse = "Steer with WASD and aim with the mouse. Hold Shift to sink, Space to rise, Q for thrusters.",
-			Gamepad = "Steer with the left stick and aim with the right. Hold L2 to sink, R2 to rise, RB for thrusters.",
-			Touch = "Steer with the joystick and drag to look around. Hold ▼ DOWN to sink and 🚀 BOOST to speed up.",
+			KeyboardMouse = "Steer with WASD + mouse. Shift sinks, Space rises, Q boosts.",
+			Gamepad = "Steer with the sticks. L2 sinks, R2 rises, RB boosts.",
+			Touch = "Use the joystick to steer. Hold ⬇️ DOWN to sink.",
 		},
 	},
 	{
@@ -44,9 +44,9 @@ local steps: { Step } = {
 		title = "Catch a fish",
 		target = "Fish",
 		text = {
-			KeyboardMouse = "Swim up to the fish and click to cast. Click again while the marker is inside the green zone!",
-			Gamepad = "Swim up to the fish and press A to cast. Press A again while the marker is inside the green zone!",
-			Touch = "Swim up to the fish and tap CATCH. Tap again while the marker is inside the green zone!",
+			KeyboardMouse = "Swim up to the fish, click, then click again in the green!",
+			Gamepad = "Swim up to the fish, press A, then A again in the green!",
+			Touch = "Swim up to the fish, tap CATCH, then tap again in the green!",
 		},
 	},
 	{
@@ -55,9 +55,9 @@ local steps: { Step } = {
 		title = "Salvage treasure",
 		target = "Treasure",
 		text = {
-			KeyboardMouse = "Treasure lies on the sea floor. Get close and hold the mouse button to grab it with your claw.",
-			Gamepad = "Treasure lies on the sea floor. Get close and hold A to grab it with your claw.",
-			Touch = "Treasure lies on the sea floor. Get close and hold SALVAGE to grab it with your claw.",
+			KeyboardMouse = "Treasure! Get close and hold the mouse button to grab it.",
+			Gamepad = "Treasure! Get close and hold A to grab it.",
+			Touch = "Treasure! Get close and hold SALVAGE to grab it.",
 		},
 	},
 	{
@@ -66,9 +66,9 @@ local steps: { Step } = {
 		title = "Bring it home",
 		target = "Surface",
 		text = {
-			KeyboardMouse = "Your haul is only safe once you surface. Watch your oxygen and hull, and hold Space to rise to the top.",
-			Gamepad = "Your haul is only safe once you surface. Watch your oxygen and hull, and hold R2 to rise to the top.",
-			Touch = "Your haul is only safe once you surface. Watch your oxygen and hull, and hold ▲ UP to rise to the top.",
+			KeyboardMouse = "Loot is safe once you surface. Hold Space to go up.",
+			Gamepad = "Loot is safe once you surface. Hold R2 to go up.",
+			Touch = "Loot is safe once you surface. Hold ⬆️ UP to go up.",
 		},
 	},
 	{
@@ -77,9 +77,9 @@ local steps: { Step } = {
 		title = "Cash in",
 		target = "Sell",
 		text = {
-			KeyboardMouse = "Take your catch to the Fish Market, press E and sell it.",
-			Gamepad = "Take your catch to the Fish Market, press X and sell it.",
-			Touch = "Take your catch to the Fish Market, tap Sell Haul and sell it.",
+			KeyboardMouse = "Sell your catch at the Fish Market (press E).",
+			Gamepad = "Sell your catch at the Fish Market (press X).",
+			Touch = "Sell your catch at the Fish Market.",
 		},
 	},
 	{
@@ -88,9 +88,9 @@ local steps: { Step } = {
 		title = "Upgrade your sub",
 		target = "Upgrades",
 		text = {
-			KeyboardMouse = "Visit the Workshop and buy an upgrade. A stronger hull lets you dive deeper, where rarer fish live!",
-			Gamepad = "Visit the Workshop and buy an upgrade. A stronger hull lets you dive deeper, where rarer fish live!",
-			Touch = "Visit the Workshop and buy an upgrade. A stronger hull lets you dive deeper, where rarer fish live!",
+			KeyboardMouse = "Buy an upgrade at the Workshop. Better hull = deeper dives!",
+			Gamepad = "Buy an upgrade at the Workshop. Better hull = deeper dives!",
+			Touch = "Buy an upgrade at the Workshop. Better hull = deeper dives!",
 		},
 	},
 }

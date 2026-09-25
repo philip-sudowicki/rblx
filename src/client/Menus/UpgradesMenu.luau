@@ -1,5 +1,5 @@
 --!strict
--- Upgrades: buy the 8 sub upgrades (clear before → after stats), pick skins in the Hangar, and
+-- Upgrades: buy the 8 sub upgrades (clear before » after stats), pick skins in the Hangar, and
 -- Resurface (rebirth) with its requirement checklist, rewards and token perk shop.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -72,7 +72,7 @@ local function refreshUpgrades()
 			row.buy.Text = "MAXED"
 			row.buy.BackgroundColor3 = Theme.PanelLight
 		else
-			row.stat.Text = string.format('%s  →  <font color="#50E68C"><b>%s</b></font>', formatStat(upgrade, level), formatStat(upgrade, level + 1))
+			row.stat.Text = string.format('%s  »  <font color="#50E68C"><b>%s</b></font>', formatStat(upgrade, level), formatStat(upgrade, level + 1))
 			local cost = Stats.upgradeCost(upgrade.id, level + 1)
 			local affordable = data.Coins >= cost and not diving
 			row.buy.Text = "💰 " .. Format.short(cost)
@@ -169,16 +169,16 @@ local function refreshResurface()
 	local coinsOk = data.Coins >= cost
 	resurface.requirements.Text = string.format(
 		"%s Reach the Hadal Trench (%s)  ·  deepest: %s\n%s Hold %s coins  ·  you have %s",
-		if depthOk then "✅" else "⬜",
+		if depthOk then "✅" else "🔲",
 		Format.meters(Rebirth.minDeepestMeters),
 		Format.meters(data.Stats.DeepestMeters),
-		if coinsOk then "✅" else "⬜",
+		if coinsOk then "✅" else "🔲",
 		Format.short(cost),
 		Format.short(data.Coins)
 	)
 	local nextCount = data.Rebirths + 1
 	resurface.rewards.Text = string.format(
-		"Resets coins and upgrades. Keeps items, Index, aquarium, skins and quests.\nRewards: sell value x%s → <b>x%s</b> · <b>+%d</b> rebirth tokens%s · a rebirth badge on your nametag",
+		"Resets coins and upgrades. Keeps items, Index, aquarium, skins and quests.\nRewards: sell value x%s » <b>x%s</b> · <b>+%d</b> rebirth tokens%s · a rebirth badge on your nametag",
 		tostring(1 + data.Rebirths * Rebirth.sellMultiplierPerRebirth),
 		tostring(1 + nextCount * Rebirth.sellMultiplierPerRebirth),
 		Stats.rebirthTokens(nextCount),
@@ -187,7 +187,7 @@ local function refreshResurface()
 	local ready = depthOk and coinsOk and not SubController.isDiving()
 	resurface.button.BackgroundColor3 = if ready then Theme.Accent else Theme.PanelLight
 	resurface.button.Text = if ready then "🔱 RESURFACE" else "Not ready yet"
-	resurface.tokens.Text = string.format("✦ %d rebirth tokens", data.Tokens)
+	resurface.tokens.Text = string.format("🔱 %d rebirth tokens", data.Tokens)
 	for _, child in resurface.perkList:GetChildren() do
 		if child:IsA("GuiObject") then
 			child:Destroy()
@@ -204,7 +204,7 @@ local function refreshResurface()
 		local maxed = level >= max
 		local perkCost = if maxed then 0 else perk.costs[level + 1]
 		UIKit.button({
-			Text = if maxed then "MAX" else string.format("✦ %d", perkCost),
+			Text = if maxed then "MAX" else string.format("🔱 %d", perkCost),
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -6, 0.5, 0),
 			Size = UDim2.fromOffset(110, 34),

@@ -1,6 +1,6 @@
 --!strict
 -- Remote definitions. The server creates every remote at startup (Remotes service); clients
--- look them up here. Client → server remotes are intents only; see server/Services/Remotes for
+-- look them up here. Client » server remotes are intents only; see server/Services/Remotes for
 -- rate limits and validation.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12,7 +12,7 @@ Net.FOLDER = "Remotes"
 
 -- Reliable RemoteEvents
 Net.Events = {
-	-- client → server
+	-- client » server
 	"Dive",
 	"EmergencySurface",
 	"CatchStart",
@@ -38,7 +38,7 @@ Net.Events = {
 	"UseConsumable",
 	"PromptPurchase",
 	"DebugCommand",
-	-- server → client
+	-- server » client
 	"DataInit",
 	"DataSet",
 	"InvAdd",
@@ -62,7 +62,7 @@ Net.Unreliable = {
 	"Predators",
 }
 
--- RemoteFunctions (client → server request/response)
+-- RemoteFunctions (client » server request/response)
 Net.Functions = {
 	"RedeemCode",
 }

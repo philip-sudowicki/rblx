@@ -292,15 +292,10 @@ function EventService.tick()
 			local isSuper = #started >= 2 and schedule.current.super
 			local first = Events.byId[started[1]]
 			local label = if isSuper then "⚡ SUPER EVENT! " else ""
-			AnnounceService.banner(label .. eventNames(started) .. " has begun!", first.color, 7)
-			AnnounceService.chat(string.format("%s%s %s has begun! %s", label, first.icon, eventNames(started), first.desc), first.color)
+			-- one banner (chat stays quiet; the event widget shows the details)
+			AnnounceService.banner(string.format("%s%s %s has begun!", label, first.icon, eventNames(started)), first.color, 6)
 		end
-		for endedId in previous do
-			local def = Events.byId[endedId]
-			if def then
-				AnnounceService.chat(string.format("%s %s has ended.", def.icon, def.name), def.color)
-			end
-		end
+
 		ServerSignals.EventsChanged:Fire()
 		EventService.sendState(nil)
 	elseif weekendChanged then
@@ -310,13 +305,8 @@ function EventService.tick()
 	end
 
 	if schedule.countdown and countdownCycle ~= schedule.nextCycle.index then
+		-- the client shows its own countdown banner; just make sure everyone has fresh state
 		countdownCycle = schedule.nextCycle.index
-		local def = Events.byId[schedule.nextCycle.events[1]]
-		local label = if schedule.nextCycle.super then "⚡ SUPER EVENT: " else ""
-		AnnounceService.chat(
-			string.format("⏳ %s%s starts in %d seconds!", label, eventNames(schedule.nextCycle.events), math.max(0, schedule.nextCycle.startsAt - now)),
-			def.color
-		)
 		EventService.sendState(nil)
 	end
 end

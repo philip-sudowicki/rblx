@@ -75,7 +75,7 @@ local list: { Zone } = {
 		meters = { 0, 200 },
 		materials = { floor = Enum.Material.Sand, wall = Enum.Material.Limestone, accent = Enum.Material.Sandstone },
 		materialColors = {
-			floor = Color3.fromRGB(232, 212, 160),
+			floor = Color3.fromRGB(216, 196, 152),
 			wall = Color3.fromRGB(205, 195, 165),
 			accent = Color3.fromRGB(196, 160, 120),
 		},
@@ -349,18 +349,18 @@ end
 
 -- Surface lighting (above water at the dock)
 local surface = {
-	ambient = Color3.fromRGB(110, 115, 125),
-	outdoorAmbient = Color3.fromRGB(140, 150, 160),
-	brightness = 2.4,
+	ambient = Color3.fromRGB(78, 84, 96),
+	outdoorAmbient = Color3.fromRGB(118, 126, 140),
+	brightness = 2.1,
 	clockTime = 13.5,
 	fogColor = Color3.fromRGB(170, 210, 235),
 	fogStart = 350,
 	fogEnd = 2300,
-	tint = Color3.fromRGB(255, 255, 255),
-	saturation = 0.1,
-	contrast = 0.05,
-	ccBrightness = 0,
-	bloom = 0.4,
+	tint = Color3.fromRGB(255, 252, 246),
+	saturation = -0.08,
+	contrast = 0.1,
+	ccBrightness = -0.02,
+	bloom = 0.15,
 }
 
 -- Dock island / atoll geometry (studs)

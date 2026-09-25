@@ -2,7 +2,7 @@
 -- Monetization IDs.
 --
 -- HOW TO FILL THESE IN (full walkthrough in README.md, "Monetization"):
---   1. Publish the place. In the Creator Dashboard open your experience → Monetization.
+--   1. Publish the place. In the Creator Dashboard open your experience » Monetization.
 --   2. Passes: create each game pass below and paste its numeric Pass ID into `id`.
 --   3. Developer Products: create each product below and paste its numeric Product ID into `id`.
 --   4. Prices are set in the dashboard; the shop reads them live with GetProductInfo.

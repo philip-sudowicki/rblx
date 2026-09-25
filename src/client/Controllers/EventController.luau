@@ -80,8 +80,8 @@ end
 local function addRow(text: string, color: Color3, order: number, big: boolean?)
 	local label = UIKit.label({
 		Text = text,
-		Size = UDim2.new(1, 0, 0, if big then 26 else 20),
-		TextSize = if big then 18 else 14,
+		Size = UDim2.new(1, 0, 0, if big then 22 else 18),
+		TextSize = if big then 16 else 13,
 		Font = if big then Theme.FontDisplay else Theme.FontBold,
 		TextColor3 = color,
 		TextXAlignment = Enum.TextXAlignment.Center,
@@ -358,9 +358,9 @@ end
 
 function EventController.Init()
 	local gui = UIKit.screen("DeepHaulEvents", 11)
-	widget = UIKit.frame({ Name = "EventWidget", BackgroundColor3 = Theme.PanelDark, BackgroundTransparency = 0.35, Size = UDim2.fromOffset(380, 0), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, Parent = gui })
+	widget = UIKit.frame({ Name = "EventWidget", BackgroundColor3 = Theme.PanelDark, BackgroundTransparency = 0.45, Size = UDim2.fromOffset(330, 0), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, Parent = gui })
 	UIKit.corner(Theme.CornerSmall).Parent = widget
-	UIKit.padding(6, 10, 6, 10).Parent = widget
+	UIKit.padding(4, 10, 4, 10).Parent = widget
 	UIKit.scaled(widget)
 	rows = UIKit.frame({ BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, Parent = widget })
 	UIKit.list(Enum.FillDirection.Vertical, 2).Parent = rows

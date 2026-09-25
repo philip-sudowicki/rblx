@@ -76,6 +76,9 @@ return {
 		TapWindow = 0.45, -- how far in the past a client tap timestamp may be
 		PerfectFraction = 0.3, -- centre fraction of the green zone that counts as PERFECT
 		PerfectBonus = 1.1, -- value multiplier for PERFECT catches
+		StreakWindow = 15, -- seconds between catches/salvages to keep a streak going
+		StreakBonusPerStep = 0.05, -- +5% value per streak step…
+		StreakMaxBonus = 0.5, -- …up to +50%
 		WarySeconds = 3, -- after escaping, a fish can't be targeted for this long
 		Cooldown = 0.4,
 		TutorialZoneWidth = 0.45,

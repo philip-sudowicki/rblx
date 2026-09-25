@@ -115,7 +115,7 @@ local function ping()
 				local rarity = Rarities.list[view.tier]
 				local built = view.built
 				local adornee: Instance = if built then built.root else EntityRenderer.anchorFor(id, view.position)
-				table.insert(entries, { adornee = adornee, d = d, text = if rarity.index >= 4 then "✦🐟" else "🐟", color = rarity.color })
+				table.insert(entries, { adornee = adornee, d = d, text = if rarity.index >= 4 then "🔱🐟" else "🐟", color = rarity.color })
 			end
 		end
 		for id, view in EntityRenderer.treasure do

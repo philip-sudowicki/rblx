@@ -224,7 +224,6 @@ local function startTremor(entry: EventService.ActiveEvent)
 		end
 	end
 	tremor = content
-	AnnounceService.chat("🌋 The seafloor has cracked open! Glowing trenches in the Midnight Zone, Abyssal Plains and Hadal Trench hold Ancient Tech and Cursed treasure.", Events.byId.DeepTremor.color)
 end
 
 local function stopTremor()

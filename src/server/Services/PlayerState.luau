@@ -61,6 +61,8 @@ export type State = {
 	lastSpawnTick: number,
 	diveSeconds: number, -- dive time this session (for the first-legendary guarantee)
 	lastOfferAt: number,
+	streak: number, -- catches/salvages in a row this dive, each within Game.Catch.StreakWindow
+	lastLootAt: number,
 }
 
 local PlayerState = {}
@@ -86,6 +88,8 @@ function PlayerState.add(player: Player): State
 		lastSpawnTick = 0,
 		diveSeconds = 0,
 		lastOfferAt = 0,
+		streak = 0,
+		lastLootAt = 0,
 	}
 	states[player] = state
 	return state

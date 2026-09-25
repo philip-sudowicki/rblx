@@ -61,9 +61,9 @@ local SEGMENT_HEIGHT = 50
 
 local function pill(parent: Instance, icon: string, color: Color3, order: number): (Frame, TextLabel)
 	local frame = UIKit.frame({
-		Size = UDim2.fromOffset(190, 38),
+		Size = UDim2.fromOffset(150, 34),
 		BackgroundColor3 = Theme.PanelDark,
-		BackgroundTransparency = 0.15,
+		BackgroundTransparency = 0.3,
 		LayoutOrder = order,
 		Parent = parent,
 	})
@@ -71,9 +71,9 @@ local function pill(parent: Instance, icon: string, color: Color3, order: number
 	UIKit.stroke(color, 2, 0.35).Parent = frame
 	UIKit.label({
 		Text = icon,
-		Size = UDim2.fromOffset(34, 38),
+		Size = UDim2.fromOffset(30, 34),
 		Position = UDim2.fromOffset(6, 0),
-		TextSize = 22,
+		TextSize = 19,
 		TextXAlignment = Enum.TextXAlignment.Center,
 		Parent = frame,
 	})
@@ -82,7 +82,7 @@ local function pill(parent: Instance, icon: string, color: Color3, order: number
 		Size = UDim2.new(1, -48, 1, 0),
 		Position = UDim2.fromOffset(42, 0),
 		Font = Theme.FontDisplay,
-		TextSize = 22,
+		TextSize = 20,
 		TextColor3 = color,
 		Parent = frame,
 	})
@@ -102,14 +102,14 @@ local function buildTopLeft(gui: ScreenGui)
 	})
 	UIKit.scaled(holder)
 	local function place(s: number)
-		holder.Position = UDim2.new(0.5, 0, 1, -math.floor(22 + 84 * s))
+		holder.Position = UDim2.new(0.5, 0, 1, -math.floor(16 + 72 * s))
 	end
 	place(UIKit.scaleFactor())
 	UIKit.ScaleChanged:Connect(place)
 	UIKit.list(Enum.FillDirection.Horizontal, 8, Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center).Parent = holder
 	local _, coins = pill(holder, "💰", Theme.Coin, 1)
 	coinLabel = coins
-	local tokens, tokenText = pill(holder, "✦", Theme.Token, 2)
+	local tokens, tokenText = pill(holder, "💠", Theme.Token, 2)
 	tokenPill = tokens
 	tokenLabel = tokenText
 	tokenPill.Visible = false
@@ -384,7 +384,9 @@ local function buildBanner(gui: ScreenGui)
 		Parent = gui,
 	})
 	UIKit.scaled(zoneBanner)
-	UIKit.textStroke(3).Parent = zoneBanner
+	local bannerStroke = UIKit.textStroke(3)
+	bannerStroke.Transparency = 1
+	bannerStroke.Parent = zoneBanner
 	zoneSubBanner = UIKit.label({
 		Text = "",
 		AnchorPoint = Vector2.new(0.5, 0.5),
@@ -397,7 +399,9 @@ local function buildBanner(gui: ScreenGui)
 		Parent = gui,
 	})
 	UIKit.scaled(zoneSubBanner)
-	UIKit.textStroke(2).Parent = zoneSubBanner
+	local subStroke = UIKit.textStroke(2)
+	subStroke.Transparency = 1
+	subStroke.Parent = zoneSubBanner
 end
 
 local bannerToken = 0
@@ -407,14 +411,22 @@ function HUDController.banner(title: string, subtitle: string?, color: Color3?, 
 	zoneBanner.Text = title
 	zoneBanner.TextColor3 = color or Theme.Text
 	zoneSubBanner.Text = subtitle or ""
+	-- the outline (UIStroke) has its own transparency, so it fades together with the text
+	local function fade(label: TextLabel, to: number, time: number)
+		UIKit.tween(label, { TextTransparency = to }, time)
+		local stroke = label:FindFirstChildOfClass("UIStroke")
+		if stroke then
+			UIKit.tween(stroke, { Transparency = to }, time)
+		end
+	end
 	zoneBanner.TextTransparency = 1
 	zoneSubBanner.TextTransparency = 1
-	UIKit.tween(zoneBanner, { TextTransparency = 0 }, 0.4)
-	UIKit.tween(zoneSubBanner, { TextTransparency = 0 }, 0.6)
+	fade(zoneBanner, 0, 0.4)
+	fade(zoneSubBanner, 0, 0.6)
 	task.delay(seconds or 2.6, function()
 		if token == bannerToken then
-			UIKit.tween(zoneBanner, { TextTransparency = 1 }, 0.8)
-			UIKit.tween(zoneSubBanner, { TextTransparency = 1 }, 0.8)
+			fade(zoneBanner, 1, 0.8)
+			fade(zoneSubBanner, 1, 0.8)
 		end
 	end)
 end

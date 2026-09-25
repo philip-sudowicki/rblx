@@ -17,7 +17,7 @@ export type Context = {
 	passes: { [string]: boolean },
 	sets: { [string]: boolean },
 	indexLuck: number, -- permanent luck from Index milestones
-	boosts: { [string]: number }, -- boost id → expiry (unix seconds)
+	boosts: { [string]: number }, -- boost id » expiry (unix seconds)
 	now: number,
 	serverLuck: number, -- active server luck multiplier (1 if none)
 	eventLuck: number, -- events + weekend luck multiplier

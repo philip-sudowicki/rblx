@@ -172,13 +172,12 @@ local function colors()
 	terrain:SetMaterialColor(Enum.Material.LeafyGrass, Color3.fromRGB(110, 175, 80))
 	terrain:SetMaterialColor(Enum.Material.Grass, Color3.fromRGB(100, 165, 75))
 	terrain:SetMaterialColor(Enum.Material.Sand, Zones.list[1].materialColors.floor)
-	terrain:SetMaterialColor(Enum.Material.Basalt, Color3.fromRGB(70, 68, 66))
-	terrain:SetMaterialColor(Enum.Material.Rock, Color3.fromRGB(120, 116, 108))
-	terrain.WaterColor = Color3.fromRGB(20, 175, 200)
-	terrain.WaterTransparency = 0.7
-	terrain.WaterReflectance = 0.25
-	terrain.WaterWaveSize = 0.2
-	terrain.WaterWaveSpeed = 9
+	-- natural sea water: deep teal-blue, clear near the shore, darkening with depth
+	terrain.WaterColor = Color3.fromRGB(14, 78, 96)
+	terrain.WaterTransparency = 0.45
+	terrain.WaterReflectance = 0.5
+	terrain.WaterWaveSize = 0.14
+	terrain.WaterWaveSpeed = 7
 	terrain.Decoration = true -- animated grass blades on the island
 end
 
@@ -223,6 +222,8 @@ local function beachIsland(rng: Random)
 	local top = world.atollTopY
 	-- rings from the outside in: each higher disc overwrites the middle of the one below
 	local rings = {
+		{ r = R + 44, y = -18 },
+		{ r = R + 34, y = -12 },
 		{ r = R + 26, y = -8 },
 		{ r = R + 16, y = -5 },
 		{ r = R + 8, y = -2.5 },
@@ -250,8 +251,8 @@ local function beachIsland(rng: Random)
 		local r = R + rng:NextNumber(4, 18)
 		local center = Vector3.new(dock.X + math.cos(angle) * r, rng:NextNumber(-4, 0), dock.Z + math.sin(angle) * r)
 		if center.Z < world.plazaCenter.Z - 40 then
-			fillBall(center, rng:NextNumber(4, 8), Enum.Material.Basalt)
-			fillBall(center + Vector3.new(rng:NextNumber(-4, 4), -1, rng:NextNumber(-4, 4)), rng:NextNumber(3, 5), Enum.Material.Rock)
+			fillBall(center, rng:NextNumber(4, 8), Enum.Material.Sandstone)
+			fillBall(center + Vector3.new(rng:NextNumber(-4, 4), -1, rng:NextNumber(-4, 4)), rng:NextNumber(3, 5), Enum.Material.Limestone)
 		end
 	end
 	-- keep the Blue Hole's rim clean where the island meets the atoll
@@ -261,33 +262,48 @@ end
 -- A sandy seabed under the open sea around the atoll, so the water is turquoise instead of a
 -- sheet over the void. Filled in cells, skipping the Blue Hole inside the atoll.
 local SEA_EXTENT = 3000
+local SEABED_TOP = -24
 local function seabed()
 	local world = Zones.world
-	local minR = world.atollOuterRadius - 12
-	local function fillCell(cx: number, cz: number, size: number)
-		local nearestX = math.max(math.abs(cx) - size / 2, 0)
-		local nearestZ = math.max(math.abs(cz) - size / 2, 0)
-		if math.sqrt(nearestX * nearestX + nearestZ * nearestZ) >= minR then
-			fillBlock(CFrame.new(cx, -20, cz), Vector3.new(size, 24, size), Enum.Material.Sand)
-		elseif size > 32 then
-			local half = size / 2
-			for dx = -1, 1, 2 do
-				for dz = -1, 1, 2 do
-					fillCell(cx + dx * half / 2, cz + dz * half / 2, half)
+	local blueHole = Zones.list[1].radius + 10
+	-- Visits square cells covering the sea, splitting cells that come closer than `minR` to the
+	-- centre (down to 32 studs) so the Blue Hole inside the atoll is never touched.
+	local function cells(minR: number, visit: (cx: number, cz: number, size: number) -> ())
+		local function cell(cx: number, cz: number, size: number)
+			local nearestX = math.max(math.abs(cx) - size / 2, 0)
+			local nearestZ = math.max(math.abs(cz) - size / 2, 0)
+			if math.sqrt(nearestX * nearestX + nearestZ * nearestZ) >= minR then
+				visit(cx, cz, size)
+			elseif size > 32 then
+				local quarter = size / 4
+				for dx = -1, 1, 2 do
+					for dz = -1, 1, 2 do
+						cell(cx + dx * quarter, cz + dz * quarter, size / 2)
+					end
 				end
 			end
 		end
-	end
-	local size = 256
-	local x = -SEA_EXTENT
-	while x < SEA_EXTENT do
-		local z = -SEA_EXTENT
-		while z < SEA_EXTENT do
-			fillCell(x + size / 2, z + size / 2, size)
-			z += size
+		local size = 256
+		local x = -SEA_EXTENT
+		while x < SEA_EXTENT do
+			local z = -SEA_EXTENT
+			while z < SEA_EXTENT do
+				cell(x + size / 2, z + size / 2, size)
+				z += size
+			end
+			x += size
 		end
-		x += size
 	end
+	-- sandy floor ~24 studs down, beyond the atoll's outer wall
+	cells(world.atollOuterRadius - 30, function(cx, cz, size)
+		fillBlock(CFrame.new(cx, SEABED_TOP - 12, cz), Vector3.new(size, 24, size), Enum.Material.Sand)
+	end)
+	-- deep water above it (only replaces air, so the atoll rock and island stay)
+	cells(blueHole, function(cx, cz, size)
+		local region = Region3.new(Vector3.new(cx - size / 2, SEABED_TOP, cz - size / 2), Vector3.new(cx + size / 2, -world.waterDepth, cz + size / 2))
+		terrain:ReplaceMaterial(region:ExpandToGrid(4), 4, AIR, Enum.Material.Water)
+		pace()
+	end)
 end
 
 local function buildZone(index: number, rng: Random)

@@ -220,11 +220,11 @@ local function alertFor(view: FishView)
 		return
 	end
 	local def = Fish.byId[view.fishId]
-	view.marker = marker(anchorFor(view.id, view.position), "✦ " .. rarity.name:upper() .. " ✦", rarity.color, if rarity.index >= 5 then 400 else 180)
+	view.marker = marker(anchorFor(view.id, view.position), "🔱 " .. rarity.name:upper() .. " 🔱", rarity.color, if rarity.index >= 5 then 400 else 180)
 	if os.clock() - lastAlert > 4 then
 		lastAlert = os.clock()
 		local name = if rarity.hidden then "???" else def.name
-		HUDController.toast(string.format("✦ A %s %s is nearby!", rarity.name:upper(), name), if rarity.index >= 5 then "warn" else "info", "🐟")
+		HUDController.toast(string.format("🔱 A %s %s is nearby!", rarity.name:upper(), name), if rarity.index >= 5 then "warn" else "info", "🐟")
 		AudioController.play("RareNearby", 1 + (rarity.index - 4) * 0.05)
 	end
 end
@@ -287,7 +287,7 @@ local function addTreasure(record: any)
 	}
 	EntityRenderer.treasure[record.id] = view
 	if record.src == "Galleon" or record.src == "Wake" then
-		view.marker = marker(anchorFor(record.id, record.p), "✦", Rarities.list[tier].color, 260)
+		view.marker = marker(anchorFor(record.id, record.p), "💠", Rarities.list[tier].color, 260)
 	end
 end
 

@@ -46,7 +46,7 @@ end
 local function rewardText(quest: Types.QuestState): string
 	local parts = { "💰 " .. Format.short(quest.reward) }
 	if quest.tokens and quest.tokens > 0 then
-		table.insert(parts, string.format("✦ %d", quest.tokens))
+		table.insert(parts, string.format("🔱 %d", quest.tokens))
 	end
 	if quest.boost and Game.Boosts[quest.boost] then
 		table.insert(parts, Game.Boosts[quest.boost].icon .. " " .. Game.Boosts[quest.boost].name)
@@ -118,7 +118,7 @@ local function tileReward(reward: DailyRewards.DailyReward): string
 		table.insert(lines, string.format("%d× %s", reward.consumable.amount, (reward.consumable.key:gsub("(%l)(%u)", "%1 %2"))))
 	end
 	if reward.tokens and ClientState.data and ClientState.data.Rebirths > 0 then
-		table.insert(lines, string.format("✦ %d token", reward.tokens))
+		table.insert(lines, string.format("🔱 %d token", reward.tokens))
 	end
 	return table.concat(lines, "\n")
 end
@@ -150,7 +150,7 @@ local function refreshLogin()
 		login.claim.Text = string.format("🎁 CLAIM DAY %d", state.slot)
 		login.claim.BackgroundColor3 = Theme.Good
 	else
-		login.claim.Text = "Claimed today ✓"
+		login.claim.Text = "Claimed today ✅"
 		login.claim.BackgroundColor3 = Theme.PanelLight
 	end
 	local streak = if state.canClaim then state.streak - 1 else data.Daily.Streak

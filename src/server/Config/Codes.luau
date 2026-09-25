@@ -1,6 +1,6 @@
 --!strict
 -- Redeemable codes. This file lives in ServerScriptService and is never replicated, so players
--- (and exploiters) can't read the list. Codes are case-insensitive; each works once per player.
+-- (and exploiters) can't read the list. Codes are case-insensitive (typed in Shop » Codes); each works once per player.
 --
 -- expires     : unix time after which the code stops working (nil = never)
 -- minRebirths : optional requirement

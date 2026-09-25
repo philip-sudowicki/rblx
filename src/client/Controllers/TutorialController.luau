@@ -75,7 +75,7 @@ local function refreshText()
 	if not step then
 		return
 	end
-	header.Text = string.format("TUTORIAL  ·  %d / %d", current.step, #Tutorial.steps)
+	header.Text = string.format("STEP %d/%d  ·  %s", current.step, #Tutorial.steps, step.title:upper())
 	iconLabel.Text = step.icon
 	if DIVE_STEPS[step.id] and not SubController.isDiving() then
 		titleLabel.Text = step.title
@@ -225,22 +225,25 @@ end
 
 function TutorialController.Init()
 	gui = UIKit.screen("DeepHaulTutorial", 12)
-	panel = UIKit.panel({
+	-- a compact card: icon, "Step 3/7 · Catch a fish", one or two lines of instructions
+	panel = UIKit.frame({
 		Name = "TutorialPanel",
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0, 120),
-		Size = UDim2.fromOffset(420, 136),
-		BackgroundTransparency = 0.08,
+		Size = UDim2.fromOffset(440, 76),
+		BackgroundColor3 = Theme.PanelDark,
+		BackgroundTransparency = 0.25,
 		Visible = false,
 		Parent = gui,
 	})
+	UIKit.corner(UDim.new(0, 14)).Parent = panel
+	UIKit.stroke(Theme.Accent, 1.5, 0.5).Parent = panel
 	UIKit.scaled(panel)
-	iconLabel = UIKit.label({ Text = "⚓", Position = UDim2.fromOffset(10, 30), Size = UDim2.fromOffset(52, 52), TextSize = 40, TextXAlignment = Enum.TextXAlignment.Center, Parent = panel })
-	header = UIKit.label({ Text = "TUTORIAL", Position = UDim2.fromOffset(16, 6), Size = UDim2.fromOffset(250, 20), TextSize = 13, Font = Theme.FontBold, TextColor3 = Theme.Accent, Parent = panel })
-	titleLabel = UIKit.label({ Text = "", Position = UDim2.fromOffset(70, 28), Size = UDim2.new(1, -84, 0, 28), Font = Theme.FontDisplay, TextSize = 22, Parent = panel })
-	UIKit.textStroke(1.5).Parent = titleLabel
-	bodyLabel = UIKit.label({ Text = "", Position = UDim2.fromOffset(70, 58), Size = UDim2.new(1, -84, 0, 70), TextSize = 15, TextYAlignment = Enum.TextYAlignment.Top, Parent = panel })
-	UIKit.button({ Text = "Skip", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 6), Size = UDim2.fromOffset(64, 24), TextSize = 13, Parent = panel }, skip, Theme.PanelLight)
+	iconLabel = UIKit.label({ Text = "⚓", Position = UDim2.fromOffset(8, 0), Size = UDim2.fromOffset(46, 76), TextSize = 30, TextXAlignment = Enum.TextXAlignment.Center, Parent = panel })
+	header = UIKit.label({ Text = "", Position = UDim2.fromOffset(58, 8), Size = UDim2.new(1, -120, 0, 16), TextSize = 12, Font = Theme.FontBold, TextColor3 = Theme.Accent, Parent = panel })
+	titleLabel = UIKit.label({ Text = "", Visible = false, Parent = panel })
+	bodyLabel = UIKit.label({ Text = "", Position = UDim2.fromOffset(58, 25), Size = UDim2.new(1, -70, 0, 44), TextSize = 15, TextYAlignment = Enum.TextYAlignment.Top, Parent = panel })
+	UIKit.button({ Text = "Skip", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 6), Size = UDim2.fromOffset(48, 20), TextSize = 12, BackgroundTransparency = 0.4, Parent = panel }, skip, Theme.PanelLight)
 
 	local folder = Instance.new("Folder")
 	folder.Name = "DH_TutorialGuide"

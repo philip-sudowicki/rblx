@@ -25,7 +25,7 @@ Before publishing:
 - **Monetization:** create the passes and products and paste their IDs into `src/shared/Config/Products.luau`. An ID of 0 shows as "Coming soon" and is never prompted.
 - **Badges (optional):** create them in the Creator Dashboard and paste the IDs into `src/shared/Config/Badges.luau`.
 - **Sounds:** see `SOUNDS.md`.
-- **Codes:** edit `src/server/Config/Codes.luau`. It lives on the server only, so players can't read it.
+- **Codes:** edit `src/server/Config/Codes.luau` (players redeem them in Shop → Codes). It lives on the server only, so players can't read it.
 
 ## Controls
 
@@ -51,6 +51,7 @@ Before publishing:
   - Predators hunt you; sonar stuns them and silent running sneaks past.
   - Darkness below the Twilight Reef limits you to your floodlights.
   - A blackout loses half your cargo unless you're insured.
+- **Catch streaks:** catching or salvaging within 15 s of your last find adds +5% value per step (up to +50%) until you surface.
 - **Loot:** 78 fish and 68 treasures across 8 rarities with exact odds. There are 7 mutations, plus weight, Colossal catches (1 in 500, ×5 value, 3× size) and 5 treasure conditions. Treasure falls into 6 categories and 13 collection sets.
 - **Progression:**
   - 8 upgrades with 15 levels each; Resurface (rebirth) gives a permanent sell multiplier, tokens for a perk shop, and The Rift.
@@ -87,7 +88,7 @@ src/server/            ServerScriptService.Server (authoritative)
 src/client/            StarterPlayerScripts.Client
   Main.client.luau     controller bootstrap (ORDER list)
   Controllers/         input, sub, HUD, effects, rendering, menus, tutorial, events, ...
-  Menus/               Inventory, Index, Upgrades, Shop, Quests, Settings, Launch panel
+  Menus/               Inventory, Index, Upgrades, Shop (+ Codes), Quests, Launch panel
   UI/                  UI kit, windows, sliders, item cards and 3D viewports
 tests/                 unit tests for pure modules (luau CLI)
 tools/                 check.sh, test bundler, economy simulator

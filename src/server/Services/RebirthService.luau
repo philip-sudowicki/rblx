@@ -81,7 +81,7 @@ function RebirthService.buyPerk(player: Player, perkId: string): boolean
 	end
 	local cost = perk.costs[level + 1]
 	if data.Tokens < cost then
-		Remotes.notify(player, string.format("You need %d rebirth tokens.", cost), "warn", "✦")
+		Remotes.notify(player, string.format("You need %d rebirth tokens.", cost), "warn", "💠")
 		return false
 	end
 	data.Tokens -= cost

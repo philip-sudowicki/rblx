@@ -1,5 +1,5 @@
 --!strict
--- Every client → server remote is bound here with a rate limit. Handlers only run for players
+-- Every client » server remote is bound here with a rate limit. Handlers only run for players
 -- whose profile has loaded, and run protected so a bad payload can never break the server.
 
 local Players = game:GetService("Players")

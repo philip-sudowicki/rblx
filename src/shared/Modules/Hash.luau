@@ -48,7 +48,7 @@ function Hash.combine(a: number, b: number): number
 	return Hash.mix(x)
 end
 
--- Hash → float in [0, 1)
+-- Hash » float in [0, 1)
 function Hash.float(h: number): number
 	return u32(h) / TWO32
 end

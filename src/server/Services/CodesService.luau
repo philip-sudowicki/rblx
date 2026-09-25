@@ -1,5 +1,5 @@
 --!strict
--- Code redemption (Settings → Codes). The code list is server-only (Config/Codes). Each code
+-- Code redemption (Shop » Codes). The code list is server-only (Config/Codes). Each code
 -- works once per player; wrong guesses are throttled so the list can't be brute forced.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

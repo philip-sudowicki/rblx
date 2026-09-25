@@ -91,7 +91,7 @@ function OfferController.Init()
 		MarketController.prompt(currentKey)
 		hide()
 	end, Theme.Good)
-	UIKit.button({ Text = "✕", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(36, 36), TextSize = 16, Parent = card }, hide, Theme.PanelLight)
+	UIKit.button({ Text = "×", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(36, 36), TextSize = 16, Parent = card }, hide, Theme.PanelLight)
 end
 
 function OfferController.Start()

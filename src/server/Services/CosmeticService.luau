@@ -22,7 +22,7 @@ function CosmeticService.grantSkin(player: Player, skinId: string, announce: boo
 	data.Skins.Owned[skinId] = true
 	DataService.replicate(player, "Skins")
 	if announce ~= false then
-		Remotes.notify(player, string.format("New sub skin unlocked: %s! Equip it in Upgrades → Hangar.", skin.name), "good", "🎨")
+		Remotes.notify(player, string.format("New sub skin unlocked: %s! Equip it in Upgrades » Hangar.", skin.name), "good", "🎨")
 	end
 	return true
 end

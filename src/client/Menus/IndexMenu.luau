@@ -566,7 +566,7 @@ local function refreshSets()
 			local has = data.Discovered.Treasure[itemId] ~= nil
 			local rarity = Rarities.byId[def.rarity]
 			local chip = UIKit.label({
-				Text = if has then "✔ " .. def.name else "? " .. (if rarity.hidden then "???" else rarity.name .. " " .. (TreasureCategories.byId[def.category].name:match("^%S+") or "item")),
+				Text = if has then "✅ " .. def.name else "? " .. (if rarity.hidden then "???" else rarity.name .. " " .. (TreasureCategories.byId[def.category].name:match("^%S+") or "item")),
 				Size = UDim2.fromOffset(0, 28),
 				AutomaticSize = Enum.AutomaticSize.X,
 				TextSize = 12,
@@ -655,7 +655,7 @@ local function refreshRewards()
 		bar.set(math.min(pct / milestone.percent, 1), string.format("%s%% / %d%%", tostring(math.min(pct, milestone.percent)), milestone.percent))
 		UIKit.label({ Text = rewardText(milestone), Position = UDim2.fromOffset(470, 0), Size = UDim2.fromOffset(190, 42), TextSize = 14, TextColor3 = Theme.Coin, Parent = row })
 		UIKit.button({
-			Text = if claimed then "Claimed ✓" elseif milestone.reached then "CLAIM" else "🔒",
+			Text = if claimed then "Claimed ✅" elseif milestone.reached then "CLAIM" else "🔒",
 			AnchorPoint = Vector2.new(1, 0.5),
 			Position = UDim2.new(1, -8, 0.5, 0),
 			Size = UDim2.fromOffset(120, 32),

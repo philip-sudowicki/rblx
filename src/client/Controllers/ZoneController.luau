@@ -125,9 +125,10 @@ local function presetAt(y: number): Preset
 	return preset
 end
 
-local function applyEvents(preset: Preset): Preset
+local function applyEvents(preset: Preset, y: number): Preset
 	local state = ClientState.events
-	if not state or not state.active then
+	-- event colours tint the ocean only: the island keeps its normal daylight
+	if not state or not state.active or y > -2 then
 		return preset
 	end
 	local out = preset
@@ -212,7 +213,7 @@ local function step(dt: number)
 		return
 	end
 	local y = camera.CFrame.Position.Y
-	local target = applyEvents(presetAt(y))
+	local target = applyEvents(presetAt(y), y)
 	local now = current
 	if now == nil then
 		current = target
@@ -261,12 +262,15 @@ function ZoneController.Init()
 	color.Parent = Lighting
 	bloom = Instance.new("BloomEffect")
 	bloom.Name = "DH_Bloom"
-	bloom.Threshold = 0.95
-	bloom.Size = 30
+	bloom.Threshold = 1.3
+	bloom.Size = 22
 	bloom.Parent = Lighting
 	Lighting.ClockTime = Zones.surface.clockTime
-	Lighting.EnvironmentDiffuseScale = 0.6
-	Lighting.EnvironmentSpecularScale = 0.6
+	Lighting.EnvironmentDiffuseScale = 0.45
+	Lighting.EnvironmentSpecularScale = 0.35
+	Lighting.ExposureCompensation = -0.15
+	Lighting.GlobalShadows = true
+	Lighting.ShadowSoftness = 0.35
 	-- fluffy clouds and soft sun rays at the surface (hidden once you're deep underwater)
 	clouds = Instance.new("Clouds")
 	clouds.Cover = 0.55
@@ -275,8 +279,8 @@ function ZoneController.Init()
 	clouds.Parent = workspace.Terrain
 	sunRays = Instance.new("SunRaysEffect")
 	sunRays.Name = "DH_SunRays"
-	sunRays.Intensity = 0.06
-	sunRays.Spread = 0.8
+	sunRays.Intensity = 0.025
+	sunRays.Spread = 0.6
 	sunRays.Parent = Lighting
 	setupSnow()
 end

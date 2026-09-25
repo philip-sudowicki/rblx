@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Theme = require(Shared.Config.Theme)
+local Game = require(Shared.Config.Game)
 local Upgrades = require(Shared.Config.Upgrades)
 local Rebirth = require(Shared.Config.Rebirth)
 local CollectionSets = require(Shared.Config.CollectionSets)
@@ -215,6 +216,16 @@ function EffectsController.Start()
 				EffectsController.flash(set.color, 0.35, 0.8)
 				HUDController.banner("SET COMPLETE!", set.name, set.color, 4)
 			end
+		end
+	end)
+	-- catch streak popup (the server adds +5% value per step while you keep catching)
+	Net.event("Reveal").OnClientEvent:Connect(function(payload)
+		if typeof(payload) == "table" and typeof(payload.streak) == "number" and payload.streak >= 2 then
+			local bonus = math.min((payload.streak - 1) * Game.Catch.StreakBonusPerStep, Game.Catch.StreakMaxBonus)
+			task.delay(0.6, function()
+				EffectsController.floatText(string.format("🔥 %d streak! +%d%%", payload.streak, math.floor(bonus * 100 + 0.5)), Theme.Warn, UDim2.fromScale(0.5, 0.62))
+				AudioController.play("CoinGain", 1 + math.min(payload.streak, 10) * 0.04, 0.5)
+			end)
 		end
 	end)
 	SubController.Ended:Connect(function(summary)

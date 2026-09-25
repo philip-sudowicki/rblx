@@ -15,7 +15,7 @@ function Format.commas(n: number): string
 	return if negative then "-" .. out else out
 end
 
--- 950 → "950", 1234 → "1.23K", 45678 → "45.7K", 1.2e9 → "1.2B"
+-- 950 » "950", 1234 » "1.23K", 45678 » "45.7K", 1.2e9 » "1.2B"
 function Format.short(n: number): string
 	if n ~= n then
 		return "0"
@@ -42,7 +42,7 @@ function Format.short(n: number): string
 	return (if negative then "-" else "") .. s .. SUFFIXES[tier + 1]
 end
 
--- Seconds → "4:05" or "1:02:03"
+-- Seconds » "4:05" or "1:02:03"
 function Format.clock(seconds: number): string
 	seconds = math.max(0, math.floor(seconds))
 	local h = seconds // 3600
@@ -54,7 +54,7 @@ function Format.clock(seconds: number): string
 	return string.format("%d:%02d", m, s)
 end
 
--- Seconds → "8h 12m", "5m 3s", "12s"
+-- Seconds » "8h 12m", "5m 3s", "12s"
 function Format.duration(seconds: number): string
 	seconds = math.max(0, math.floor(seconds))
 	local d = seconds // 86400
@@ -91,7 +91,7 @@ function Format.percent(fraction: number, decimals: number?): string
 	return string.format("%." .. d .. "f%%", fraction * 100)
 end
 
--- Probability → "1 in 1,234"
+-- Probability » "1 in 1,234"
 function Format.odds(p: number): string
 	if p <= 0 then
 		return "—"

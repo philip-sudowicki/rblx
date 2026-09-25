@@ -150,7 +150,7 @@ Controllers/
   AudioController       SoundGroups, music/ambient crossfades, SFX
   HUDController         depth meter, O₂/hull bars, cargo, coins, event banner/timer, toasts
   MenuController        side bar + tweened menus
-  Menus/                Inventory, Index, Upgrades(+Hangar, Resurface), Shop, Quests(+Daily), Settings(+Codes)
+  Menus/                Inventory, Index, Upgrades(+Hangar, Resurface), Shop(+Codes), Quests(+Daily)
   RevealController      catch reveal card with escalating sound
   TutorialController    arrows/beams + step prompts, skippable
   AquariumRenderer      renders displayed fish swimming in tanks

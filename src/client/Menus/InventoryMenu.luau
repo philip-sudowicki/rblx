@@ -190,14 +190,14 @@ local function showDetail(page: Page, item: Types.Item?)
 		local condition = Conditions.byId[item.c or "Worn"]
 		local def = Treasure.byId[item.i]
 		local category = def and TreasureCategories.byId[def.category]
-		local cursed = if def and def.cursed then string.format('  <font color="#C77DFF">☠️ +%d%% O₂ drain</font>', math.floor(def.cursed * 100)) else ""
+		local cursed = if def and def.cursed then string.format('  <font color="#C77DFF">☠️ +%d%% O2 drain</font>', math.floor(def.cursed * 100)) else ""
 		d.stat.Text = string.format('%s %s · <font color="#%s">%s</font>%s', if category then category.icon else "", if category then category.name else "", condition.color:ToHex(), condition.name, cursed)
 	end
 	d.value.Text = "💰 " .. Format.commas(priceOf(item))
 	local zone = Zones.list[item.z]
 	local event = item.e and Events.byId[item.e]
 	d.meta.Text = string.format("From the %s%s\n%s", if zone then zone.name else "deep", if event then string.format(' · <font color="#%s">%s %s</font>', event.color:ToHex(), event.icon, event.name) else "", DateTime.fromUnixTimestamp(item.t):FormatLocalTime("ll", "en-us"))
-	d.favorite.Text = if item.f then "⭐ Unfavourite" else "☆ Favourite"
+	d.favorite.Text = if item.f then "⭐ Unfavourite" else "⭐ Favourite"
 	d.display.Text = if item.d then "Remove from Aquarium" else "🐠 Display"
 	d.display.Visible = not item.g
 	local sellOk = canSell()
@@ -251,7 +251,7 @@ local function refreshPage(kind: string)
 		end
 	end
 	showDetail(page, selectedItem)
-	page.sortButton.Text = "Sort: " .. SORTS[kind][sortIndex[kind]] .. " ▾"
+	page.sortButton.Text = "Sort: " .. SORTS[kind][sortIndex[kind]] .. ""
 	for name, button in page.filterButtons do
 		local active = filter[kind] == name
 		button.BackgroundColor3 = if active then Theme.Accent else Theme.PanelLight
@@ -261,7 +261,7 @@ local function refreshPage(kind: string)
 	page.storage.Text = string.format("Storage %d/%d", storage, Game.Economy.StorageCap)
 	page.storage.TextColor3 = if storage >= Game.Economy.StorageCap then Theme.Bad elseif storage >= Game.Economy.StorageCap * 0.85 then Theme.Warn else Theme.TextMuted
 	local keep = ClientState.data.Settings.SellKeep
-	page.keepButton.Text = keepLabel(keep) .. " ▾"
+	page.keepButton.Text = keepLabel(keep) .. ""
 	local sellCount, sellCoins = 0, 0
 	for _, item in ClientState.items() do
 		if not item.f and item.d == nil and not item.g and item.r < keep then

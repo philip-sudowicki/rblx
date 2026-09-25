@@ -142,7 +142,7 @@ local function refreshSeal()
 	local unlocked = ClientState.data ~= nil and ClientState.data.Rebirths >= Rebirth.riftUnlockRebirths
 	seal.CanCollide = not unlocked
 	seal.Transparency = if unlocked then 0.75 else 0.15
-	sealLabel.Text = if unlocked then "✦ THE RIFT - the Seal answers you ✦" else "🔒 THE RIFT SEAL\nResurface once to open it"
+	sealLabel.Text = if unlocked then "🔱 THE RIFT - the Seal answers you 🔱" else "🔒 THE RIFT SEAL\nResurface once to open it"
 end
 
 local accumulator = 0

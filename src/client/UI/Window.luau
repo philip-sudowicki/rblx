@@ -47,7 +47,7 @@ function Window.new(parent: Instance, title: string, icon: string, tabs: { strin
 	})
 	UIKit.textStroke(2).Parent = titleLabel
 	local closeButton = UIKit.button({
-		Text = "✕",
+		Text = "×",
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.new(1, -14, 0, 12),
 		Size = UDim2.fromOffset(40, 40),

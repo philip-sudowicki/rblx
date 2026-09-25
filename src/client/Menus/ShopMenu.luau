@@ -16,6 +16,9 @@ local UIKit = require(script.Parent.Parent.UI.UIKit)
 local Window = require(script.Parent.Parent.UI.Window)
 local ClientState = require(script.Parent.Parent.Controllers.ClientState)
 local MarketController = require(script.Parent.Parent.Controllers.MarketController)
+local AudioController = require(script.Parent.Parent.Controllers.AudioController)
+local EffectsController = require(script.Parent.Parent.Controllers.EffectsController)
+local Net = require(Shared.Modules.Net)
 
 local ShopMenu = {}
 
@@ -24,6 +27,9 @@ local CARD = Vector2.new(264, 196)
 local window: Window.Window
 local isOpen = false
 local grids: { [string]: ScrollingFrame } = {}
+local codeBox: TextBox
+local codeResult: TextLabel
+local redeeming = false
 
 local function clearGrid(grid: ScrollingFrame)
 	for _, child in grid:GetChildren() do
@@ -48,7 +54,7 @@ end
 
 local function buyButton(key: string): (string, Color3, (() -> ())?)
 	if MarketController.ownsPass(key) then
-		return "Owned ✓", Theme.PanelLight, nil
+		return "Owned ✅", Theme.PanelLight, nil
 	end
 	if not MarketController.available(key) then
 		return "Coming soon", Theme.PanelLight, nil
@@ -117,6 +123,75 @@ local function refreshCoins()
 	end
 end
 
+local function redeem()
+	if redeeming then
+		return
+	end
+	local text = codeBox.Text
+	if #text == 0 then
+		codeResult.Text = "Type a code first."
+		codeResult.TextColor3 = Theme.Warn
+		return
+	end
+	redeeming = true
+	codeResult.Text = "Checking…"
+	codeResult.TextColor3 = Theme.TextMuted
+	local ok, response = pcall(function()
+		return Net.func("RedeemCode"):InvokeServer(text)
+	end)
+	redeeming = false
+	if ok and typeof(response) == "table" and typeof(response.message) == "string" then
+		codeResult.Text = response.message
+		codeResult.TextColor3 = if response.ok then Theme.Good else Theme.Bad
+		if response.ok then
+			codeBox.Text = ""
+			AudioController.play("Purchase")
+			EffectsController.flash(Theme.Good, 0.25, 0.5)
+		else
+			AudioController.play("UIError")
+		end
+	else
+		codeResult.Text = "Couldn't reach the server. Try again."
+		codeResult.TextColor3 = Theme.Bad
+	end
+end
+
+local function buildCodes(page: Frame)
+	UIKit.label({ Text = "🎟️ Redeem a code", Font = Theme.FontDisplay, TextSize = 26, TextColor3 = Theme.Accent, Size = UDim2.new(1, 0, 0, 34), Parent = page })
+	UIKit.label({
+		Text = "Codes are shared on our group and social pages for updates and milestones. Each code works once per player.",
+		Position = UDim2.fromOffset(0, 40),
+		Size = UDim2.new(1, 0, 0, 44),
+		TextSize = 15,
+		TextColor3 = Theme.TextMuted,
+		Parent = page,
+	})
+	codeBox = UIKit.new("TextBox", {
+		PlaceholderText = "Enter code",
+		Text = "",
+		ClearTextOnFocus = false,
+		Font = Theme.FontBold,
+		TextSize = 22,
+		TextColor3 = Theme.Text,
+		PlaceholderColor3 = Theme.TextMuted,
+		BackgroundColor3 = Theme.PanelDark,
+		Position = UDim2.fromOffset(0, 96),
+		Size = UDim2.new(1, -200, 0, 50),
+		Parent = page,
+	}) :: TextBox
+	UIKit.corner(Theme.CornerSmall).Parent = codeBox
+	UIKit.stroke(Theme.Stroke, 2, 0.1).Parent = codeBox
+	codeBox.FocusLost:Connect(function(enterPressed)
+		if enterPressed then
+			redeem()
+		end
+	end)
+	UIKit.button({ Text = "REDEEM", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 96), Size = UDim2.fromOffset(186, 50), Font = Theme.FontDisplay, TextSize = 22, Parent = page }, function()
+		task.spawn(redeem)
+	end, Theme.Good)
+	codeResult = UIKit.label({ Text = "", Position = UDim2.fromOffset(0, 156), Size = UDim2.new(1, 0, 0, 60), TextSize = 17, Font = Theme.FontBold, TextYAlignment = Enum.TextYAlignment.Top, Parent = page })
+end
+
 local function refresh()
 	if not isOpen then
 		return
@@ -125,7 +200,7 @@ local function refresh()
 		refreshPasses()
 	elseif window.tab == "Items" then
 		refreshItems()
-	else
+	elseif window.tab == "Coins" then
 		refreshCoins()
 	end
 end
@@ -155,10 +230,11 @@ local function makeGrid(page: Frame): ScrollingFrame
 end
 
 function ShopMenu.build(parent: Instance, close: () -> ()): Window.Window
-	window = Window.new(parent, "Shop", "🛒", { "Passes", "Items", "Coins" }, close)
+	window = Window.new(parent, "Shop", "🛒", { "Passes", "Items", "Coins", "Codes" }, close)
 	grids.Passes = makeGrid(window.pages.Passes)
 	grids.Items = makeGrid(window.pages.Items)
 	grids.Coins = makeGrid(window.pages.Coins)
+	buildCodes(window.pages.Codes)
 	window.TabChanged:Connect(refresh)
 	MarketController.PricesUpdated:Connect(refresh)
 	ClientState.Changed:Connect(function(key)
@@ -176,6 +252,7 @@ end
 
 function ShopMenu.onOpen()
 	isOpen = true
+	codeResult.Text = ""
 	refresh()
 end
 

@@ -22,12 +22,40 @@ local EventService = require(script.Parent.EventService)
 local AnnounceService = require(script.Parent.AnnounceService)
 local Remotes = require(script.Parent.Remotes)
 local ServerSignals = require(script.Parent.ServerSignals)
+local PlayerState = require(script.Parent.PlayerState)
+local Game = require(Shared.Config.Game)
 
 local LootService = {}
 
 local rng = Random.new()
 local function roll(): number
 	return rng:NextNumber()
+end
+
+-- Catch streak: every catch or salvage soon after the previous one adds a small value bonus.
+-- Returns the value multiplier and the new streak length.
+local function streakBonus(player: Player): (number, number)
+	local state = PlayerState.get(player)
+	if not state then
+		return 1, 0
+	end
+	local now = os.clock()
+	if now - state.lastLootAt <= Game.Catch.StreakWindow then
+		state.streak += 1
+	else
+		state.streak = 1
+	end
+	state.lastLootAt = now
+	local bonus = math.min((state.streak - 1) * Game.Catch.StreakBonusPerStep, Game.Catch.StreakMaxBonus)
+	return 1 + bonus, state.streak
+end
+
+function LootService.resetStreak(player: Player)
+	local state = PlayerState.get(player)
+	if state then
+		state.streak = 0
+		state.lastLootAt = 0
+	end
 end
 
 local function eventTag(entityEvent: string?): string?
@@ -109,7 +137,8 @@ function LootService.grantFish(player: Player, entity: { fishId: string, tier: n
 	local mutation = LootMath.rollMutation(roll, { luck = stats.luck, mult = mods.mutationMult, enabled = mods.enabledMutations })
 	local zone = Zones.list[entity.zone] or Zones.list[1]
 	local base = def.value * (if def.event then zone.valueScale else 1)
-	local value = LootMath.fishValue(base, size.valueMult, mutation, perfect)
+	local streakMult, streak = streakBonus(player)
+	local value = math.floor(LootMath.fishValue(base, size.valueMult, mutation, perfect) * streakMult + 0.5)
 	local item: Types.Item = {
 		u = 0,
 		k = "F",
@@ -162,7 +191,7 @@ function LootService.grantFish(player: Player, entity: { fishId: string, tier: n
 	DataService.replicate(player, "Discovered")
 	DataService.replicate(player, "Stats")
 
-	Remotes.fire(player, "Reveal", { item = added, isNew = isNew, modelScale = size.modelScale })
+	Remotes.fire(player, "Reveal", { item = added, isNew = isNew, modelScale = size.modelScale, streak = streak })
 	ServerSignals.ItemObtained:Fire(player, added, { source = "Catch", zone = entity.zone, perfect = perfect, events = EventService.activeIds() })
 	announce(player, added, def.name)
 	return added
@@ -187,7 +216,8 @@ function LootService.grantTreasure(player: Player, entity: { treasureId: string,
 	local conditionIndex = LootMath.rollCondition(roll, luck)
 	local zone = Zones.list[entity.zone] or Zones.list[1]
 	local base = def.value * (if def.event then zone.valueScale else 1)
-	local value = LootMath.treasureValue(base, conditionIndex)
+	local streakMult, streak = streakBonus(player)
+	local value = math.floor(LootMath.treasureValue(base, conditionIndex) * streakMult + 0.5)
 	local condition = Conditions.list[conditionIndex]
 	local item: Types.Item = {
 		u = 0,
@@ -220,10 +250,15 @@ function LootService.grantTreasure(player: Player, entity: { treasureId: string,
 	DataService.replicate(player, "Discovered")
 	DataService.replicate(player, "Stats")
 
-	Remotes.fire(player, "Reveal", { item = added, isNew = isNew, modelScale = 1 })
+	Remotes.fire(player, "Reveal", { item = added, isNew = isNew, modelScale = 1, streak = streak })
 	ServerSignals.ItemObtained:Fire(player, added, { source = "Salvage", zone = entity.zone, events = EventService.activeIds() })
 	announce(player, added, def.name)
 	return added
+end
+
+function LootService.Start()
+	-- streaks last one dive
+	ServerSignals.DiveEnded:Connect(LootService.resetStreak)
 end
 
 return LootService

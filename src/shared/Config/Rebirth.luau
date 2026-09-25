@@ -119,10 +119,10 @@ return {
 	perksById = perksById,
 	-- Nametag badge shown at rebirth counts (highest matching entry wins)
 	badges = {
-		{ at = 1, text = "★", color = Color3.fromRGB(120, 220, 255) },
-		{ at = 3, text = "★★", color = Color3.fromRGB(150, 255, 170) },
-		{ at = 5, text = "★★★", color = Color3.fromRGB(255, 210, 80) },
-		{ at = 10, text = "✦", color = Color3.fromRGB(255, 110, 220) },
-		{ at = 25, text = "✦✦", color = Color3.fromRGB(255, 80, 80) },
+		{ at = 1, text = "⭐", color = Color3.fromRGB(120, 220, 255) },
+		{ at = 3, text = "⭐⭐", color = Color3.fromRGB(150, 255, 170) },
+		{ at = 5, text = "⭐⭐⭐", color = Color3.fromRGB(255, 210, 80) },
+		{ at = 10, text = "💠", color = Color3.fromRGB(255, 110, 220) },
+		{ at = 25, text = "💠💠", color = Color3.fromRGB(255, 80, 80) },
 	},
 }
