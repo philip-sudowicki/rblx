@@ -30,6 +30,7 @@ local ORDER: { Instance } = {
 	Menus:WaitForChild("LaunchPanel"),
 	Controllers:WaitForChild("MenuController"),
 	Controllers:WaitForChild("DockController"),
+	Controllers:WaitForChild("TutorialController"),
 }
 
 local modules: { { name: string, module: any } } = {}

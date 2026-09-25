@@ -6,6 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Format = require(Shared.Modules.Format)
+local Calendar = require(Shared.Modules.Calendar)
+local ClientState = require(script.Parent.ClientState)
 local PromptRouter = require(script.Parent.PromptRouter)
 local SubController = require(script.Parent.SubController)
 local HUDController = require(script.Parent.HUDController)
@@ -13,9 +15,22 @@ local LaunchPanel = require(script.Parent.Parent.Menus.LaunchPanel)
 
 local DockController = {}
 
+-- A friendly nudge a few seconds after joining if today's login reward is waiting.
+local function remindDaily()
+	task.wait(6)
+	local data = ClientState.data
+	if data and data.Tutorial.Done and Calendar.dailyState(data.Daily, math.floor(ClientState.serverTime())).canClaim then
+		HUDController.toast("Your daily reward is ready! Open the treasure chest by the Quest Board.", "good", "🎁")
+	end
+end
+
 function DockController.Start()
 	PromptRouter.on("Launch", function()
 		LaunchPanel.open()
+	end)
+	task.spawn(function()
+		ClientState.waitReady()
+		remindDaily()
 	end)
 	SubController.Ended:Connect(function(summary)
 		if typeof(summary) ~= "table" then

@@ -13,6 +13,8 @@ local Treasure = require(Shared.Config.Treasure)
 local Skins = require(Shared.Config.Skins)
 local Rarities = require(Shared.Config.Rarities)
 local Rebirth = require(Shared.Config.Rebirth)
+local Quests = require(Shared.Config.Quests)
+local Achievements = require(Shared.Config.Achievements)
 
 local DataSchema = {}
 
@@ -210,6 +212,35 @@ function DataSchema.sanitize(data: Types.PlayerData): number
 	for key, expiry in data.Boosts do
 		if finite(expiry, 0) <= now then
 			data.Boosts[key] = nil
+		end
+	end
+	-- Quests: a list with a removed template or bad numbers is regenerated on the next refresh
+	for _, period in { "Daily", "Weekly" } do
+		local quests = data.Quests :: any
+		local list = quests[period]
+		local valid = typeof(list) == "table"
+		if valid then
+			for _, quest in list do
+				if typeof(quest) ~= "table" or not Quests.byId[quest.id] or finite(quest.target, 0) <= 0 then
+					valid = false
+					break
+				end
+				quest.progress = math.clamp(finite(quest.progress, 0), 0, quest.target)
+				quest.reward = math.max(0, math.floor(finite(quest.reward, 0)))
+			end
+		end
+		if not valid then
+			quests[period] = {}
+			quests[period .. "Key"] = 0
+		end
+	end
+	data.Daily.LastDay = math.max(0, math.floor(finite(data.Daily.LastDay, 0)))
+	data.Daily.Streak = math.max(0, math.floor(finite(data.Daily.Streak, 0)))
+	data.Daily.Claimed = math.max(0, math.floor(finite(data.Daily.Claimed, 0)))
+	data.Tutorial.Step = math.max(1, math.floor(finite(data.Tutorial.Step, 1)))
+	for id in data.Achievements do
+		if not Achievements.byId[id] then
+			data.Achievements[id] = nil
 		end
 	end
 	-- Purchase id cache

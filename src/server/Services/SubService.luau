@@ -107,7 +107,8 @@ function SubService.endDive(player: Player, reason: string)
 	dive.ending = true
 	local data = DataService.get(player)
 	local summary = InventoryService.finishDive(player, reason, dive.insured)
-	local clean = reason ~= "Blackout"
+	-- a clean dive ends by surfacing; leaving the game mid-dive counts as neither
+	local clean = reason == "Surface" or reason == "Emergency"
 	local elapsed = os.clock() - dive.startedAt
 	state.diveSeconds += elapsed
 	if data then
@@ -115,7 +116,7 @@ function SubService.endDive(player: Player, reason: string)
 		data.Stats.DiveSeconds += math.floor(elapsed)
 		if clean then
 			data.Stats.CleanDives += 1
-		else
+		elseif reason == "Blackout" then
 			data.Stats.Blackouts += 1
 		end
 		DataService.replicate(player, "Stats")
@@ -152,7 +153,7 @@ function SubService.endDive(player: Player, reason: string)
 	end
 	state.dive = nil
 	setAttributes(player, nil)
-	ServerSignals.DiveEnded:Fire(player, reason, clean)
+	ServerSignals.DiveEnded:Fire(player, reason, clean, elapsed, dive.deepest)
 	Remotes.fire(player, "DiveEvent", {
 		type = "Ended",
 		reason = reason,

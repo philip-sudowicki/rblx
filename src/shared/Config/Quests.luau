@@ -9,7 +9,7 @@
 --   catch            catch n fish
 --   catchRarity      catch n fish of `rarity` or rarer
 --   catchMutated     catch n fish with any mutation
---   catchZone        catch n fish in your deepest zone
+--   catchZone        catch n fish in your deepest zone (or deeper)
 --   perfect          land n PERFECT catches
 --   salvage          salvage n treasures
 --   salvageCondition salvage n treasures of `condition` or better
@@ -82,7 +82,7 @@ local templates: { QuestTemplate } = {
 	{
 		id = "CatchZone",
 		kind = "catchZone",
-		text = "Catch {n} fish in the {zone}",
+		text = "Catch {n} fish in the {zone} or deeper",
 		reward = 160,
 		weight = 2,
 		daily = { { n = 10 }, { n = 12 }, { n = 14 }, { n = 15 }, { n = 15 }, { n = 15 } },

@@ -9,6 +9,7 @@ local Theme = require(Shared.Config.Theme)
 local Upgrades = require(Shared.Config.Upgrades)
 local Rebirth = require(Shared.Config.Rebirth)
 local CollectionSets = require(Shared.Config.CollectionSets)
+local Achievements = require(Shared.Config.Achievements)
 local Format = require(Shared.Modules.Format)
 local Net = require(Shared.Modules.Net)
 local UIKit = require(script.Parent.Parent.UI.UIKit)
@@ -193,6 +194,18 @@ function EffectsController.Start()
 					HUDController.banner("THE RIFT IS OPEN", "Something ancient stirs below the Hadal Trench", Color3.fromRGB(200, 90, 255), 6)
 				end)
 			end
+		elseif payload.kind == "Achievement" then
+			local achievement = Achievements.byId[payload.id]
+			if achievement then
+				AudioController.play("Achievement")
+				EffectsController.flash(Theme.Coin, 0.25, 0.6)
+				HUDController.banner("🏅 " .. achievement.name, achievement.desc, Theme.Coin, 3.5)
+			end
+		elseif payload.kind == "QuestComplete" then
+			AudioController.play("QuestComplete")
+		elseif payload.kind == "Daily" then
+			AudioController.play("DailyClaim")
+			EffectsController.flash(Theme.Good, 0.3, 0.6)
 		elseif payload.kind == "SetComplete" then
 			local set = CollectionSets.byId[payload.id]
 			if set then

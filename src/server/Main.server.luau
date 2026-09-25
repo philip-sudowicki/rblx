@@ -29,6 +29,12 @@ local ORDER = {
 	"NametagService",
 	"CosmeticService",
 	"SettingsService",
+	"DailyService",
+	"QuestService",
+	"AchievementService",
+	"LeaderboardService",
+	"CodesService",
+	"TutorialService",
 }
 
 local modules: { { name: string, module: any } } = {}

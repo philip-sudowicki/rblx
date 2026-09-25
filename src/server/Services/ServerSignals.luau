@@ -26,8 +26,9 @@ return {
 	ItemsSold = Signal.new() :: Signal.Signal<Player, number, number>,
 	-- (player) dive started
 	DiveStarted = Signal.new() :: Signal.Signal<Player>,
-	-- (player, reason, clean) dive ended. reason = "Surface" | "Emergency" | "Blackout" | "Left" | "Kicked"
-	DiveEnded = Signal.new() :: Signal.Signal<Player, string, boolean>,
+	-- (player, reason, clean, seconds, deepestMetres) dive ended.
+	-- reason = "Surface" | "Emergency" | "Blackout" | "Left"; clean = ended by surfacing
+	DiveEnded = Signal.new() :: Signal.Signal<Player, string, boolean, number, number>,
 	-- (player, metres) new deepest depth this dive (fired in steps)
 	DepthReached = Signal.new() :: Signal.Signal<Player, number>,
 	-- (player, zoneIndex) entered a zone during a dive

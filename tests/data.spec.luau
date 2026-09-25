@@ -79,3 +79,20 @@ test("migrations run in order up to the current version", function()
 	DataSchema.migrate(data)
 	eq(data.Version, require(Shared.Config.Game).DataVersion)
 end)
+
+test("quests with removed templates regenerate and progress is clamped", function()
+	local data = fresh()
+	data.Quests.DailyKey = 123
+	data.Quests.Daily = { { id = "CatchFish", target = 10, progress = 99, claimed = false, reward = 50 } }
+	data.Quests.WeeklyKey = 7
+	data.Quests.Weekly = { { id = "RetiredQuest", target = 5, progress = 1, claimed = false, reward = 10 } }
+	data.Daily.Streak = -4
+	data.Achievements.Gone = true
+	DataSchema.sanitize(data)
+	eq(data.Quests.Daily[1].progress, 10)
+	eq(data.Quests.DailyKey, 123)
+	eq(#data.Quests.Weekly, 0)
+	eq(data.Quests.WeeklyKey, 0)
+	eq(data.Daily.Streak, 0)
+	eq(data.Achievements.Gone, nil)
+end)

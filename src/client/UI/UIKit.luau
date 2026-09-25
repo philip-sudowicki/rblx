@@ -167,17 +167,33 @@ function UIKit.button(props: Props?, onClick: (() -> ())?, color: Color3?): Text
 	local button = UIKit.new("TextButton", base) :: TextButton
 	UIKit.corner(Theme.CornerSmall).Parent = button
 	local scale = UIKit.new("UIScale", { Scale = 1, Parent = button }) :: UIScale
-	local baseColor = button.BackgroundColor3
+	-- Hover brightens through an overlay, so code is free to recolour the button at any time.
+	local glow = UIKit.frame({
+		Name = "HoverGlow",
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 1),
+		Parent = button,
+	})
+	UIKit.corner(Theme.CornerSmall).Parent = glow
+	local function hover(on: boolean)
+		UIKit.tween(glow, { BackgroundTransparency = if on then 0.86 else 1 }, Theme.TweenFast)
+		UIKit.tween(scale, { Scale = if on then 1.04 else 1 }, Theme.TweenFast)
+	end
 	button.MouseEnter:Connect(function()
-		UIKit.tween(button, { BackgroundColor3 = baseColor:Lerp(Color3.new(1, 1, 1), 0.15) }, Theme.TweenFast)
-		UIKit.tween(scale, { Scale = 1.04 }, Theme.TweenFast)
+		hover(true)
 		if UIKit.hoverSound then
 			UIKit.hoverSound()
 		end
 	end)
 	button.MouseLeave:Connect(function()
-		UIKit.tween(button, { BackgroundColor3 = baseColor }, Theme.TweenFast)
-		UIKit.tween(scale, { Scale = 1 }, Theme.TweenFast)
+		hover(false)
+	end)
+	button.SelectionGained:Connect(function()
+		hover(true)
+	end)
+	button.SelectionLost:Connect(function()
+		hover(false)
 	end)
 	button.MouseButton1Down:Connect(function()
 		UIKit.tween(scale, { Scale = 0.95 }, 0.08)

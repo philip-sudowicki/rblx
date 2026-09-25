@@ -60,7 +60,6 @@ export type State = {
 	paidRandomRestricted: boolean,
 	lastSpawnTick: number,
 	diveSeconds: number, -- dive time this session (for the first-legendary guarantee)
-	tutorialSpawned: { [string]: boolean },
 	lastOfferAt: number,
 }
 
@@ -86,7 +85,6 @@ function PlayerState.add(player: Player): State
 		paidRandomRestricted = true, -- until PolicyService says otherwise
 		lastSpawnTick = 0,
 		diveSeconds = 0,
-		tutorialSpawned = {},
 		lastOfferAt = 0,
 	}
 	states[player] = state
