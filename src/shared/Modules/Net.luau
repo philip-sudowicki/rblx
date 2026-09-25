@@ -36,6 +36,7 @@ Net.Events = {
 	"SetSetting",
 	"Tutorial",
 	"UseConsumable",
+	"PromptPurchase",
 	"DebugCommand",
 	-- server → client
 	"DataInit",

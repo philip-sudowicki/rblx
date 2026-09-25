@@ -18,6 +18,7 @@ local ORDER: { Instance } = {
 	Controllers:WaitForChild("HUDController"),
 	Controllers:WaitForChild("EffectsController"),
 	Controllers:WaitForChild("PopupController"),
+	Controllers:WaitForChild("MarketController"),
 	Controllers:WaitForChild("MobileControls"),
 	Controllers:WaitForChild("EntityRenderer"),
 	Controllers:WaitForChild("AquariumRenderer"),
@@ -33,6 +34,7 @@ local ORDER: { Instance } = {
 	Controllers:WaitForChild("TutorialController"),
 	Controllers:WaitForChild("EventController"),
 	Controllers:WaitForChild("ChatController"),
+	Controllers:WaitForChild("OfferController"),
 }
 
 local modules: { { name: string, module: any } } = {}

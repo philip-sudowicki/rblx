@@ -15,6 +15,8 @@ local Signal = require(Shared.Modules.Signal)
 local UIKit = require(script.Parent.Parent.UI.UIKit)
 local ClientState = require(script.Parent.Parent.Controllers.ClientState)
 local InputController = require(script.Parent.Parent.Controllers.InputController)
+local MarketController = require(script.Parent.Parent.Controllers.MarketController)
+local Products = require(Shared.Config.Products)
 
 local LaunchPanel = {}
 
@@ -44,9 +46,20 @@ local function refresh()
 		stats.clawTier
 	)
 	local owned = data.Consumables.CargoInsurance or 0
-	insureButton.Visible = owned > 0
-	insureButton.Text = if insure then string.format("🛡️ Insured (%d left)", owned) else string.format("🛡️ Use Cargo Insurance (%d)", owned)
-	insureButton.BackgroundColor3 = if insure then Theme.Good else Theme.PanelLight
+	-- no insurance left: deep divers (who have something to lose) see an optional way to get one
+	local offer = owned == 0
+		and data.Settings.Offers
+		and stats.maxDepth >= Products.offers.insuranceMinDepth
+		and MarketController.available("CargoInsurance")
+	insureButton.Visible = owned > 0 or offer
+	if owned > 0 then
+		insureButton.Text = if insure then string.format("🛡️ Insured (%d left)", owned) else string.format("🛡️ Use Cargo Insurance (%d)", owned)
+		insureButton.BackgroundColor3 = if insure then Theme.Good else Theme.PanelLight
+	else
+		insure = false
+		insureButton.Text = "🛡️ Get Cargo Insurance · " .. MarketController.priceText("CargoInsurance")
+		insureButton.BackgroundColor3 = Theme.PanelLight
+	end
 	local storage = ClientState.storageCount()
 	if storage >= Game.Economy.StorageCap then
 		warningLabel.Text = string.format("Storage full (%d/%d). Sell at the Fish Market first!", storage, Game.Economy.StorageCap)
@@ -137,6 +150,11 @@ function LaunchPanel.Init()
 		TextSize = 16,
 		Parent = window,
 	}, function()
+		local data = ClientState.data
+		if data and (data.Consumables.CargoInsurance or 0) == 0 then
+			MarketController.prompt("CargoInsurance")
+			return
+		end
 		insure = not insure
 		refresh()
 	end, Theme.PanelLight)
