@@ -181,6 +181,8 @@ function LootService.grantTreasure(player: Player, entity: { treasureId: string,
 		luck *= Events.galleon.luck
 	elseif entity.source == "Tremor" then
 		luck *= Events.tremor.luck
+	elseif entity.source == "Wake" then
+		luck *= Events.leviathan.wakeLuck
 	end
 	local conditionIndex = LootMath.rollCondition(roll, luck)
 	local zone = Zones.list[entity.zone] or Zones.list[1]

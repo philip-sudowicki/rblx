@@ -146,3 +146,17 @@ test("minigame marker sweeps as a triangle wave", function()
 		ok(passes >= 2, rarity.id .. " gives at least two passes")
 	end
 end)
+
+test("leviathan path stays inside the Abyssal Plains and matches its velocity", function()
+	local LeviathanPath = require(Shared.Modules.LeviathanPath)
+	local WorldGeometry = require(Shared.Modules.WorldGeometry)
+	local Zones = require(Shared.Config.Zones)
+	local zone = Zones.list[LeviathanPath.zone]
+	for t = 0, 600, 7 do
+		local p = LeviathanPath.position(t)
+		ok(WorldGeometry.isOpenWater(p, 30), "open water at t=" .. t)
+		ok(p.Y < zone.topY and p.Y > zone.bottomY + zone.floorThickness, "inside the zone band")
+		local numeric = (LeviathanPath.position(t + 0.01) - LeviathanPath.position(t - 0.01)) / 0.02
+		near((numeric - LeviathanPath.velocity(t)).Magnitude, 0, 0.05, "velocity is the derivative")
+	end
+end)
