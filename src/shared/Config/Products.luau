@@ -74,14 +74,6 @@ local passes: { GamePass } = {
 		desc = "+30% submarine speed.",
 		order = 5,
 	},
-	{
-		key = "ExtraTanks",
-		id = 0, -- paste Extra Aquarium Tanks game pass id
-		name = "Extra Aquarium Tanks",
-		icon = "🐠",
-		desc = "+4 aquarium tanks to show off (and earn passive coins from) more of your best catches.",
-		order = 6,
-	},
 }
 
 local products: { DevProduct } = {
@@ -194,7 +186,6 @@ return {
 	vipSellBonus = 0.20,
 	luckyDiverLuck = 0.25,
 	turboSpeed = 0.30,
-	extraTanks = 4,
 	vipSkin = "Gilded",
 
 	serverLuck = { multiplier = 2, seconds = 15 * 60, maxStackSeconds = 2 * 60 * 60 },

@@ -33,7 +33,6 @@ export type Bonuses = {
 	sonar: number,
 	cargo: number,
 	minigame: number,
-	tanks: number,
 	startLevels: number,
 }
 
@@ -49,7 +48,6 @@ local function emptyBonuses(): Bonuses
 		sonar = 0,
 		cargo = 0,
 		minigame = 0,
-		tanks = 0,
 		startLevels = 0,
 	}
 end
@@ -154,7 +152,7 @@ function Stats.compute(ctx: Context): Types.DerivedStats
 		* Stats.boostMultiplier(ctx.boosts, "Sell", ctx.now)
 		* ctx.eventSell
 
-	local cargo = Stats.upgradeValue("Cargo", lvl("Cargo")) + sets.cargo
+	local cargo = Stats.upgradeValue("Cargo", lvl("Cargo")) + sets.cargo + perks.cargo
 	if passes.DoubleCargo then
 		cargo *= 2
 	end
@@ -177,9 +175,6 @@ function Stats.compute(ctx: Context): Types.DerivedStats
 		clawSpeed = (clawUpgrade.speed :: { number })[clawLevel] * (1 + sets.clawSpeed + perks.clawSpeed),
 		luck = luck,
 		sellMult = sell,
-		displaySlots = Game.Aquarium.BaseTanks
-			+ (if passes.ExtraTanks then Products.extraTanks else 0)
-			+ math.floor(perks.tanks),
 		minigameWidth = 1 + perks.minigame,
 		oxygenEfficiency = 1,
 	}

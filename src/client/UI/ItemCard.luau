@@ -88,9 +88,6 @@ function ItemCard.new(item: Types.Item, price: number, onClick: (() -> ())?): Te
 	if item.f then
 		table.insert(badges, "⭐")
 	end
-	if item.d then
-		table.insert(badges, "🐠")
-	end
 	if item.g then
 		table.insert(badges, "📦")
 	end

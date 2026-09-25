@@ -3,7 +3,7 @@
 --
 -- Requirements: have reached minDeepestMeters at least once AND hold coinsBase × coinsGrowth^n
 -- coins, where n = rebirths already done. Resurfacing resets coins and upgrades (to level 1 +
--- any Reinforced perks) and keeps inventory, index, aquarium, skins, quests and stats.
+-- any Reinforced perks) and keeps inventory, index, skins, quests and stats.
 -- Rewards: permanent sell multiplier, tokens for the Resurface shop, The Rift (first rebirth),
 -- a rebirth badge on your nametag and in chat.
 
@@ -12,7 +12,7 @@ export type Perk = {
 	name: string,
 	icon: string,
 	desc: string,
-	stat: string, -- luck | sell | oxygen | clawSpeed | minigame | tanks | sonar | startLevels | skin
+	stat: string, -- luck | sell | oxygen | clawSpeed | minigame | cargo | sonar | startLevels | skin
 	perLevel: number,
 	costs: { number }, -- token cost per level (#costs = max level)
 	skin: string?,
@@ -74,11 +74,11 @@ local perks: { Perk } = {
 		costs = { 1, 2, 2, 3, 3 },
 	},
 	{
-		id = "BigTanks",
-		name = "Bigger Aquarium",
-		icon = "🐠",
-		desc = "+1 aquarium tank per level.",
-		stat = "tanks",
+		id = "DeepHold",
+		name = "Deep Hold",
+		icon = "📦",
+		desc = "+1 cargo slot per level.",
+		stat = "cargo",
 		perLevel = 1,
 		costs = { 2, 3, 4, 5 },
 	},

@@ -1,5 +1,5 @@
 --!strict
--- Procedural fish animation shared by the wild-fish renderer and the aquarium tanks: tails and
+-- Procedural fish animation used by the wild-fish renderer: tails and
 -- fins wag around their pivots, eel/tentacle segments carry a travelling wave, and rainbow /
 -- pulse tints cycle colour. Output is appended to part/CFrame arrays for one BulkMoveTo.
 

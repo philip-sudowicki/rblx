@@ -255,6 +255,10 @@ local function beachIsland(rng: Random)
 	end
 	-- keep the Blue Hole's rim clean where the island meets the atoll
 	fillCylinder(CFrame.new(0, -17, 0), 58, Zones.list[1].radius - 2, AIR)
+	-- shave anything above the land level (rotated atoll blocks and rounded voxels poke up
+	-- through the dock deck otherwise)
+	fillCylinder(CFrame.new(0, top + 16, 0), 32, world.atollOuterRadius + 12, AIR)
+	fillBlock(CFrame.new(dock.X, top + 16, dock.Z), Vector3.new(2 * R + 120, 32, 2 * R + 120), AIR)
 end
 
 -- A sandy seabed under the open sea around the atoll, so the water is turquoise instead of a

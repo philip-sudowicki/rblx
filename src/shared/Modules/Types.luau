@@ -20,7 +20,6 @@ export type Item = {
 	p: boolean?, -- PERFECT catch
 	f: boolean?, -- favourite / locked (never sold by Sell All or auto-sell)
 	g: boolean?, -- currently in the sub's cargo hold (unsecured)
-	d: number?, -- aquarium tank index it is displayed in
 }
 
 export type FishDiscovery = {
@@ -103,7 +102,6 @@ export type PlayerData = {
 	Daily: { LastDay: number, Streak: number, Claimed: number },
 	Quests: { DailyKey: number, Daily: { QuestState }, WeeklyKey: number, Weekly: { QuestState } },
 	Codes: { [string]: boolean },
-	Aquarium: { Slots: { [string]: number }, Pending: number, LastTick: number },
 	Consumables: { [string]: number },
 	Boosts: { [string]: number },
 	Settings: Settings,
@@ -126,7 +124,6 @@ export type DerivedStats = {
 	clawSpeed: number,
 	luck: number, -- multiplier (1 = base)
 	sellMult: number, -- multiplier on sell price
-	displaySlots: number, -- aquarium tanks
 	minigameWidth: number, -- multiplier on green-zone width
 	oxygenEfficiency: number, -- multiplier on oxygen drain (lower is better)
 }

@@ -25,7 +25,6 @@ local ORDER = {
 	"PredatorService",
 	"UpgradeService",
 	"RebirthService",
-	"AquariumService",
 	"IndexService",
 	"NametagService",
 	"CosmeticService",

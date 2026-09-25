@@ -77,7 +77,6 @@ local function simulate(seed)
 	local diveTime = 0
 	local foundLegendary = false
 	local milestones = {}
-	local displayed = {}
 	local spentOnUpgrades = 0
 	local function mark(key)
 		if milestones[key] == nil then
@@ -204,25 +203,13 @@ local function simulate(seed)
 			diveElapsed += cost
 			items += 1
 			haul += value
-			table.insert(displayed, value)
 		end
 		if items == 0 then
 			-- can't do anything in this zone: shouldn't happen, but avoid infinite loops
 			t += 60
 		end
-		-- keep the best 6 values for the aquarium
-		table.sort(displayed, function(a, b)
-			return a > b
-		end)
-		for i = #displayed, 7, -1 do
-			displayed[i] = nil
-		end
 		local duration = diveElapsed + 3 + DOCK_OVERHEAD
-		local passive = 0
-		for _, v in displayed do
-			passive += v * Game.Aquarium.IncomePerMinute * duration / 60
-		end
-		local earned = haul * stats.sellMult + passive
+		local earned = haul * stats.sellMult
 		coins += earned
 		lifetime += earned
 		t += duration

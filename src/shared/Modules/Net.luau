@@ -23,9 +23,6 @@ Net.Events = {
 	"Sell",
 	"SellAll",
 	"Favorite",
-	"Display",
-	"Undisplay",
-	"CollectAquarium",
 	"BuyUpgrade",
 	"Rebirth",
 	"BuyPerk",
@@ -53,7 +50,6 @@ Net.Events = {
 	"Reveal",
 	"Announce",
 	"EventState",
-	"WelcomeBack",
 	"Effect",
 }
 

@@ -1,6 +1,6 @@
 --!strict
 -- The dock hub on the atoll island: pier + launch bay, market, workshop, shop, quest board,
--- daily chest, leaderboards, Resurface shrine, 12 aquarium plots, lighthouse, palms, lamps and
+-- daily chest, leaderboards, lighthouse, palms, lamps and
 -- the invisible character barriers. Interactive spots are ProximityPrompts carrying a
 -- "DeepHaulAction" attribute; the client opens UI and the server validates the action.
 
@@ -13,21 +13,10 @@ local Build = require(script.Parent.Build)
 local Beach = require(script.Parent.Beach)
 local SubModel = require(Shared.Models.SubModel)
 
-export type Plot = {
-	index: number,
-	model: Model,
-	origin: CFrame,
-	tanks: { Model },
-	sign: TextLabel,
-	pending: TextLabel,
-	prompt: ProximityPrompt,
-}
-
 export type DockResult = {
 	folder: Folder,
 	prompts: { [string]: ProximityPrompt },
 	boards: { [string]: Part },
-	plots: { Plot },
 	spawnPoints: { Vector3 },
 	barrierParts: { BasePart },
 }
@@ -95,10 +84,15 @@ local function launchBay(folder: Folder, prompts: { [string]: ProximityPrompt })
 	local model = Build.model(folder, "LaunchBay")
 	local pierY = world.pierEnd.Y - 0.5
 	-- walkway from the plaza to the pier
-	Build.part(model, Vector3.new(16, 1, 60), CFrame.new(0, pierY, -498), WOOD, Enum.Material.WoodPlanks)
+	-- (walkway, pier and platform butt together end to end: no overlapping, flickering planks)
+	local plazaEdge = world.plazaCenter.Z + 54
+	local walkLength = world.pierStart.Z + 2 - plazaEdge
+	Build.part(model, Vector3.new(16, 1, walkLength), CFrame.new(0, pierY, plazaEdge + walkLength / 2), WOOD, Enum.Material.WoodPlanks)
 	-- pier
-	local pierLength = math.abs(world.pierStart.Z - world.pierEnd.Z) + 14
-	local pierMidZ = (world.pierStart.Z + world.pierEnd.Z) / 2 - 5
+	local pierFrom = world.pierStart.Z + 2
+	local pierTo = world.pierEnd.Z - 9 -- where the launch platform begins
+	local pierLength = pierTo - pierFrom
+	local pierMidZ = (pierFrom + pierTo) / 2
 	Build.part(model, Vector3.new(22, 1, pierLength), CFrame.new(0, pierY, pierMidZ), WOOD, Enum.Material.WoodPlanks)
 	for z = world.pierStart.Z + 2, world.pierEnd.Z - 2, 10 do
 		for side = -1, 1, 2 do
@@ -239,7 +233,11 @@ local function workshop(folder: Folder, prompts: { [string]: ProximityPrompt }, 
 		window.Transparency = 0.4
 		window.Shape = Enum.PartType.Cylinder
 	end
-	Build.soft(add(Vector3.new(W + 0.2, 0.4, D + 0.2), CFrame.new(0, 3.2, 0), CYAN, Enum.Material.Neon))
+	-- neon trim around the outside of the walls (strips, not a slab through the room)
+	Build.soft(add(Vector3.new(W + 0.4, 0.35, 0.2), CFrame.new(0, 3.2, D / 2 + 0.1), CYAN, Enum.Material.Neon))
+	for side = -1, 1, 2 do
+		Build.soft(add(Vector3.new(0.2, 0.35, D + 0.4), CFrame.new(side * (W / 2 + 0.1), 3.2, 0), CYAN, Enum.Material.Neon))
+	end
 	-- roof: two slopes and a ridge, with neon trim along the front
 	Build.wedge(model, Vector3.new(D + 1, 4, W / 2 + 0.5), origin * CFrame.new(-W / 4, H + 3.2, 0) * CFrame.Angles(0, math.pi / 2, 0), rgb(24, 44, 70), Enum.Material.Metal)
 	Build.wedge(model, Vector3.new(D + 1, 4, W / 2 + 0.5), origin * CFrame.new(W / 4, H + 3.2, 0) * CFrame.Angles(0, -math.pi / 2, 0), rgb(24, 44, 70), Enum.Material.Metal)
@@ -391,34 +389,6 @@ local function leaderboards(folder: Folder, boards: { [string]: Part })
 	end
 end
 
-local function shrine(folder: Folder, prompts: { [string]: ProximityPrompt }, center: Vector3)
-	local model = Build.model(folder, "ResurfaceShrine")
-	local marble = rgb(225, 225, 235)
-	Build.cylinder(model, 1.6, 32, CFrame.new(center + Vector3.new(0, 0.8, 0)) * CFrame.Angles(0, 0, math.pi / 2), marble, Enum.Material.Marble)
-	Build.cylinder(model, 1.2, 22, CFrame.new(center + Vector3.new(0, 2.2, 0)) * CFrame.Angles(0, 0, math.pi / 2), rgb(200, 205, 220), Enum.Material.Marble)
-	for i = 1, 6 do
-		local angle = i / 6 * math.pi * 2
-		Build.pillar(model, 16, 2.4, center + Vector3.new(math.cos(angle) * 13, 1.6, math.sin(angle) * 13), marble, Enum.Material.Marble)
-		Build.soft(Build.ball(model, 1.4, center + Vector3.new(math.cos(angle) * 13, 18.2, math.sin(angle) * 13), CYAN, Enum.Material.Neon))
-	end
-	local ringFolder = Build.model(model, "OrbRing")
-	for i = 1, 14 do
-		local angle = i / 14 * math.pi * 2
-		Build.soft(Build.part(ringFolder, Vector3.new(0.8, 0.8, 2.6), CFrame.new(center + Vector3.new(math.cos(angle) * 6, 12, math.sin(angle) * 6)) * CFrame.Angles(0, -angle, 0), rgb(120, 230, 255), Enum.Material.Neon))
-	end
-	Build.tag(ringFolder, "Spin")
-	local orb = Build.soft(Build.ball(model, 5, center + Vector3.new(0, 12, 0), rgb(120, 240, 255), Enum.Material.Neon))
-	local light = Instance.new("PointLight")
-	light.Color = rgb(120, 230, 255)
-	light.Range = 30
-	light.Brightness = 2
-	light.Parent = orb
-	local signPos = center + Vector3.new(0, 4.5, 15.5)
-	Build.sign(model, Vector3.new(14, 2.6, 0.6), CFrame.lookAt(signPos, signPos + Vector3.new(0, 0, 10)), "RESURFACE", NAVY, rgb(150, 240, 255), Enum.Material.SmoothPlastic)
-	local anchorPart = anchor(model, "RebirthPrompt", center + Vector3.new(0, 4, 0))
-	prompts.Rebirth = prompt(anchorPart, "Rebirth", "Resurface", "Ancient Shrine", 18)
-end
-
 local function lighthouse(folder: Folder, base: Vector3)
 	local model = Build.model(folder, "Lighthouse", true)
 	Build.pillar(model, 6, 16, base, rgb(120, 120, 126), Enum.Material.Cobblestone)
@@ -440,115 +410,6 @@ local function lighthouse(folder: Folder, base: Vector3)
 	beam.Parent = lamp
 	Build.ball(model, 7, Vector3.new(base.X, y + 6.2, base.Z), rgb(220, 60, 60), Enum.Material.SmoothPlastic)
 	Build.tag(lamp, "LighthouseLamp")
-end
-
-local function tank(parent: Instance, plotIndex: number, tankIndex: number, cf: CFrame, color: Color3): Model
-	local model = Build.model(parent, "Tank_" .. tankIndex)
-	-- painted cabinet, a sandy bottom, blue-tinted water behind the glass and a white lid
-	Build.part(model, Vector3.new(4.8, 2, 3.8), cf * CFrame.new(0, 1, 0), color:Lerp(rgb(40, 50, 64), 0.35), Enum.Material.SmoothPlastic)
-	Build.soft(Build.part(model, Vector3.new(5, 0.3, 4), cf * CFrame.new(0, 2.05, 0), rgb(245, 245, 240), Enum.Material.SmoothPlastic))
-	Build.soft(Build.part(model, Vector3.new(4.4, 0.3, 3.4), cf * CFrame.new(0, 2.35, 0), rgb(226, 206, 160), Enum.Material.Sand))
-	Build.soft(Build.part(model, Vector3.new(4.3, 3.9, 3.3), cf * CFrame.new(0, 4.35, 0), rgb(80, 170, 210), Enum.Material.SmoothPlastic, { Transparency = 0.82 }))
-	local glass = Build.part(model, Vector3.new(4.8, 4.4, 3.8), cf * CFrame.new(0, 4.2, 0), rgb(200, 240, 255), Enum.Material.Glass, { Transparency = 0.7 })
-	glass.Name = "Glass"
-	Build.soft(Build.part(model, Vector3.new(5, 0.3, 4), cf * CFrame.new(0, 6.5, 0), rgb(245, 245, 240), Enum.Material.SmoothPlastic))
-	local lamp = Build.soft(Build.part(model, Vector3.new(3.6, 0.15, 0.4), cf * CFrame.new(0, 6.3, 0), rgb(180, 230, 255), Enum.Material.Neon, { Transparency = 0.3 }))
-	local light = Instance.new("SurfaceLight")
-	light.Face = Enum.NormalId.Bottom
-	light.Range = 5
-	light.Brightness = 0.6
-	light.Color = rgb(170, 220, 255)
-	light.Parent = lamp
-	model.PrimaryPart = glass
-	model:SetAttribute("PlotIndex", plotIndex)
-	model:SetAttribute("TankIndex", tankIndex)
-	Build.tag(model, "AquariumTank")
-	return model
-end
-
-local PLOT_COLORS = {
-	rgb(120, 200, 255),
-	rgb(255, 170, 120),
-	rgb(150, 230, 150),
-	rgb(230, 150, 255),
-	rgb(255, 220, 110),
-	rgb(120, 240, 220),
-}
-
-local function plot(folder: Folder, index: number, origin: CFrame): Plot
-	local model = Build.model(folder, "Plot_" .. index)
-	local color = PLOT_COLORS[(index - 1) % #PLOT_COLORS + 1]
-	-- a light wooden deck on a low stone base, with a painted border in the plot's colour
-	Build.part(model, Vector3.new(30.6, 2, 30.6), origin * CFrame.new(0, -0.2, 0), rgb(150, 144, 132), Enum.Material.Cobblestone)
-	Build.part(model, Vector3.new(30, 1, 30), origin * CFrame.new(0, 0.5, 0), rgb(196, 158, 112), Enum.Material.WoodPlanks)
-	for side = -1, 1, 2 do
-		Build.soft(Build.part(model, Vector3.new(30.2, 0.25, 1), origin * CFrame.new(0, 1.1, side * 14.6), color, Enum.Material.SmoothPlastic))
-		Build.soft(Build.part(model, Vector3.new(1, 0.25, 30.2), origin * CFrame.new(side * 14.6, 1.1, 0), color, Enum.Material.SmoothPlastic))
-	end
-	-- low white rails (back and sides) with coloured caps
-	Build.part(model, Vector3.new(30, 2.4, 0.5), origin * CFrame.new(0, 2.2, 14.8), rgb(245, 243, 236), Enum.Material.WoodPlanks)
-	Build.soft(Build.part(model, Vector3.new(30.4, 0.3, 0.8), origin * CFrame.new(0, 3.5, 14.8), color, Enum.Material.SmoothPlastic))
-	for side = -1, 1, 2 do
-		Build.part(model, Vector3.new(0.5, 2.4, 30), origin * CFrame.new(side * 14.8, 2.2, 0), rgb(245, 243, 236), Enum.Material.WoodPlanks)
-		Build.soft(Build.part(model, Vector3.new(0.8, 0.3, 30.4), origin * CFrame.new(side * 14.8, 3.5, 0), color, Enum.Material.SmoothPlastic))
-	end
-	local tanks = {}
-	local tankIndex = 0
-	for i = 0, 5 do
-		tankIndex += 1
-		table.insert(tanks, tank(model, index, tankIndex, origin * CFrame.new(-12.5 + i * 5, 1, 11.5), color))
-	end
-	for side = -1, 1, 2 do
-		for i = 0, 3 do
-			tankIndex += 1
-			table.insert(tanks, tank(model, index, tankIndex, origin * CFrame.new(side * 12, 1, -9 + i * 5) * CFrame.Angles(0, math.pi / 2, 0), color))
-		end
-	end
-	-- entrance sign
-	local signCf = origin * CFrame.new(0, 7.5, -15)
-	for side = -1, 1, 2 do
-		Build.part(model, Vector3.new(0.6, 8, 0.6), origin * CFrame.new(side * 6, 4, -15), rgb(245, 243, 236), Enum.Material.Wood)
-	end
-	local board = Build.part(model, Vector3.new(12, 2.6, 0.5), CFrame.lookAt(signCf.Position, signCf.Position + origin.LookVector), NAVY, Enum.Material.SmoothPlastic)
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Enum.NormalId.Front
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 40
-	gui.LightInfluence = 0
-	gui.Parent = board
-	local label = Instance.new("TextLabel")
-	label.BackgroundTransparency = 1
-	label.Size = UDim2.fromScale(1, 1)
-	label.Text = "Empty Aquarium"
-	label.TextColor3 = rgb(255, 255, 255)
-	label.TextScaled = true
-	label.Font = Enum.Font.FredokaOne
-	label.Parent = gui
-	-- collector pedestal with a pending-coins billboard
-	local pedestal = Build.part(model, Vector3.new(2.4, 3, 2.4), origin * CFrame.new(8, 2.5, -11), rgb(255, 205, 70), Enum.Material.Metal)
-	local coinTop = Build.soft(Build.cylinder(model, 0.6, 2, pedestal.CFrame * CFrame.new(0, 1.8, 0) * CFrame.Angles(0, 0, math.pi / 2), rgb(255, 220, 90), Enum.Material.Neon))
-	Build.tag(coinTop, "Spin")
-	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.fromOffset(160, 40)
-	billboard.StudsOffset = Vector3.new(0, 3.5, 0)
-	billboard.MaxDistance = 60
-	billboard.LightInfluence = 0
-	billboard.Parent = pedestal
-	local pending = Instance.new("TextLabel")
-	pending.BackgroundTransparency = 1
-	pending.Size = UDim2.fromScale(1, 1)
-	pending.Text = ""
-	pending.TextColor3 = rgb(255, 220, 90)
-	pending.TextScaled = true
-	pending.Font = Enum.Font.FredokaOne
-	pending.Parent = billboard
-	local stroke = Instance.new("UIStroke")
-	stroke.Thickness = 2
-	stroke.Parent = pending
-	local collect = prompt(pedestal, "Aquarium", "Collect Coins", "Aquarium")
-	collect:SetAttribute("PlotIndex", index)
-	model:SetAttribute("PlotIndex", index)
-	return { index = index, model = model, origin = origin, tanks = tanks, sign = label, pending = pending, prompt = collect }
 end
 
 local function barriers(folder: Folder): { BasePart }
@@ -611,28 +472,7 @@ function Dock.build(parent: Instance): DockResult
 	kiosk(folder, prompts, facing(Vector3.new(78, plaza.Y + 1, plaza.Z - 24), plaza))
 	questBoard(folder, prompts, facing(Vector3.new(-76, plaza.Y + 1, plaza.Z - 24), plaza))
 	leaderboards(folder, boards)
-	shrine(folder, prompts, Vector3.new(0, plaza.Y + 0.1, plaza.Z - 135))
 	lighthouse(folder, Vector3.new(175, plaza.Y - 1.5, -800))
-
-	-- aquarium plots: two columns of six along the west side, entrances facing a central aisle
-	local plotsFolder = Build.folder(folder, "Aquarium")
-	local plots: { Plot } = {}
-	local aisleX = -128
-	for i = 1, Game.Aquarium.Plots do
-		local column = (i - 1) % 2
-		local row = (i - 1) // 2
-		local x = if column == 0 then aisleX - 22 else aisleX + 22
-		local z = plaza.Z - 12 - row * 33
-		local position = Vector3.new(x, plaza.Y, z)
-		local origin = facing(position, Vector3.new(aisleX, plaza.Y, z))
-		table.insert(plots, plot(plotsFolder, i, origin))
-	end
-	Build.part(folder, Vector3.new(14, 1, 33 * 6), CFrame.new(aisleX, plaza.Y + 0.5, plaza.Z - 12 - 33 * 2.5), rgb(196, 156, 108), Enum.Material.WoodPlanks)
-	local hallSignPos = Vector3.new(aisleX, plaza.Y + 12, plaza.Z + 8)
-	Build.sign(folder, Vector3.new(20, 4, 0.6), CFrame.lookAt(hallSignPos, hallSignPos + Vector3.new(0, 0, 10)), "AQUARIUMS", NAVY, rgb(120, 230, 255), Enum.Material.SmoothPlastic)
-	for side = -1, 1, 2 do
-		Build.part(folder, Vector3.new(1, 14, 1), CFrame.new(aisleX + side * 10.5, plaza.Y + 7, plaza.Z + 8), rgb(60, 70, 84), Enum.Material.Metal)
-	end
 
 	-- decoration
 	for i = 1, 8 do
@@ -648,7 +488,6 @@ function Dock.build(parent: Instance): DockResult
 		folder = folder,
 		prompts = prompts,
 		boards = boards,
-		plots = plots,
 		spawnPoints = spawnPoints,
 		barrierParts = barriers(folder),
 	}

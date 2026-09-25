@@ -1,7 +1,6 @@
 --!strict
 -- Routes the dock's ProximityPrompts (attribute "DeepHaulAction") to the right UI. The server
--- validates every action again; prompts only open menus. Also hides other players' aquarium
--- collectors and every dock prompt while diving.
+-- validates every action again; prompts only open menus. Dock prompts are hidden while diving.
 
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")

@@ -118,16 +118,6 @@ return {
 		DespawnDistance = 460,
 	},
 
-	Aquarium = {
-		BaseTanks = 6,
-		IncomePerMinute = 0.002, -- fraction of a displayed item's value earned per minute
-		OfflineCapHours = 8,
-		OfflineRate = 1.0, -- offline earnings rate relative to online
-		PendingCapHours = 8, -- uncollected income stops growing after this much
-		TickSeconds = 30,
-		Plots = 12, -- aquarium plots at the dock (set the place's Max Players to at most this)
-	},
-
 	-- Personal boosts granted by daily rewards, quests and codes (never sold).
 	Boosts = {
 		Luck = { name = "Luck Boost", icon = "🍀", multiplier = 2, seconds = 10 * 60, stat = "luck" },

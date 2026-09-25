@@ -291,9 +291,6 @@ function MenuController.Start()
 	PromptRouter.on("Daily", function()
 		MenuController.open("Quests", "Login")
 	end)
-	PromptRouter.on("Rebirth", function()
-		MenuController.open("Upgrades", "Resurface")
-	end)
 end
 
 return MenuController

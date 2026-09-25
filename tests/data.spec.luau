@@ -44,17 +44,13 @@ test("unknown items are refunded, cargo is secured, uids repaired", function()
 	eq(data.NextUid, 6)
 end)
 
-test("aquarium slots must reference owned items", function()
+test("old aquarium data is dropped", function()
 	local data = fresh()
-	data.Inventory["3"] = { u = 3, k = "F", i = "Clownfin", r = 3, v = 80, z = 1, t = 0, d = 2 }
-	data.Inventory["4"] = { u = 4, k = "F", i = "Clownfin", r = 3, v = 80, z = 1, t = 0, d = 7 }
-	data.Aquarium.Slots["1"] = 3
-	data.Aquarium.Slots["2"] = 99
+	data.Inventory["3"] = { u = 3, k = "F", i = "Clownfin", r = 3, v = 80, z = 1, t = 0, d = 2 } :: any
+	;(data :: any).Aquarium = { Slots = { ["1"] = 3 }, Pending = 5, LastTick = 0 }
 	DataSchema.sanitize(data)
-	eq(data.Aquarium.Slots["1"], 3)
-	eq(data.Aquarium.Slots["2"], nil)
-	eq(data.Inventory["3"].d, 1, "flag follows the slot")
-	eq(data.Inventory["4"].d, nil, "orphan display flag cleared")
+	eq((data :: any).Aquarium, nil)
+	eq((data.Inventory["3"] :: any).d, nil, "display flag cleared")
 end)
 
 test("skins, boosts and purchase cache", function()

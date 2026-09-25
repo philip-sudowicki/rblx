@@ -1,7 +1,7 @@
 --!strict
 -- Beach dressing for the home island: leaning palms, striped umbrellas with towels and loungers,
 -- tiki torches, surfboards, sandcastles, starfish and shells, a lifeguard tower facing the sea,
--- a boardwalk to the Resurface shrine and a welcome arch over the pier walkway.
+-- and a welcome arch over the pier walkway.
 -- Props are scattered deterministically and never placed on top of the dock buildings.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -30,18 +30,16 @@ type Circle = { x: number, z: number, r: number }
 local world = Zones.world
 local dock = world.dockCenter
 
--- Areas kept clear (buildings, walkways, plots).
+-- Areas kept clear (buildings, walkways, open sand).
 local RECTS: { Rect } = {
 	{ x0 = -96, x1 = 96, z0 = -636, z1 = -508 }, -- plaza deck and leaderboards
 	{ x0 = -84, x1 = 84, z0 = -542, z1 = -500 }, -- market and workshop
 	{ x0 = 62, x1 = 96, z0 = -604, z1 = -572 }, -- shop kiosk
 	{ x0 = -96, x1 = -58, z0 = -604, z1 = -572 }, -- quest board
-	{ x0 = -172, x1 = -84, z0 = -766, z1 = -552 }, -- aquarium plots
 	{ x0 = -20, x1 = 20, z0 = -534, z1 = -455 }, -- pier walkway and gateway
-	{ x0 = -8, x1 = 8, z0 = -690, z1 = -630 }, -- boardwalk to the shrine
+	{ x0 = -130, x1 = 130, z0 = -790, z1 = -626 }, -- open sand behind the leaderboards
 }
 local CIRCLES: { Circle } = {
-	{ x = 0, z = -700, r = 26 }, -- shrine
 	{ x = 175, z = -800, r = 16 }, -- lighthouse
 	{ x = 0, z = -876, r = 14 }, -- lifeguard tower
 }
@@ -276,20 +274,6 @@ local function lifeguardTower(parent: Instance, base: Vector3)
 	ring.Name = "LifeRing"
 end
 
-local function boardwalk(parent: Instance)
-	local model = Build.model(parent, "Boardwalk")
-	local z = -630
-	while z > -688 do
-		Build.part(model, Vector3.new(8, 0.6, 3.6), CFrame.new(0, world.atollTopY + 0.3, z), if math.floor(z) % 2 == 0 then WOOD else rgb(160, 118, 78), Enum.Material.WoodPlanks)
-		z -= 4
-	end
-	for zz = -634, -684, -12 do
-		for side = -1, 1, 2 do
-			Build.part(model, Vector3.new(0.6, 2.6, 0.6), CFrame.new(side * 4.4, world.atollTopY + 1.3, zz), WOOD_DARK, Enum.Material.Wood)
-		end
-	end
-end
-
 -- A big gateway over the start of the pier, so the way to the dive area is obvious.
 local function welcomeArch(parent: Instance)
 	local model = Build.model(parent, "WelcomeArch")
@@ -369,7 +353,6 @@ function Beach.build(parent: Instance)
 	local folder = Build.folder(parent, "Beach")
 	local rng = Random.new(1606)
 	table.clear(taken)
-	boardwalk(folder)
 	welcomeArch(folder)
 	lifeguardTower(folder, Vector3.new(0, groundY(0, -876), -876))
 	-- palms: a ring near the shore and a few inland
@@ -433,10 +416,7 @@ function Beach.build(parent: Instance)
 			starfish(folder, p, rng)
 		end
 	end
-	-- torches line the plaza edge and the boardwalk
-	for i = 0, 5 do
-		tikiTorch(folder, Vector3.new(if i % 2 == 0 then -6.5 else 6.5, world.atollTopY + 0.4, -636 - math.floor(i / 2) * 16))
-	end
+	-- torches mark the plaza corners
 	for _, x in { -97, 97 } do
 		for _, z in { -505, -623 } do
 			tikiTorch(folder, Vector3.new(x, world.atollTopY + 0.4, z))

@@ -18,7 +18,7 @@ local TIPS = {
 	"Surface before your oxygen runs out, or you'll lose half your cargo!",
 	"PERFECT catches are worth more. Stop the marker dead centre.",
 	"Ping your sonar to reveal loot nearby and stun predators.",
-	"Display your best catches in your aquarium to earn coins, even offline.",
+	"Catch or salvage again within 15 seconds to build a streak worth up to +50%.",
 	"Events start every 45 minutes. Watch the timer at the top of the screen.",
 	"Complete collection sets for permanent bonuses.",
 	"Fish that glow can be seen from far away in the dark.",

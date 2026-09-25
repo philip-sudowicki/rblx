@@ -121,7 +121,7 @@ function InventoryService.sellPrice(player: Player, item: Types.Item): number
 end
 
 local function sellable(item: Types.Item?): boolean
-	return item ~= nil and not item.f and item.d == nil and not item.g
+	return item ~= nil and not item.f and not item.g
 end
 
 -- Sells the given uids (skipping favourites, displayed and cargo items). Returns count, coins.
@@ -207,9 +207,6 @@ function InventoryService.finishDive(player: Player, reason: string, insured: bo
 			local item = cargo[i]
 			summary.lostValue += item.v
 			table.insert(lostUids, item.u)
-			if item.d then
-				data.Aquarium.Slots[tostring(item.d)] = nil
-			end
 		end
 		summary.lost = loseCount
 		InventoryService.removeMany(player, lostUids)
@@ -231,7 +228,7 @@ function InventoryService.finishDive(player: Player, reason: string, insured: bo
 		local keep = data.Settings.SellKeep
 		local uids = {}
 		for _, item in secured do
-			if not item.f and item.d == nil and item.r < keep then
+			if not item.f and item.r < keep then
 				table.insert(uids, item.u)
 			end
 		end

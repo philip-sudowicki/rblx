@@ -4,7 +4,7 @@
 -- A normal catch rolls t = random()^curveExponent (luck pushes it a little toward heavy),
 -- weight = lerp(minWeight, maxWeight, t) and value multiplier = lerp(valueAtMin, valueAtMax, t).
 -- A Colossal roll replaces that with a weight above the species maximum, a big value multiplier
--- and a 3x model scale in reveals and the aquarium.
+-- and a 3x model scale in reveals.
 
 return {
 	curveExponent = 1.8,

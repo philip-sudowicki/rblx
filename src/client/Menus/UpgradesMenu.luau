@@ -178,7 +178,7 @@ local function refreshResurface()
 	)
 	local nextCount = data.Rebirths + 1
 	resurface.rewards.Text = string.format(
-		"Resets coins and upgrades. Keeps items, Index, aquarium, skins and quests.\nRewards: sell value x%s » <b>x%s</b> · <b>+%d</b> rebirth tokens%s · a rebirth badge on your nametag",
+		"Resets coins and upgrades. Keeps items, Index, skins and quests.\nRewards: sell value x%s » <b>x%s</b> · <b>+%d</b> rebirth tokens%s · a rebirth badge on your nametag",
 		tostring(1 + data.Rebirths * Rebirth.sellMultiplierPerRebirth),
 		tostring(1 + nextCount * Rebirth.sellMultiplierPerRebirth),
 		Stats.rebirthTokens(nextCount),

@@ -139,7 +139,7 @@ local function enter(player: Player, index: number)
 		-- lost everything in a blackout? Skip straight to the upgrade with the bonus.
 		local sellable = false
 		for _, item in data.Inventory do
-			if not item.g and not item.f and item.d == nil then
+			if not item.g and not item.f then
 				sellable = true
 				break
 			end

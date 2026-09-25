@@ -443,7 +443,7 @@ function FishModel.build(look: Look, options: Options?): Built
 end
 
 -- Positions every part at `cf` (models are built around the origin). Works outside workspace
--- (ViewportFrames, aquarium tanks) because it sets CFrames directly.
+-- (ViewportFrames) because it sets CFrames directly.
 function FishModel.place(built: Built, cf: CFrame)
 	for i, part in built.parts do
 		part.CFrame = cf * built.offsets[i]

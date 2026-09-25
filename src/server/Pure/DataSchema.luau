@@ -76,7 +76,6 @@ local TEMPLATE: Types.PlayerData = {
 	Daily = { LastDay = 0, Streak = 0, Claimed = 0 },
 	Quests = { DailyKey = 0, Daily = {}, WeeklyKey = 0, Weekly = {} },
 	Codes = {},
-	Aquarium = { Slots = {}, Pending = 0, LastTick = 0 },
 	Consumables = { OxygenRefill = 0, HullRepair = 0, CargoInsurance = 0 },
 	Boosts = {},
 	Settings = {
@@ -169,23 +168,12 @@ function DataSchema.sanitize(data: Types.PlayerData): number
 	end
 	data.NextUid = math.max(math.floor(finite(data.NextUid, 1)), maxUid + 1)
 	data.Coins += refunded
-	-- Aquarium slots must point at owned items, and flags must agree with slots
-	local slotted: { [number]: string } = {}
-	for slot, uid in data.Aquarium.Slots do
-		local item = data.Inventory[tostring(uid)]
-		if not item or slotted[uid] then
-			data.Aquarium.Slots[slot] = nil
-		else
-			slotted[uid] = slot
-			item.d = tonumber(slot)
-		end
-	end
+	-- The aquarium was removed: drop its save data and old display flags
+	local raw: any = data
+	raw.Aquarium = nil
 	for _, item in data.Inventory do
-		if item.d and not slotted[item.u] then
-			item.d = nil
-		end
+		(item :: any).d = nil
 	end
-	data.Aquarium.Pending = math.max(0, finite(data.Aquarium.Pending, 0))
 	-- Skins
 	for id in data.Skins.Owned do
 		if not Skins.byId[id] then

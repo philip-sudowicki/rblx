@@ -1,5 +1,5 @@
 --!strict
--- Modal popups, queued so they never stack: "Welcome back" offline aquarium earnings and any
+-- Modal popups, queued so they never stack: one-off announcements and any
 -- other one-off announcements (daily reward ready, new skin, etc.). Popups wait until the
 -- player has loaded in and isn't mid-dive.
 
@@ -9,15 +9,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Theme = require(Shared.Config.Theme)
-local Game = require(Shared.Config.Game)
-local Format = require(Shared.Modules.Format)
-local Net = require(Shared.Modules.Net)
 local UIKit = require(script.Parent.Parent.UI.UIKit)
 local ClientState = require(script.Parent.ClientState)
 local InputController = require(script.Parent.InputController)
 local SubController = require(script.Parent.SubController)
 local AudioController = require(script.Parent.AudioController)
-local EffectsController = require(script.Parent.EffectsController)
 
 export type Popup = {
 	icon: string,
@@ -128,48 +124,11 @@ function PopupController.poke()
 	showNext()
 end
 
-local function welcomeBack(payload: any)
-	if typeof(payload) ~= "table" then
-		return
-	end
-	local coins = if typeof(payload.coins) == "number" then payload.coins else 0
-	local seconds = if typeof(payload.seconds) == "number" then payload.seconds else 0
-	-- short server hops aren't worth a popup
-	if coins <= 0 and seconds < 1800 then
-		return
-	end
-	local name = ClientState.player.DisplayName
-	if coins > 0 then
-		local body = string.format("Your aquarium earned coins while you were away for %s.", Format.duration(seconds))
-		if payload.capped then
-			body ..= string.format("\nOffline earnings stop after %d hours - come back sooner, or display rarer fish to earn more.", Game.Aquarium.OfflineCapHours)
-		end
-		PopupController.show({
-			icon = "🐠",
-			title = "Welcome back, " .. name .. "!",
-			highlight = "+" .. Format.commas(coins) .. " 💰",
-			body = body,
-			button = "Nice!",
-			onClose = function()
-				EffectsController.coinBurst(coins)
-			end,
-		})
-	else
-		PopupController.show({
-			icon = "🐠",
-			title = "Welcome back, " .. name .. "!",
-			body = string.format("Tip: fish and treasure on display in your aquarium earn coins, even while you're offline (up to %d hours).", Game.Aquarium.OfflineCapHours),
-			button = "Let's dive",
-		})
-	end
-end
-
 function PopupController.Init()
 	gui = UIKit.screen("DeepHaulPopups", 40)
 end
 
 function PopupController.Start()
-	Net.event("WelcomeBack").OnClientEvent:Connect(welcomeBack)
 	ClientState.Ready:Connect(function()
 		task.delay(1, showNext)
 	end)

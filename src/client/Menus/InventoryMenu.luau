@@ -1,7 +1,7 @@
 --!strict
--- Inventory: Fish / Treasure / Aquarium tabs. Sort (rarity, value, zone, category, newest),
--- filter chips, paged grid, a detail pane with a 3D preview, favourite / display / sell, and
--- Sell All that keeps favourites, displayed items and everything at or above your keep rarity.
+-- Inventory: Fish / Treasure tabs. Sort (rarity, value, zone, category, newest),
+-- filter chips, paged grid, a detail pane with a 3D preview, favourite / sell, and
+-- Sell All that keeps favourites and everything at or above your keep rarity.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -30,7 +30,7 @@ local InventoryMenu = {}
 
 local PAGE_SIZE = 30
 local SORTS: { [string]: { string } } = { F = { "Rarity", "Value", "Zone", "Newest", "Name" }, T = { "Rarity", "Value", "Category", "Newest", "Name" } }
-local FILTERS = { "All", "⭐ Favourites", "🐠 Displayed", "🎉 Event", "✨ Mutated" }
+local FILTERS = { "All", "⭐ Favourites", "🎉 Event", "✨ Mutated" }
 
 type Page = {
 	kind: string,
@@ -46,7 +46,6 @@ type Page = {
 		value: TextLabel,
 		meta: TextLabel,
 		favorite: TextButton,
-		display: TextButton,
 		sell: TextButton,
 		empty: TextLabel,
 	},
@@ -64,13 +63,6 @@ local pageIndex: { [string]: number } = { F = 1, T = 1 }
 local selected: { [string]: number? } = { F = nil, T = nil }
 local sellAt: Vector3? = nil
 local isOpen = false
-
--- aquarium tab
-local aquariumHeader: TextLabel
-local aquariumIncome: TextLabel
-local collectButton: TextButton
-local tankGrid: Frame
-local aquariumHint: TextLabel
 
 local function canSell(): (boolean, string)
 	if SubController.isDiving() then
@@ -111,7 +103,6 @@ local function sortedItems(kind: string): { Types.Item }
 		if item.k == kind then
 			local keep = f == "All"
 				or (f == "⭐ Favourites" and item.f == true)
-				or (f == "🐠 Displayed" and item.d ~= nil)
 				or (f == "🎉 Event" and item.e ~= nil)
 				or (f == "✨ Mutated" and item.m ~= nil)
 			if keep then
@@ -158,7 +149,7 @@ end
 local function showDetail(page: Page, item: Types.Item?)
 	local d = page.detail
 	local visible = item ~= nil
-	local guis: { GuiObject } = { d.name, d.tags, d.stat, d.value, d.meta, d.favorite, d.display, d.sell }
+	local guis: { GuiObject } = { d.name, d.tags, d.stat, d.value, d.meta, d.favorite, d.sell }
 	for _, gui in guis do
 		gui.Visible = visible
 	end
@@ -198,10 +189,8 @@ local function showDetail(page: Page, item: Types.Item?)
 	local event = item.e and Events.byId[item.e]
 	d.meta.Text = string.format("From the %s%s\n%s", if zone then zone.name else "deep", if event then string.format(' · <font color="#%s">%s %s</font>', event.color:ToHex(), event.icon, event.name) else "", DateTime.fromUnixTimestamp(item.t):FormatLocalTime("ll", "en-us"))
 	d.favorite.Text = if item.f then "⭐ Unfavourite" else "⭐ Favourite"
-	d.display.Text = if item.d then "Remove from Aquarium" else "🐠 Display"
-	d.display.Visible = not item.g
 	local sellOk = canSell()
-	local sellable = sellOk and not item.f and item.d == nil and not item.g
+	local sellable = sellOk and not item.f and not item.g
 	d.sell.Text = string.format("Sell · 💰 %s", Format.short(priceOf(item)))
 	d.sell.BackgroundColor3 = if sellable then Theme.Good else Theme.PanelLight
 	d.sell.AutoButtonColor = sellable
@@ -264,7 +253,7 @@ local function refreshPage(kind: string)
 	page.keepButton.Text = keepLabel(keep) .. ""
 	local sellCount, sellCoins = 0, 0
 	for _, item in ClientState.items() do
-		if not item.f and item.d == nil and not item.g and item.r < keep then
+		if not item.f and not item.g and item.r < keep then
 			sellCount += 1
 			sellCoins += priceOf(item)
 		end
@@ -321,24 +310,17 @@ local function buildItemsPage(parentPage: Frame, kind: string)
 	local stat = UIKit.label({ Text = "", Position = UDim2.fromOffset(10, 188), Size = UDim2.new(1, -20, 0, 20), TextSize = 14, TextXAlignment = Enum.TextXAlignment.Center, Parent = pane })
 	local value = UIKit.label({ Text = "", Position = UDim2.fromOffset(10, 210), Size = UDim2.new(1, -20, 0, 30), Font = Theme.FontDisplay, TextSize = 26, TextColor3 = Theme.Coin, TextXAlignment = Enum.TextXAlignment.Center, Parent = pane })
 	local meta = UIKit.label({ Text = "", Position = UDim2.fromOffset(10, 240), Size = UDim2.new(1, -20, 0, 36), TextSize = 12, TextColor3 = Theme.TextMuted, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Top, Parent = pane })
-	local favorite = UIKit.button({ Position = UDim2.fromOffset(10, 280), Size = UDim2.new(0.5, -14, 0, 38), TextSize = 14, Parent = pane }, function()
+	local favorite = UIKit.button({ Position = UDim2.fromOffset(10, 280), Size = UDim2.new(1, -20, 0, 38), TextSize = 14, Parent = pane }, function()
 		local uid = selected[kind]
 		local item = uid and ClientState.data.Inventory[tostring(uid)]
 		if item then
 			Net.event("Favorite"):FireServer(item.u, not item.f)
 		end
 	end, Theme.PanelLight)
-	local display = UIKit.button({ Position = UDim2.new(0.5, 4, 0, 280), Size = UDim2.new(0.5, -14, 0, 38), TextSize = 14, Parent = pane }, function()
-		local uid = selected[kind]
-		local item = uid and ClientState.data.Inventory[tostring(uid)]
-		if item then
-			Net.event(if item.d then "Undisplay" else "Display"):FireServer(item.u)
-		end
-	end, Theme.PanelLight)
 	local sell = UIKit.button({ Position = UDim2.fromOffset(10, 326), Size = UDim2.new(1, -20, 0, 44), TextSize = 17, Parent = pane }, function()
 		local uid = selected[kind]
 		local item = uid and ClientState.data.Inventory[tostring(uid)]
-		if item and canSell() and not item.f and item.d == nil and not item.g then
+		if item and canSell() and not item.f and not item.g then
 			Net.event("Sell"):FireServer({ item.u })
 			selected[kind] = nil
 		end
@@ -370,7 +352,7 @@ local function buildItemsPage(parentPage: Frame, kind: string)
 		sortButton = sortButton,
 		filterButtons = filterButtons,
 		setPager = setPager,
-		detail = { viewport = viewport, name = name, tags = tags, stat = stat, value = value, meta = meta, favorite = favorite, display = display, sell = sell, empty = empty },
+		detail = { viewport = viewport, name = name, tags = tags, stat = stat, value = value, meta = meta, favorite = favorite, sell = sell, empty = empty },
 		storage = storage,
 		keepButton = keepButton,
 		sellAll = sellAll,
@@ -379,86 +361,25 @@ local function buildItemsPage(parentPage: Frame, kind: string)
 	pages[kind] = page
 end
 
-local function refreshAquarium()
-	local data = ClientState.data
-	if not data then
-		return
-	end
-	local stats = ClientState.stats()
-	local plot = Players.LocalPlayer:GetAttribute("PlotIndex")
-	aquariumHeader.Text = if typeof(plot) == "number" and plot > 0 then string.format("🐠 Your Aquarium · Plot #%d", plot) else "🐠 Your Aquarium"
-	local perMinute = 0
-	for slot, uid in data.Aquarium.Slots do
-		local item = data.Inventory[tostring(uid)]
-		if item and (tonumber(slot) or 99) <= stats.displaySlots then
-			perMinute += item.v * Game.Aquarium.IncomePerMinute
-		end
-	end
-	aquariumIncome.Text = string.format("Earning 💰 %s / hour  ·  %s ready to collect", Format.short(perMinute * 60), Format.short(math.floor(data.Aquarium.Pending)))
-	collectButton.Text = string.format("Collect 💰 %s", Format.short(math.floor(data.Aquarium.Pending)))
-	for _, child in tankGrid:GetChildren() do
-		if child:IsA("GuiObject") then
-			child:Destroy()
-		end
-	end
-	for index = 1, 14 do
-		local uid = data.Aquarium.Slots[tostring(index)]
-		local item = if uid then data.Inventory[tostring(uid)] else nil
-		if index > stats.displaySlots then
-			local locked = UIKit.label({ Text = "🔒\nLocked", Size = ItemCard.SIZE, TextXAlignment = Enum.TextXAlignment.Center, TextColor3 = Theme.TextMuted, BackgroundTransparency = 0.3, BackgroundColor3 = Theme.PanelDark, LayoutOrder = index, Parent = tankGrid })
-			UIKit.corner(Theme.CornerSmall).Parent = locked
-		elseif item then
-			local card = ItemCard.new(item, math.floor(item.v * Game.Aquarium.IncomePerMinute * 60), function()
-				Net.event("Undisplay"):FireServer(item.u)
-			end)
-			card.LayoutOrder = index
-			card.Parent = tankGrid
-		else
-			local empty = UIKit.label({ Text = "Empty tank", Size = ItemCard.SIZE, TextXAlignment = Enum.TextXAlignment.Center, TextColor3 = Theme.TextMuted, BackgroundTransparency = 0.5, BackgroundColor3 = Theme.PanelDark, LayoutOrder = index, Parent = tankGrid })
-			UIKit.corner(Theme.CornerSmall).Parent = empty
-		end
-	end
-	aquariumHint.Text = string.format(
-		"Display fish or treasure from the other tabs (🐠 Display). Each earns %s%% of its value per minute, even while you're offline (up to %dh). Click a tank to take its item back. Tanks: %d/14 - more with the Extra Aquarium Tanks pass or the Bigger Aquarium perk.",
-		tostring(Game.Aquarium.IncomePerMinute * 100),
-		Game.Aquarium.OfflineCapHours,
-		stats.displaySlots
-	)
-end
-
-local function buildAquariumPage(page: Frame)
-	aquariumHeader = UIKit.label({ Text = "", Size = UDim2.new(1, 0, 0, 30), Font = Theme.FontDisplay, TextSize = 24, Parent = page })
-	aquariumIncome = UIKit.label({ Text = "", Position = UDim2.fromOffset(0, 30), Size = UDim2.new(1, -240, 0, 24), TextSize = 16, TextColor3 = Theme.Coin, Parent = page })
-	collectButton = UIKit.button({ AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 4), Size = UDim2.fromOffset(220, 44), TextSize = 17, Parent = page }, function()
-		Net.event("CollectAquarium"):FireServer()
-	end, Theme.Good)
-	tankGrid = UIKit.frame({ BackgroundTransparency = 1, Position = UDim2.fromOffset(0, 64), Size = UDim2.new(1, 0, 0, 250), Parent = page })
-	UIKit.grid(ItemCard.SIZE, UDim2.fromOffset(9, 9)).Parent = tankGrid
-	aquariumHint = UIKit.label({ Text = "", Position = UDim2.fromOffset(0, 320), Size = UDim2.new(1, 0, 0, 70), TextSize = 14, TextColor3 = Theme.TextMuted, TextYAlignment = Enum.TextYAlignment.Top, Parent = page })
-end
-
 local function refreshAll()
 	if not isOpen then
 		return
 	end
 	if window.tab == "Fish" then
 		refreshPage("F")
-	elseif window.tab == "Treasure" then
-		refreshPage("T")
 	else
-		refreshAquarium()
+		refreshPage("T")
 	end
 end
 
 function InventoryMenu.build(parent: Instance, close: () -> ()): Window.Window
-	window = Window.new(parent, "Inventory", "🎒", { "Fish", "Treasure", "Aquarium" }, close)
+	window = Window.new(parent, "Inventory", "🎒", { "Fish", "Treasure" }, close)
 	buildItemsPage(window.pages.Fish, "F")
 	buildItemsPage(window.pages.Treasure, "T")
-	buildAquariumPage(window.pages.Aquarium)
 	window.TabChanged:Connect(refreshAll)
 	ClientState.InventoryChanged:Connect(refreshAll)
 	ClientState.Changed:Connect(function(key)
-		if key == "Aquarium" or key == "Derived" or key == "Settings" or key == "*" then
+		if key == "Derived" or key == "Settings" or key == "*" then
 			refreshAll()
 		end
 	end)
