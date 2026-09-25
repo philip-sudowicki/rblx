@@ -57,7 +57,7 @@ local toastHolder: Frame
 local consumableRow: Frame
 local consumableButtons: { [string]: TextButton } = {}
 
-local SEGMENT_HEIGHT = 50
+local SEGMENT_HEIGHT = 30
 
 local function pill(parent: Instance, icon: string, color: Color3, order: number): (Frame, TextLabel)
 	local frame = UIKit.frame({
@@ -203,7 +203,7 @@ local function buildDepthMeter(root: Frame)
 	})
 	UIKit.textStroke(2).Parent = depthLabel
 	zoneLabel = UIKit.label({
-		Text = "Sunlit Shallows",
+		Text = "Sunlit Lagoon",
 		Position = UDim2.fromOffset(0, 32),
 		Size = UDim2.new(1, 0, 0, 20),
 		Font = Theme.FontBold,

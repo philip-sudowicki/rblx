@@ -92,7 +92,7 @@ local function addVent(inst: Instance)
 end
 
 local function buildSeal()
-	local hadal = Zones.list[5]
+	local hadal = Zones.list[Zones.count - 1]
 	local hole = hadal.hole
 	if not hole then
 		return

@@ -109,13 +109,13 @@ local function simulate(seed)
 			mark("reach_Hadal")
 		end
 		if stats.maxDepth >= 3000 then
-			mark("reach_Abyssal")
+			mark("reach_Wrecks")
 		end
 		if stats.maxDepth >= 1000 then
-			mark("reach_Midnight")
+			mark("reach_Glowvein")
 		end
 		if stats.maxDepth >= 200 then
-			mark("reach_Twilight")
+			mark("reach_Kelp")
 		end
 
 		local chances = LootMath.tierChances({ luck = stats.luck, zoneBonus = zone.rarityBonus })
@@ -275,12 +275,16 @@ end
 
 local keys = {
 	"first_legendary",
-	"reach_Twilight",
-	"dive_Twilight",
-	"reach_Midnight",
-	"dive_Midnight",
-	"reach_Abyssal",
-	"dive_Abyssal",
+	"dive_Coral",
+	"reach_Kelp",
+	"dive_Kelp",
+	"dive_Drift",
+	"reach_Glowvein",
+	"dive_Glowvein",
+	"dive_Abyss",
+	"reach_Wrecks",
+	"dive_Wrecks",
+	"dive_Frostvent",
 	"reach_Hadal",
 	"dive_Hadal",
 	"rebirth",
@@ -325,7 +329,7 @@ end
 print("upgrade levels at the end of the last run: " .. table.concat(levels, " "))
 
 print("zone        hours   coins/h   items/min")
-for i = 1, 6 do
+for i = 1, Zones.count do
 	if ZONE_TIME[i] then
 		print(string.format("%-10s %6.2f %10s %8.2f", Zones.list[i].id, ZONE_TIME[i] / 3600 / RUNS, Format.short(ZONE_COINS[i] / (ZONE_TIME[i] / 3600)), ZONE_ITEMS[i] / (ZONE_TIME[i] / 60)))
 	end

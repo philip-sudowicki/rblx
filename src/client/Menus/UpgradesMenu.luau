@@ -168,7 +168,7 @@ local function refreshResurface()
 	local depthOk = data.Stats.DeepestMeters >= Rebirth.minDeepestMeters
 	local coinsOk = data.Coins >= cost
 	resurface.requirements.Text = string.format(
-		"%s Reach the Hadal Trench (%s)  ·  deepest: %s\n%s Hold %s coins  ·  you have %s",
+		"%s Reach the Hadal Maw (%s)  ·  deepest: %s\n%s Hold %s coins  ·  you have %s",
 		if depthOk then "✅" else "🔲",
 		Format.meters(Rebirth.minDeepestMeters),
 		Format.meters(data.Stats.DeepestMeters),

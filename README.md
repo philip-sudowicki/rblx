@@ -1,8 +1,8 @@
 # DEEP HAUL
 
-A Roblox deep-sea salvage game. Pilot a submarine down through six ocean zones, catch fish with a
+A Roblox deep-sea salvage game. Pilot a submarine down through ten ocean biomes, catch fish with a
 quick timing minigame, salvage sunken treasure with your claw, and surface before your oxygen or
-hull gives out. Sell your haul, upgrade your sub, fill your Index and aquarium, and Resurface
+hull gives out. Sell your haul, upgrade your sub, fill your Index, and Resurface
 (rebirth) to open The Rift.
 
 Everything (the world, the models and all the UI) is built from code: there are no uploaded
@@ -21,7 +21,6 @@ assets. The project syncs into Studio with [Rojo](https://rojo.space).
 
 Before publishing:
 
-- **Max Players:** set it to **12** or fewer in Game Settings. There are 12 aquarium plots (`Game.Aquarium.Plots`).
 - **Monetization:** create the passes and products and paste their IDs into `src/shared/Config/Products.luau`. An ID of 0 shows as "Coming soon" and is never prompted.
 - **Badges (optional):** create them in the Creator Dashboard and paste the IDs into `src/shared/Config/Badges.luau`.
 - **Sounds:** see `SOUNDS.md`.
@@ -45,18 +44,17 @@ Before publishing:
 ## Game systems
 
 - **Core loop:** launch from the pier and dive. Catch fish (≤3 s timing bar; rarer fish have a smaller zone and a faster marker, and landing the marker dead centre is a PERFECT catch). Salvage treasure (hold, needs the right claw tier), then surface to secure your cargo. Sell at the Fish Market and upgrade at the Workshop.
-- **Zones:** Sunlit Shallows, Twilight Reef, Midnight Zone, Abyssal Plains, Hadal Trench, and The Rift (after your first rebirth).
+- **Biomes:** Sunlit Lagoon, Coral Kingdom, Kelp Cathedral, Twilight Drift, Glowvein Caverns, Midnight Abyss, Wreck Graveyard, Frostvent Trench, Hadal Maw, and The Rift (after your first rebirth). Each has its own light, colours, decorations and fish.
 - **Hazards:**
   - Oxygen drains as you dive, and hull pressure damages you below your rated depth.
   - Predators hunt you; sonar stuns them and silent running sneaks past.
-  - Darkness below the Twilight Reef limits you to your floodlights.
+  - Darkness from the Glowvein Caverns down limits you to your floodlights.
   - A blackout loses half your cargo unless you're insured.
 - **Catch streaks:** catching or salvaging within 15 s of your last find adds +5% value per step (up to +50%) until you surface.
-- **Loot:** 78 fish and 68 treasures across 8 rarities with exact odds. There are 7 mutations, plus weight, Colossal catches (1 in 500, ×5 value, 3× size) and 5 treasure conditions. Treasure falls into 6 categories and 13 collection sets.
+- **Loot:** 99 fish and 81 treasures across 8 rarities with exact odds. There are 7 mutations, plus weight, Colossal catches (1 in 500, ×5 value, 3× size) and 5 treasure conditions. Treasure falls into 6 categories and 13 collection sets.
 - **Progression:**
   - 8 upgrades with 15 levels each; Resurface (rebirth) gives a permanent sell multiplier, tokens for a perk shop, and The Rift.
   - The Index shows silhouettes, completion, your exact odds and milestone rewards.
-  - The personal aquarium earns passive coins, plus offline earnings capped at 8 hours with a "Welcome back" popup.
 - **Retention:** daily streak calendar, 3 daily and 3 weekly quests, 24 achievements (with sub skins), global leaderboards on the dock, and codes.
 - **Events:**
   - Automated and seeded from UTC, so every server matches: every 45 minutes for 10 minutes, with a 60 s countdown.
@@ -89,7 +87,7 @@ src/client/            StarterPlayerScripts.Client
   Main.client.luau     controller bootstrap (ORDER list)
   Controllers/         input, sub, HUD, effects, rendering, menus, tutorial, events, ...
   Menus/               Inventory, Index, Upgrades, Shop (+ Codes), Quests, Launch panel
-  UI/                  UI kit, windows, sliders, item cards and 3D viewports
+  UI/                  UI kit, windows, item cards and 3D viewports
 tests/                 unit tests for pure modules (luau CLI)
 tools/                 check.sh, test bundler, economy simulator
 ```

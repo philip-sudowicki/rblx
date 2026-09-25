@@ -61,18 +61,18 @@ Groups map to the volume sliders in Settings: **SFX** (effects), **Music** (soun
 | `LeviathanCall` | Ambient | 0.9 |  |  | Enormous distant whale/serpent call |
 | `WhaleCall` | Ambient | 0.5 |  |  | Distant whale song |
 | `AmbientDock` | Ambient | 0.4 | yes |  | Dock ambience bed (water, distant creaks, whale calls for deep zones) |
-| `AmbientShallows` | Ambient | 0.4 | yes |  | Shallows ambience bed (water, distant creaks, whale calls for deep zones) |
-| `AmbientTwilight` | Ambient | 0.4 | yes |  | Twilight ambience bed (water, distant creaks, whale calls for deep zones) |
-| `AmbientMidnight` | Ambient | 0.45 | yes |  | Midnight ambience bed (water, distant creaks, whale calls for deep zones) |
-| `AmbientAbyssal` | Ambient | 0.45 | yes |  | Abyssal ambience bed (water, distant creaks, whale calls for deep zones) |
-| `AmbientHadal` | Ambient | 0.5 | yes |  | Hadal ambience bed (water, distant creaks, whale calls for deep zones) |
+| `AmbientShallows` | Ambient | 0.4 | yes |  | Sunlit Lagoon and Coral Kingdom ambience bed (water, distant creaks, whale calls for deep zones) |
+| `AmbientTwilight` | Ambient | 0.4 | yes |  | Kelp Cathedral and Twilight Drift ambience bed (water, distant creaks, whale calls for deep zones) |
+| `AmbientMidnight` | Ambient | 0.45 | yes |  | Glowvein Caverns and Midnight Abyss ambience bed (water, distant creaks, whale calls for deep zones) |
+| `AmbientAbyssal` | Ambient | 0.45 | yes |  | Wreck Graveyard and Frostvent Trench ambience bed (water, distant creaks, whale calls for deep zones) |
+| `AmbientHadal` | Ambient | 0.5 | yes |  | Hadal Maw ambience bed (water, distant creaks, whale calls for deep zones) |
 | `AmbientRift` | Ambient | 0.5 | yes |  | Rift ambience bed (water, distant creaks, whale calls for deep zones) |
 | `MusicDock` | Music | 0.35 | yes |  | Dock music loop |
-| `MusicShallows` | Music | 0.35 | yes |  | Shallows music loop |
-| `MusicTwilight` | Music | 0.35 | yes |  | Twilight music loop |
-| `MusicMidnight` | Music | 0.35 | yes |  | Midnight music loop |
-| `MusicAbyssal` | Music | 0.35 | yes |  | Abyssal music loop |
-| `MusicHadal` | Music | 0.35 | yes |  | Hadal music loop |
+| `MusicShallows` | Music | 0.35 | yes |  | Sunlit Lagoon and Coral Kingdom music loop |
+| `MusicTwilight` | Music | 0.35 | yes |  | Kelp Cathedral and Twilight Drift music loop |
+| `MusicMidnight` | Music | 0.35 | yes |  | Glowvein Caverns and Midnight Abyss music loop |
+| `MusicAbyssal` | Music | 0.35 | yes |  | Wreck Graveyard and Frostvent Trench music loop |
+| `MusicHadal` | Music | 0.35 | yes |  | Hadal Maw music loop |
 | `MusicRift` | Music | 0.35 | yes |  | Rift music loop |
 | `MusicBloom` | Music | 0.4 | yes |  | Bloom music loop |
 | `MusicLeviathan` | Music | 0.4 | yes |  | Leviathan music loop |

@@ -32,7 +32,7 @@ return {
 		{ percent = 75, coins = 50000, luck = 0.04 },
 		{ percent = 100, coins = 250000, luck = 0.1 },
 	} :: { Milestone },
-	coinScale = { 1, 4, 15, 60, 240, 1000 },
+	coinScale = { 1, 2, 4, 8, 15, 30, 60, 120, 240, 1000 },
 	-- Secret entries are counted but hidden until found. Set false to exclude them from %.
 	secretsCountTowardCompletion = true,
 }

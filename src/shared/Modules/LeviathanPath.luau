@@ -1,5 +1,5 @@
 --!strict
--- The Leviathan's route during a Leviathan Migration: slow laps around the Abyssal Plains at a
+-- The Leviathan's route during a Leviathan Migration: slow laps around the Wreck Graveyard at a
 -- fixed radius, rising and falling three times per lap. A pure function of the seconds since
 -- the event started, so the server (wake drops) and every client (rendering) agree with no
 -- networking at all.

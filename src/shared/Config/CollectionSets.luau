@@ -67,7 +67,7 @@ local list: { CollectionSet } = {
 	{
 		id = "GraveyardSalvage",
 		name = "Graveyard Salvage",
-		desc = "Pieces of the great ships that rest on the Abyssal Plains.",
+		desc = "Pieces of the great ships that rest in the Wreck Graveyard.",
 		items = { "IronCannonball", "FigureheadFragment", "MermaidFigurehead", "RustyAnchor" },
 		bonus = { stat = "speed", amount = 0.08 },
 		badge = "SetGraveyardSalvage",

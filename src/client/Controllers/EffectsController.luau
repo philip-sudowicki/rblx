@@ -192,7 +192,7 @@ function EffectsController.Start()
 			)
 			if payload.riftUnlocked then
 				task.delay(3.2, function()
-					HUDController.banner("THE RIFT IS OPEN", "Something ancient stirs below the Hadal Trench", Color3.fromRGB(200, 90, 255), 6)
+					HUDController.banner("THE RIFT IS OPEN", "Something ancient stirs below the Hadal Maw", Color3.fromRGB(200, 90, 255), 6)
 				end)
 			end
 		elseif payload.kind == "Achievement" then

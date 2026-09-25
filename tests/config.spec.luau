@@ -185,6 +185,22 @@ test("zones are contiguous and holes fit inside the next zone", function()
 	end
 end)
 
+test("zones that share a terrain material give it the same colour", function()
+	local seen: { [Enum.Material]: { color: Color3, zone: string } } = {}
+	for _, zone in Zones.list do
+		for _, slot in { "floor", "wall", "accent" } do
+			local material = (zone.materials :: any)[slot]
+			local color = (zone.materialColors :: any)[slot]
+			local previous = seen[material]
+			if previous then
+				ok(previous.color == color, string.format("%s %s colour clashes with %s (%s)", zone.id, slot, previous.zone, tostring(material)))
+			else
+				seen[material] = { color = color, zone = zone.id }
+			end
+		end
+	end
+end)
+
 test("sound keys referenced by config exist", function()
 	for _, rarity in Rarities.list do
 		ok(Sounds.sounds[rarity.sound] ~= nil, rarity.id .. " reveal sound")

@@ -36,10 +36,10 @@ test("event exclusives only appear when their event is active", function()
 end)
 
 test("zone-restricted exclusives respect their zones", function()
-	eq(#LootPools.eventFishPool("Leviathan", 1), 0, "wake remora only in the abyssal plains")
-	ok(#LootPools.eventFishPool("Leviathan", 4) > 0)
+	eq(#LootPools.eventFishPool("Leviathan", 1), 0, "wake remora only in the wreck graveyard")
+	ok(#LootPools.eventFishPool("Leviathan", 7) > 0)
 	eq(#LootPools.eventTreasurePool("DeepTremor", 1), 0)
-	ok(#LootPools.eventTreasurePool("DeepTremor", 4) > 0)
+	ok(#LootPools.eventTreasurePool("DeepTremor", 7) > 0)
 end)
 
 test("minTier forces the guarantee", function()

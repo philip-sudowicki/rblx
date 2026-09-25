@@ -20,7 +20,7 @@ local CodesService = {}
 
 local MAX_FAILURES = 5
 local LOCKOUT_SECONDS = 60
-local COIN_SCALE = { 1, 4, 15, 60, 240, 1000 }
+local COIN_SCALE = { 1, 2, 4, 8, 15, 30, 60, 120, 240, 1000 }
 
 local byCode: { [string]: Codes.Code } = {}
 for _, entry in Codes do

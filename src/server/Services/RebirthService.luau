@@ -24,7 +24,7 @@ function RebirthService.canRebirth(player: Player): (boolean, string?)
 		return false, "Not loaded"
 	end
 	if data.Stats.DeepestMeters < Rebirth.minDeepestMeters then
-		return false, string.format("Reach %s first (the Hadal Trench).", Format.meters(Rebirth.minDeepestMeters))
+		return false, string.format("Reach %s first (the Hadal Maw).", Format.meters(Rebirth.minDeepestMeters))
 	end
 	local cost = Stats.rebirthCost(data.Rebirths)
 	if data.Coins < cost then

@@ -109,7 +109,7 @@ for _, perk in perks do
 end
 
 return {
-	minDeepestMeters = 6000, -- must have reached the Hadal Trench
+	minDeepestMeters = 6000, -- must have reached the Hadal Maw
 	coinsBase = 60000000, -- coins required for the first rebirth
 	coinsGrowth = 3, -- each rebirth costs 3× the previous one
 	sellMultiplierPerRebirth = 0.5, -- +50% sell value per rebirth (additive: 1.5×, 2×, 2.5×…)

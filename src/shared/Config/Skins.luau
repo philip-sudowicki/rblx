@@ -76,7 +76,7 @@ local defs: { SkinDef } = {
 	{
 		id = "AbyssWalker",
 		name = "Abyss Walker",
-		desc = "Reach the Abyssal Plains.",
+		desc = "Reach the Wreck Graveyard.",
 		source = "achievement",
 		body = rgb(30, 40, 60),
 		accent = rgb(60, 230, 220),
@@ -89,7 +89,7 @@ local defs: { SkinDef } = {
 	{
 		id = "TrenchCrawler",
 		name = "Trench Crawler",
-		desc = "Reach the Hadal Trench.",
+		desc = "Reach the Hadal Maw.",
 		source = "achievement",
 		body = rgb(50, 44, 40),
 		accent = rgb(255, 110, 40),

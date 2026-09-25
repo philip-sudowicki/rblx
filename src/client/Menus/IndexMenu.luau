@@ -504,7 +504,7 @@ local function buildBrowser(page: Frame, kind: string, groups: { Group }): Brows
 	for index, group in groups do
 		local chip = UIKit.button({
 			Text = group.label,
-			Size = UDim2.new(1, -6, 0, 46),
+			Size = UDim2.new(1, -6, 0, 38),
 			TextSize = 14,
 			LayoutOrder = index,
 			Parent = chipColumn,

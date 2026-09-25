@@ -74,7 +74,7 @@ local list: { EventDef } = {
 		id = "Leviathan",
 		name = "Leviathan Migration",
 		short = "Leviathan",
-		desc = "A colossal Leviathan swims through the Abyssal Plains. Follow it: rare loot falls in its wake.",
+		desc = "A colossal Leviathan swims through the Wreck Graveyard. Follow it: rare loot falls in its wake.",
 		color = rgb(60, 200, 255),
 		icon = "🐋",
 		music = "MusicLeviathan",
@@ -200,10 +200,10 @@ return {
 		cooldownSeconds = 20 * 60, -- per-server cooldown between purchased events
 	},
 	leviathan = {
-		zone = 4,
+		zone = 7, -- Wreck Graveyard
 		radius = 300, -- path radius around the shaft centre
 		lapSeconds = 300, -- time for one full lap
-		bobHeight = 60,
+		bobHeight = 45,
 		wakeInterval = 3, -- seconds between wake drops
 		wakeDelay = 2.5, -- wake loot appears where the Leviathan was this many seconds ago
 		wakeLuck = 4, -- luck multiplier on wake drops
@@ -211,15 +211,15 @@ return {
 		followRadius = 90, -- players within this distance of the wake get the drops
 	},
 	galleon = {
-		zones = { 1, 2, 3, 4, 5 },
+		zones = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
 		treasureCount = 26,
 		minRarity = "Rare",
 		luck = 6,
 		exclusiveChance = 0.35,
 	},
 	tremor = {
-		zones = { 3, 4, 5 },
-		trenchesPerZone = 3,
+		zones = { 6, 7, 8, 9 },
+		trenchesPerZone = 2,
 		treasurePerTrench = 7,
 		exclusiveChance = 0.3,
 		luck = 2,

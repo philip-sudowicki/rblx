@@ -19,19 +19,27 @@ events, no boosts, no Index or set bonuses, so real players progress somewhat fa
 
 | Milestone | Target | p10 | Median | p90 |
 |---|---|---|---|---|
-| First Legendary | about 1 hour | 5 min | **31 min** | 52 min |
-| First dive into Twilight Reef | minutes | 5 min | 8 min | 10 min |
-| Reach Midnight Zone | | 24 min | 33 min | 45 min |
-| Reach Abyssal Plains | | 3.1 h | 4.0 h | 4.5 h |
-| **Reach Hadal Trench** | 15-20 hours | 15.3 h | **18.7 h** | 22.3 h |
-| **First rebirth (Resurface)** | about 25 hours | 19.0 h | **23.4 h** | 27.4 h |
+| First Legendary | about 1 hour | 7 min | **42 min** | 52 min |
+| First dive into Kelp Cathedral | minutes | 2 min | 5 min | 8 min |
+| First dive into Twilight Drift | | 10 min | 13 min | 16 min |
+| Reach Glowvein Caverns | | 16 min | 26 min | 32 min |
+| First dive into Midnight Abyss | | 1.7 h | 2.0 h | 2.5 h |
+| First dive into Wreck Graveyard | | 2.3 h | 2.9 h | 3.2 h |
+| First dive into Frostvent Trench | | 3.3 h | 4.3 h | 5.0 h |
+| **Reach Hadal Maw** | 15-20 hours | 6.7 h | **16.1 h** | 18.9 h |
+| **First rebirth (Resurface)** | about 20 hours | 8.7 h | **18.8 h** | 22.2 h |
+
+The p10 column is the lucky runs: an early Secret catch can pay for several hull levels at once.
 
 Safety net: a player who has dived for `Game.Spawns.FirstLegendaryGuaranteeMinutes` (45) without a Legendary gets one
 spawned for them (retried every 5 minutes), so nobody waits much longer than an hour.
 
-Income per zone in the simulation: Shallows 8.7K/h, Twilight 100K/h, Midnight 970K/h,
-Abyssal 11M/h. Each zone is roughly 10× the one above, and upgrade prices grow about 3× per
-level, which is what keeps every zone relevant for a few hours.
+Income per biome in the simulation: Coral Kingdom 16K/h, Kelp Cathedral 49K/h, Twilight Drift
+155K/h, Glowvein Caverns 580K/h, Midnight Abyss 1.7M/h, Wreck Graveyard 5.4M/h, Frostvent Trench
+20M/h. Item values double from one biome to the next (4× from the Hadal Maw to The Rift), and
+upgrade prices grow about 3× per level, which keeps every biome worth a visit. The sim skips the
+Lagoon because the starting hull already reaches the Coral Kingdom; real players fish it on the
+way down.
 
 ## Rarity (exact odds)
 
@@ -51,7 +59,7 @@ glows, and it can flee).
 | Abyssal | 1 in 100,000 | | 6 |
 | Secret | 1 in 1,000,000 | 9% of the bar | 7 |
 
-Zone rarity bonus: Shallows 1.0, Twilight 1.3, Midnight 1.7, Abyssal 2.2, Hadal 3.0, Rift 4.0.
+Biome rarity bonus: Lagoon 1.0, Coral 1.15, Kelp 1.3, Drift 1.5, Glowvein 1.7, Abyss 1.95, Wrecks 2.2, Frostvent 2.6, Hadal Maw 3.0, Rift 4.0.
 The Index shows each player their exact odds for every species, including their current luck and
 any active events.
 
@@ -81,7 +89,7 @@ doesn't break it.
 
 | Upgrade | Level 1 → 15 | Cost of level 2 · 5 · 10 · 15 | Total |
 |---|---|---|---|
-| Hull Plating (max depth, m) | 250 → 14,000 | 400 · 20K · 22M · 8B | 10.8B |
+| Hull Plating (max depth, m) | 250 → 14,000 | 400 · 20K · 45M · 8B | 10.9B |
 | Oxygen Tank (seconds) | 120 → 1,000 | 100 · 2.7K · 660K · 160M | 239M |
 | Engine (speed) | 28 → 104 | 90 · 2.4K · 590K · 140M | 211M |
 | Floodlights (light radius) | 45 → 330 | 120 · 3.2K · 790K · 190M | 285M |
@@ -96,10 +104,10 @@ others use `base × growth^(level-2)` with prices rounded to "nice" numbers.
 
 ## Rebirth (Resurface)
 
-- **Requirements:** you must have reached the Hadal Trench (6,000m) once, and hold
+- **Requirements:** you must have reached the Hadal Maw (6,000m) once, and hold
   `60M × 3^n` coins (60M, 180M, 540M, 1.6B, 4.9B, …).
 - **Resets:** coins and upgrades.
-- **Keeps:** items, Index, aquarium, skins, quests and achievements.
+- **Keeps:** items, Index, skins, quests and achievements.
 - **Rewards:**
   - +0.5 sell multiplier per rebirth (×1.5, ×2, ×2.5, …).
   - `3 + n` rebirth tokens for the perk shop (starting upgrade levels, luck, sell, oxygen and more, plus the Phoenix skin).
@@ -108,10 +116,9 @@ others use `base × growth^(level-2)` with prices rounded to "nice" numbers.
 
 ## Other income
 
-- **Aquarium:** displayed items earn 0.2% of their value per minute, online and offline, with offline earnings capped at 8 hours.
 - **Index milestones:** 25/50/75/100% per zone and per treasure category, plus the whole Index. They pay coins scaled to the zone, and the 100% milestones add permanent luck.
 - **Collection sets:** 13 sets, each with a permanent bonus.
-- **Quests:** coin rewards scale with your deepest zone (`coinScale` 1, 4, 15, 60, 240, 1000). Weekly quests pay 6× and grant a Luck Boost (plus a token after your first rebirth).
+- **Quests:** coin rewards scale with your deepest zone (`coinScale` 1, 2, 4, 8, 15, 30, 60, 120, 240, 1000). Weekly quests pay 6× and grant a Luck Boost (plus a token after your first rebirth).
 - **Daily streak:** also scales with your deepest zone; day 7 is the jackpot.
 
 ## Events
@@ -122,7 +129,7 @@ others use `base × growth^(level-2)` with prices rounded to "nice" numbers.
 | Event | Effect |
 |---|---|
 | Bioluminescent Bloom | Glowing ×10, 12% exclusive spawns |
-| Leviathan Migration | Wake loot at ×4 luck behind the Leviathan (Abyssal Plains) |
+| Leviathan Migration | Wake loot at ×4 luck behind the Leviathan (Wreck Graveyard) |
 | Sunken Galleon | 26 Rare+ treasures at ×6 luck, 35% Galleon exclusives |
 | Golden Tide | Golden ×5, sell prices ×1.5 |
 | Deep Tremor | 9 trenches holding Tech/Cursed-weighted treasure at ×2 luck |

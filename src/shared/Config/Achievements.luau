@@ -26,8 +26,8 @@ local defs: { AchievementDef } = {
 	{ id = "Salvager1000", name = "Treasure Hunter", desc = "Salvage 1,000 treasures.", stat = "TreasureSalvaged", target = 1000, coins = 8000 },
 	{ id = "Perfect100", name = "Precision Diver", desc = "Land 100 PERFECT catches.", stat = "PerfectCatches", target = 100, skin = "Precision" },
 	{ id = "Depth1000", name = "Into the Dark", desc = "Reach 1,000m.", stat = "DeepestMeters", target = 1000, coins = 500 },
-	{ id = "Depth3000", name = "Abyss Walker", desc = "Reach the Abyssal Plains (3,000m).", stat = "DeepestMeters", target = 3000, skin = "AbyssWalker" },
-	{ id = "Depth6000", name = "Trench Crawler", desc = "Reach the Hadal Trench (6,000m).", stat = "DeepestMeters", target = 6000, skin = "TrenchCrawler" },
+	{ id = "Depth3000", name = "Abyss Walker", desc = "Reach the Wreck Graveyard (3,000m).", stat = "DeepestMeters", target = 3000, skin = "AbyssWalker" },
+	{ id = "Depth6000", name = "Trench Crawler", desc = "Reach the Hadal Maw (6,000m).", stat = "DeepestMeters", target = 6000, skin = "TrenchCrawler" },
 	{ id = "Rift", name = "Through the Seal", desc = "Enter The Rift.", stat = "RiftVisits", target = 1, skin = "RiftRunner" },
 	{ id = "Golden", name = "Midas Touch", desc = "Catch a Golden fish.", stat = "GoldenCatches", target = 1, skin = "GoldenHauler" },
 	{ id = "Mutant25", name = "Mutant Collector", desc = "Catch 25 mutated fish.", stat = "MutatedCatches", target = 25, coins = 1500 },
@@ -54,5 +54,5 @@ end
 return {
 	list = list,
 	byId = byId,
-	coinScale = { 1, 4, 15, 60, 240, 1000 },
+	coinScale = { 1, 2, 4, 8, 15, 30, 60, 120, 240, 1000 },
 }

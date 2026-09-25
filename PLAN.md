@@ -7,13 +7,13 @@ This file is the architecture and build order for DEEP HAUL. It is kept up to da
 ## 1. High-level design
 
 **Pitch:** You pilot a small submarine out of a sunny atoll dock and dive into "The Blue Hole", a huge
-sinkhole that drops through six depth zones. Every dive you catch fish (timing minigame) and salvage
+sinkhole that drops through ten biomes. Every dive you catch fish (timing minigame) and salvage
 treasure (hold-to-salvage) while oxygen drains, pressure crushes your hull, and predators bump you.
-You surface, sell, show off your best catches in your aquarium, upgrade, and push deeper. At the
-Hadal Trench you can **Resurface** (rebirth) for a permanent multiplier and access to The Rift.
+You surface, sell, upgrade, and push deeper. At the
+Hadal Maw you can **Resurface** (rebirth) for a permanent multiplier and access to The Rift.
 
 **Core loop:** Dock → Launch Bay → dive → catch/salvage → manage O₂/hull/cargo → surface (swim up or
-hold R) → cargo secured into storage → sell at the Market / display in the Aquarium → buy upgrades →
+hold R) → cargo secured into storage → sell at the Market → buy upgrades →
 dive deeper.
 
 ### World layout (all procedural, no uploaded assets)
@@ -22,20 +22,24 @@ The map is one vertical shaft. Surface is `Y = 0`; 1 stud ≠ 1 metre. Displayed
 stud band onto its metre band (piecewise linear), so every zone is a similar physical size while the
 depth readout climbs from 0 m to 14,000 m.
 
-| # | Zone            | Stud band      | Metres          | Radius | Look / hazard                                        |
-|---|-----------------|----------------|-----------------|--------|------------------------------------------------------|
-| 1 | Sunlit Shallows | 0 → −300       | 0 – 200         | 460    | Bright sand terraces, kelp, coral, light shafts. Safe |
-| 2 | Twilight Reef   | −300 → −700    | 200 – 1,000     | 380    | Dim blue reef ledges, first predators                |
-| 3 | Midnight Zone   | −700 → −1,100  | 1,000 – 3,000   | 360    | Near black, glowing coral, lights matter             |
-| 4 | Abyssal Plains  | −1,100 → −1,500| 3,000 – 6,000   | 480    | Wide silt plain, shipwreck graveyard, heavy pressure |
-| 5 | Hadal Trench    | −1,500 → −1,900| 6,000 – 11,000  | 260    | Narrow trench, ancient ruins, huge creatures         |
-| 6 | The Rift        | −1,900 → −2,300| 11,000 – 14,000 | 420    | Alien crystals, neon. Sealed until first rebirth     |
+| # | Biome            | Stud band       | Metres          | Radius | Look / hazard                                             |
+|---|------------------|-----------------|-----------------|--------|-----------------------------------------------------------|
+| 1 | Sunlit Lagoon    | 0 → −220        | 0 – 80          | 460    | Turquoise sand terraces, sunbeams, shells. Safe           |
+| 2 | Coral Kingdom    | −220 → −480     | 80 – 200        | 400    | Towers of coral in every colour, coral arches. Safe       |
+| 3 | Kelp Cathedral   | −480 → −760     | 200 – 500       | 380    | Giant kelp, sea grass, green-gold light. First predators  |
+| 4 | Twilight Drift   | −760 → −1,020   | 500 – 1,000     | 360    | Blue dusk, floating rock islands, glowing coral           |
+| 5 | Glowvein Caverns | −1,020 → −1,280 | 1,000 – 1,800   | 340    | Dark caves, cyan and violet crystal veins. Lights matter  |
+| 6 | Midnight Abyss   | −1,280 → −1,540 | 1,800 – 3,000   | 380    | Pitch black, anglers, vents and bones                     |
+| 7 | Wreck Graveyard  | −1,540 → −1,800 | 3,000 – 4,500   | 480    | Wide silt plain full of shipwrecks, heavy pressure        |
+| 8 | Frostvent Trench | −1,800 → −2,060 | 4,500 – 6,000   | 300    | Snow-white walls, ice crystals and boiling vents          |
+| 9 | Hadal Maw        | −2,060 → −2,340 | 6,000 – 11,000  | 260    | Lava cracks, drowned temples, huge creatures              |
+| 10 | The Rift        | −2,340 → −2,740 | 11,000 – 14,000 | 420    | Alien crystals, neon. Sealed until first rebirth          |
 
 - **Terrain** (FillBlock/FillCylinder/FillBall, carved with Air) builds the atoll ring, the rock
   walls, terraced floors and the holes between zones. **Parts** build the decorations: dock hub,
-  kelp, coral, light shafts, shipwrecks, ruins, crystals, aquarium plots and leaderboards.
+  kelp, coral, light shafts, shipwrecks, ruins, crystals and leaderboards, tinted by each biome's palette.
 - Each zone's floor has an offset hole leading to the next zone, so descending means some
-  navigating. The Hadal floor's hole is the **Rift Seal**: a client-side barrier for players who
+  navigating. The Hadal Maw floor's hole is the **Rift Seal**: a client-side barrier for players who
   haven't rebirthed, enforced on the server with a depth clamp.
 - A thin terrain-water layer at the surface gives waves and lets players swim at the dock.
   Under it, fog, ambient light and colour correction per zone (driven on the client from camera
@@ -73,8 +77,8 @@ Config/            ALL tunable data (rebalance here, never in logic)
   Sizes.luau         weight curve, Colossal roll
   Conditions.luau    Corroded…Flawless
   Zones.luau         geometry, depth mapping, lighting/fog, drain, rarity bonus, hazards
-  Fish.luau          78 fish (69 regular + 9 event exclusives)
-  Treasure.luau      68 treasures (59 regular + 9 event exclusives)
+  Fish.luau          99 fish (90 regular + 9 event exclusives)
+  Treasure.luau      81 treasures (72 regular + 9 event exclusives)
   TreasureCategories.luau  6 categories with icon + colour
   CollectionSets.luau      13 sets and their permanent bonuses
   Upgrades.luau      8 upgrades × 15 levels, stats + exponential costs
@@ -122,7 +126,7 @@ form a DAG; lower layers talk upward only through `ServerSignals` (no require cy
 8. **SpawnService** (fish/treasure interest-managed streaming with caps + flee), **PredatorService**
 9. **LootService**: builds items (mutation, weight, colossal, condition, value, event tag)
 10. **CatchService** (minigame sessions), **SalvageService** (hold sessions)
-11. **UpgradeService, RebirthService, AquariumService, IndexService** (codex, milestones, sets),
+11. **UpgradeService, RebirthService, IndexService** (codex, milestones, sets),
     **QuestService, DailyService, AchievementService** (skins), **CodesService, LeaderboardService,
     TutorialService, MonetizationService** (ProcessReceipt), **NametagService, CosmeticService,
     SettingsService, EventContentService** (Leviathan / Galleon / Tremor), **DebugService** (Studio
@@ -153,7 +157,6 @@ Controllers/
   Menus/                Inventory, Index, Upgrades(+Hangar, Resurface), Shop(+Codes), Quests(+Daily)
   RevealController      catch reveal card with escalating sound
   TutorialController    arrows/beams + step prompts, skippable
-  AquariumRenderer      renders displayed fish swimming in tanks
   ChatController        VIP/rebirth chat tags, system announcements
   PromptController      tasteful, rate-limited purchase offers
 UI/                     UIKit (instance builder, components), Theme usage
@@ -227,7 +230,7 @@ types + selene + unit tests + rojo build), a self-review, a commit and a push.
 | 2 | Server core: Remotes/RateLimiter, DataService (+migrations, replication), WorldService |
 | 3 | Diving: SubService, client Input/Sub/Camera/Zone controllers, HUD bars, surfacing, blackout |
 | 4 | Loot: Spawn/Predator/Loot/Catch/Salvage services, EntityRenderer, minigame, salvage ring, reveal |
-| 5 | Economy: inventory/sell/favourites, upgrades, rebirth + perks, aquarium + offline, index, sets |
+| 5 | Economy: inventory/sell/favourites, upgrades, rebirth + perks, index, sets |
 | 6 | Retention: daily streak, quests, leaderboards, codes, achievements/skins, tutorial |
 | 7 | Events: schedule, 6 events + exclusives, leviathan, galleon, tremor trenches, blood moon, super/weekend, local events |
 | 8 | Monetization: passes, products, receipts, policy, server luck boost, shop, tasteful offers |

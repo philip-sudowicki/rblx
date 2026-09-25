@@ -26,5 +26,5 @@ local rewards: { DailyReward } = {
 
 return {
 	rewards = rewards,
-	coinScale = { 1, 4, 15, 60, 240, 1000 },
+	coinScale = { 1, 2, 4, 8, 15, 30, 60, 120, 240, 1000 },
 }

@@ -1,5 +1,5 @@
 --!strict
--- Procedural terrain for the Blue Hole: atoll ring, dock island, terraced Shallows, zone walls,
+-- Procedural terrain for the Blue Hole: atoll ring, dock island, terraced Lagoon, zone walls,
 -- floors with offset holes, ceiling rings, boulders, ledges, arches and the thin surface water.
 -- Everything is deterministic (fixed seed) so every server has the same map.
 
@@ -11,6 +11,7 @@ local WorldGeometry = require(Shared.Modules.WorldGeometry)
 
 export type Obstacle = { center: Vector3, radius: number }
 export type Ledge = { top: Vector3, zone: number, normal: Vector3 }
+export type Floater = { center: Vector3, radius: number, zone: number }
 
 local TerrainGen = {}
 
@@ -45,7 +46,7 @@ end
 -- Spherical obstacles per zone (fish spawns avoid them)
 TerrainGen.obstacles = {} :: { [number]: { Obstacle } }
 TerrainGen.ledges = {} :: { Ledge }
-TerrainGen.floaters = {} :: { Obstacle }
+TerrainGen.floaters = {} :: { Floater }
 TerrainGen.arches = {} :: { Vector3 }
 
 local function addObstacle(zoneIndex: number, center: Vector3, radius: number)
@@ -158,7 +159,7 @@ local function floaters(zoneIndex: number, rng: Random, count: number, material:
 		local center = Vector3.new(x, y, z)
 		fillBall(center, radius, material)
 		fillBall(center + Vector3.new(rng:NextNumber(-6, 6), -radius * 0.6, rng:NextNumber(-6, 6)), radius * 0.7, material)
-		table.insert(TerrainGen.floaters, { center = center, radius = radius })
+		table.insert(TerrainGen.floaters, { center = center, radius = radius, zone = zoneIndex })
 		addObstacle(zoneIndex, center, radius + 6)
 	end
 end
@@ -181,7 +182,7 @@ local function colors()
 	terrain.Decoration = true -- animated grass blades on the island
 end
 
-local function buildShallows(rng: Random)
+local function buildLagoon(rng: Random)
 	local zone = Zones.list[1]
 	local world = Zones.world
 	local outer = world.atollOuterRadius
@@ -374,8 +375,8 @@ function TerrainGen.build()
 	local rng = Random.new(20240601)
 	sliceStart = os.clock()
 	stage("colors", colors)
-	stage("shallows", function()
-		buildShallows(rng)
+	stage("lagoon", function()
+		buildLagoon(rng)
 	end)
 	stage("seabed", seabed)
 	stage("island", function()

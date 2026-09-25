@@ -1,6 +1,6 @@
 --!strict
 -- Part-built decorations for each zone: kelp, coral, anemones, shells, light shafts, vents,
--- shipwrecks, whale bones, ruins, broken pillars and alien crystals.
+-- shipwrecks, whale bones, ruins, broken pillars and crystals, tinted by each zone's `style`.
 -- Returns "special" treasure spots (wreck decks, ruin altars) with a rarity bias.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -57,9 +57,9 @@ local function pick<T>(rng: Random, list: { T }): T
 end
 
 ---------------------------------------------------------------- small decor
-local function kelp(parent: Instance, base: Vector3, rng: Random, tint: Color3)
+local function kelp(parent: Instance, base: Vector3, rng: Random, tint: Color3, height: number)
 	local model = Build.model(parent, "Kelp")
-	local segments = rng:NextInteger(4, 7)
+	local segments = math.floor(rng:NextInteger(4, 7) * height)
 	local yaw = rng:NextNumber(0, math.pi * 2)
 	for k = 1, segments do
 		local t = (k - 1) / segments
@@ -93,9 +93,9 @@ local GLOW_COLORS = {
 	rgb(255, 90, 220),
 }
 
-local function coral(parent: Instance, base: Vector3, rng: Random, glow: boolean)
+local function coral(parent: Instance, base: Vector3, rng: Random, glow: boolean, palette: { Color3 }?)
 	local model = Build.model(parent, "Coral")
-	local color = if glow then pick(rng, GLOW_COLORS) else pick(rng, CORAL_COLORS)
+	local color = if palette then pick(rng, palette) elseif glow then pick(rng, GLOW_COLORS) else pick(rng, CORAL_COLORS)
 	local material = if glow then Enum.Material.Neon else Enum.Material.SmoothPlastic
 	local kind = rng:NextInteger(1, 5)
 	local scale = rng:NextNumber(0.8, 1.6)
@@ -165,11 +165,11 @@ local function shell(parent: Instance, base: Vector3, rng: Random)
 	end
 end
 
-local function lightShaft(parent: Instance, x: number, z: number, rng: Random)
-	local length = rng:NextNumber(120, 200)
+local function lightShaft(parent: Instance, x: number, z: number, topY: number, maxLength: number, color: Color3, rng: Random)
+	local length = math.min(rng:NextNumber(120, 200), maxLength)
 	local width = rng:NextNumber(8, 16)
-	local cf = CFrame.new(x, -length / 2, z) * CFrame.Angles(rng:NextNumber(-0.18, 0.18), rng:NextNumber(0, 6.28), rng:NextNumber(-0.18, 0.18))
-	local p = Build.part(parent, Vector3.new(width, length, width), cf, rgb(210, 245, 255), Enum.Material.SmoothPlastic, { Transparency = 0.9 })
+	local cf = CFrame.new(x, topY - length / 2, z) * CFrame.Angles(rng:NextNumber(-0.18, 0.18), rng:NextNumber(0, 6.28), rng:NextNumber(-0.18, 0.18))
+	local p = Build.part(parent, Vector3.new(width, length, width), cf, color, Enum.Material.SmoothPlastic, { Transparency = 0.9 })
 	Build.soft(p)
 	p.Name = "LightShaft"
 	Build.tag(p, "LightShaft")
@@ -331,9 +331,9 @@ end
 
 local CRYSTAL_COLORS = { rgb(190, 90, 255), rgb(90, 240, 255), rgb(255, 110, 220), rgb(140, 120, 255) }
 
-local function crystal(parent: Instance, base: Vector3, rng: Random, big: boolean)
+local function crystal(parent: Instance, base: Vector3, rng: Random, big: boolean, palette: { Color3 }?)
 	local model = Build.model(parent, "Crystal")
-	local color = pick(rng, CRYSTAL_COLORS)
+	local color = pick(rng, palette or CRYSTAL_COLORS)
 	local count = rng:NextInteger(3, 5)
 	local scale = if big then rng:NextNumber(2.5, 4) else rng:NextNumber(0.8, 1.6)
 	for i = 1, count do
@@ -372,15 +372,17 @@ function Decor.build(zoneIndex: number, parent: Instance, rng: Random): { Spot }
 		end
 	end
 
-	local kelpTint = if zoneIndex == 1 then rgb(60, 150, 70) else rgb(40, 100, 70)
+	local style = zone.style
+	local kelpTint = style.kelp or rgb(40, 100, 70)
+	local kelpHeight = style.kelpHeight or 1
 	scatter(decor.kelp, function(pos)
-		kelp(folder, pos, rng, kelpTint)
+		kelp(folder, pos, rng, kelpTint, kelpHeight)
 	end)
 	scatter(decor.coral, function(pos)
 		coral(folder, pos, rng, false)
 	end)
 	scatter(decor.glowCoral, function(pos)
-		coral(folder, pos, rng, true)
+		coral(folder, pos, rng, true, style.glow)
 	end)
 	scatter(decor.anemones, function(pos)
 		anemone(folder, pos, rng)
@@ -404,23 +406,28 @@ function Decor.build(zoneIndex: number, parent: Instance, rng: Random): { Spot }
 		brokenPillar(folder, pos, rng)
 	end, 30, 12)
 	scatter(decor.crystals, function(pos)
-		crystal(folder, pos, rng, false)
+		crystal(folder, pos, rng, false, style.crystals)
 	end)
 	scatter(decor.spires, function(pos)
-		crystal(folder, pos, rng, true)
+		crystal(folder, pos, rng, true, style.crystals)
 	end, 70, 20)
 
 	if decor.lightShafts then
+		-- beams fall from the zone's ceiling (the sea surface in the Lagoon)
+		local top = WorldGeometry.ceilingY(zoneIndex, 0, 0)
+		local floorTop = zone.bottomY + zone.floorThickness
+		local shaftColor = style.shaft or rgb(210, 245, 255)
 		for _ = 1, decor.lightShafts do
 			local r = (zone.radius - 30) * math.sqrt(rng:NextNumber())
 			local theta = rng:NextNumber(0, math.pi * 2)
-			lightShaft(folder, math.cos(theta) * r, math.sin(theta) * r, rng)
+			lightShaft(folder, math.cos(theta) * r, math.sin(theta) * r, top, top - floorTop, shaftColor, rng)
 		end
 	end
-	if zoneIndex == Zones.count then
-		for _, floater in TerrainGen.floaters do
+	-- crystals grow on top of the floating rocks
+	for _, floater in TerrainGen.floaters do
+		if floater.zone == zoneIndex then
 			for _ = 1, 2 do
-				crystal(folder, floater.center + Vector3.new(rng:NextNumber(-4, 4), floater.radius * 0.85, rng:NextNumber(-4, 4)), rng, false)
+				crystal(folder, floater.center + Vector3.new(rng:NextNumber(-4, 4), floater.radius * 0.85, rng:NextNumber(-4, 4)), rng, false, style.crystals)
 			end
 		end
 	end

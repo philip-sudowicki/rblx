@@ -1,6 +1,6 @@
 --!strict
 -- World content for the special events:
---   Leviathan Migration  the Leviathan laps the Abyssal Plains (LeviathanPath, rendered by every
+--   Leviathan Migration  the Leviathan laps the Wreck Graveyard (LeviathanPath, rendered by every
 --                        client); loot drops in its wake while a diver is close enough to follow
 --   Sunken Galleon       a treasure galleon settles on the floor of a random zone, packed with
 --                        rare treasure; ReplicatedStorage attributes drive the HUD marker

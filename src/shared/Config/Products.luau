@@ -190,7 +190,7 @@ return {
 
 	serverLuck = { multiplier = 2, seconds = 15 * 60, maxStackSeconds = 2 * 60 * 60 },
 	-- Coin packs: coins × coinScale[deepest zone index reached]
-	coinScale = { 1, 4, 15, 60, 240, 1000 },
+	coinScale = { 1, 2, 4, 8, 15, 30, 60, 120, 240, 1000 },
 
 	-- Tasteful offer rules (PromptController)
 	offers = {
