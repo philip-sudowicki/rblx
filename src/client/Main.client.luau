@@ -1,2 +1,52 @@
 --!strict
-print("client")
+-- DEEP HAUL client bootstrap: Init every controller (UI construction, signal wiring), then Start.
+
+local StarterGui = game:GetService("StarterGui")
+
+local Controllers = script.Parent:WaitForChild("Controllers")
+local Menus = script.Parent:WaitForChild("Menus")
+local UI = script.Parent:WaitForChild("UI")
+
+local ORDER: { Instance } = {
+	UI:WaitForChild("UIKit"),
+	Controllers:WaitForChild("ClientState"),
+	Controllers:WaitForChild("InputController"),
+	Controllers:WaitForChild("SubController"),
+	Controllers:WaitForChild("ZoneController"),
+	Controllers:WaitForChild("WorldFXController"),
+	Controllers:WaitForChild("HUDController"),
+	Controllers:WaitForChild("MobileControls"),
+	Controllers:WaitForChild("PromptRouter"),
+	Menus:WaitForChild("LaunchPanel"),
+	Controllers:WaitForChild("DockController"),
+}
+
+local modules: { { name: string, module: any } } = {}
+for _, moduleScript in ORDER do
+	assert(moduleScript:IsA("ModuleScript"), moduleScript.Name .. " is not a ModuleScript")
+	table.insert(modules, { name = moduleScript.Name, module = require(moduleScript) :: any })
+end
+
+for _, entry in modules do
+	if entry.module.Init then
+		local ok, err = pcall(entry.module.Init)
+		if not ok then
+			warn(string.format("[DeepHaul] %s.Init failed: %s", entry.name, tostring(err)))
+		end
+	end
+end
+for _, entry in modules do
+	if entry.module.Start then
+		task.spawn(function()
+			local ok, err = pcall(entry.module.Start)
+			if not ok then
+				warn(string.format("[DeepHaul] %s.Start failed: %s", entry.name, tostring(err)))
+			end
+		end)
+	end
+end
+
+pcall(function()
+	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Health, false)
+end)
